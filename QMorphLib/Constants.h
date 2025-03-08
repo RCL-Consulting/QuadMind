@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Node.h"
+#include <numbers>
+#include <cmath>
 
 /*
  * This class holds the program "constants". That is, they are given as
@@ -10,6 +11,9 @@
 class Constants
 {
 public:
+	inline static constexpr double toRadians = std::numbers::pi / 180.0;
+	inline static constexpr double toDegrees = 180.0 / std::numbers::pi;
+
 	// A boolean indicating whether the triangle to quad conversion should run. 
 	inline static const bool doTri2QuadConversion = true;
 	// A boolean indicating whether the topological cleanup should run. 
@@ -28,45 +32,45 @@ public:
 
 	// Some useful constants involving PI:
 	// PI/6 or 30 degrees
-	inline static const double PIdiv6 = java.lang.Math.PI / 6.0;
+	inline static constexpr double PIdiv6 = std::numbers::pi / 6.0;
 	// PI/2 or 90 degrees
-	inline static const double PIdiv2 = java.lang.Math.PI / 2.0;
+	inline static constexpr double PIdiv2 = std::numbers::pi / 2.0;
 	// 3*PI/4 or 135 degrees
-	inline static const double PIx3div4 = 3 * java.lang.Math.PI / 4.0;
+	inline static constexpr double PIx3div4 = 3 * std::numbers::pi / 4.0;
 	// 5*PI/4 or 225 degrees
-	inline static const double PIx5div4 = 5 * java.lang.Math.PI / 4.0;
+	inline static constexpr double PIx5div4 = 5 * std::numbers::pi / 4.0;
 	// 3*PI/2 or 270 degrees
-	inline static const double PIx3div2 = 3 * java.lang.Math.PI / 2.0;
+	inline static constexpr double PIx3div2 = 3 * std::numbers::pi / 2.0;
 	// 2*PI or 360 degrees
-	inline static const double PIx2 = java.lang.Math.PI * 2.0;
+	inline static constexpr double PIx2 = std::numbers::pi * 2.0;
 
 	// Some useful constants holding the radian values of common angles in degrees
 	// 6 degrees in radians
-	inline static const double DEG_6 = Math.toRadians( 6 );
+	inline static constexpr double DEG_6 = toRadians * 6;
 	// 150 degrees in radians
-	inline static const double DEG_150 = Math.toRadians( 150 );
+	inline static constexpr double DEG_150 = toRadians * 150;
 	// 160 degrees in radians
-	inline static const double DEG_160 = Math.toRadians( 160 );
+	inline static constexpr double DEG_160 = toRadians * 160;
 	// 179 degrees in radians
-	inline static const double DEG_179 = Math.toRadians( 179 );
+	inline static constexpr double DEG_179 = toRadians * 179;
 	// 180 degrees in radians
-	inline static const double DEG_180 = Math.toRadians( 180 );
+	inline static constexpr double DEG_180 = toRadians * 180;
 	// 200 degrees in radians
-	inline static const double DEG_200 = Math.toRadians( 200 );
+	inline static constexpr double DEG_200 = toRadians * 200;
 
 	// Constants for the seam, transition seam and transition split operations:
 	// Note that we must have (EPSILON1 < EPSILON2)
-	inline static const double EPSILON1 = java.lang.Math.PI * 0.04;
-	inline static const double EPSILON2 = java.lang.Math.PI * 0.09;
+	inline static const double EPSILON1 = std::numbers::pi * 0.04;
+	inline static const double EPSILON2 = std::numbers::pi * 0.09;
 
 	// The minimum size of the greatest angle in a chevron.
 	inline static const double CHEVRONMIN = DEG_200;
 
 	// Constants for side edge selection (EPSILON < EPSILONLARGER)
-	inline static const double sqrt3div2 = Math.sqrt( 3.0 ) / 2.0;
+	inline static const double sqrt3div2 = sqrt( 3.0 ) / 2.0;
 
-	inline static const double EPSILON = java.lang.Math.PI / 6.0;
-	inline static const double EPSILONLARGER = java.lang.Math.PI;
+	inline static const double EPSILON = std::numbers::pi / 6.0;
+	inline static const double EPSILONLARGER = std::numbers::pi;
 
 	// Constants for post smoothing
 	// The node coincidence tolerance
@@ -78,7 +82,7 @@ public:
 	inline static const double DELTAFACTOR = 0.00001;
 	inline static const double MYMIN = 0.05;
 	// The maximum angle allowed in an element (not given in the paper)
-	inline static const double THETAMAX = Math.toRadians( 200 );
+	inline static constexpr double THETAMAX = toRadians * 200;
 	inline static const double TOL = 0.00001;
 	inline static const double GAMMA = 0.8; // 0.8
 	inline static const int MAXITER = 5;
@@ -98,4 +102,4 @@ public:
 	inline static const int defaultMAXITER = 5;
 
 	// The origin, only used as a reference.
-}
+};
