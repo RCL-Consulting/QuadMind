@@ -19,6 +19,12 @@
     <Filter Include="Source Files\Geometry">
       <UniqueIdentifier>{669aeae5-b990-47ed-8d50-8ef8f2a89bd8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Viewer">
+      <UniqueIdentifier>{c7205272-b941-4b45-8769-6359c4713b9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Viewer">
+      <UniqueIdentifier>{9b348648-f0f4-4f5a-bdda-23f5b5a6c8c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -29,9 +35,6 @@
     </ClInclude>
     <ClInclude Include="Dart.h">
       <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Constants.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Node.h">
       <Filter>Header Files\Geometry</Filter>
@@ -48,13 +51,16 @@
     <ClInclude Include="Triangle.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="Msg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MyVector.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="Ray.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Msg.h">
+      <Filter>Header Files\Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
   </ItemGroup>
@@ -72,6 +78,21 @@
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="Ray.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Edge.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Element.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Msg.cpp">
+      <Filter>Source Files\Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Triangle.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Quad.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
