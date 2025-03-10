@@ -16,6 +16,8 @@ class Node;
 class Element : public Constants
 {
 public:
+	virtual bool IsAQuad() = 0;
+	virtual bool IsATriangle() = 0;
 	/** An array of interior angles */
 	std::vector<double> ang;
 	/** An array of edges */
@@ -80,7 +82,7 @@ public:
 	virtual bool invertedOrZeroArea() = 0;
 
 	/** @return true if the element has a concavity at its Node n. */
-	virtual bool concavityAt( Node n ) = 0;
+	virtual bool concavityAt( Node* n ) = 0;
 
 	/** Replace one of the specified edges e with a replacement edge. */
 	virtual void replaceEdge( Edge* e, Edge* replacement ) = 0;

@@ -27,6 +27,16 @@ public:
 	// Makes a copy of the given triangle
 	Triangle( const Triangle& t );
 
+	bool IsAQuad()
+	{
+		return false;
+	}
+
+	bool IsATriangle()
+	{
+		return true;
+	}
+
 	// Create a simple triangle for testing purposes only
 	// (constrainedLaplacianSmooth()
 	// and optBasedSmooth(..))

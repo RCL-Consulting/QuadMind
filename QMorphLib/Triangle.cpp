@@ -105,7 +105,7 @@ Triangle::Triangle( const Triangle& t )
 Element* 
 Triangle::elementWithExchangedNodes( Node* original, Node* replacement )
 {
-	/*Node* node1 = edgeList[0]->leftNode;
+	Node* node1 = edgeList[0]->leftNode;
 	Node* node2 = edgeList[0]->rightNode;
 	Node* node3 = edgeList[1]->rightNode;
 	if ( node3 == node1 || node3 == node2 )
@@ -171,7 +171,7 @@ Triangle::elementWithExchangedNodes( Node* original, Node* replacement )
 	{
 		t->firstNode = firstNode;
 	}
-	return t;*/
+	return t;
 
 	return nullptr;
 }
