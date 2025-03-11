@@ -71,16 +71,16 @@ Node::moveTo( const Node& n )
 void 
 Node::updateEdgeLengths()
 {
-	/*for ( auto e : edgeList )
+	for ( auto e : edgeList )
 	{
 		e->len = e->computeLength();
-	}*/
+	}
 }
 
 void 
 Node::updateLRinEdgeList()
 {
-	/*bool btemp;
+	bool btemp;
 	Edge* temp;
 	Node* node;
 	Quad* q;
@@ -105,7 +105,7 @@ Node::updateLRinEdgeList()
 			if ( dynamic_cast<Quad*>(e->element1) )
 			{
 				q = static_cast<Quad*>(e->element1);
-				if ( &e == q->edgeList[base] )
+				if ( e == q->edgeList[base] )
 				{
 					q->updateLR();
 				}
@@ -114,19 +114,19 @@ Node::updateLRinEdgeList()
 			if ( dynamic_cast<Quad*>(e->element2) )
 			{
 				q = static_cast<Quad*>(e->element2);
-				if ( &e == q->edgeList[base] )
+				if ( e == q->edgeList[base] )
 				{
 					q->updateLR();
 				}
 			}
 		}
-	}*/
+	}
 }
 
 void 
 Node::updateAngles()
 {
-	/*Msg::debug( "Entering Node.updateAngles()" );
+	Msg::debug( "Entering Node.updateAngles()" );
 	Edge* e, * ne;
 	Node* other1, * other2;
 	Quad* q;
@@ -178,7 +178,7 @@ Node::updateAngles()
 			}
 		}
 	}
-	Msg::debug( "Leaving Node.updateAngles()" );*/
+	Msg::debug( "Leaving Node.updateAngles()" );
 }
 
 double 
@@ -200,11 +200,11 @@ Node::connectToEdge( Edge* edge )
 std::vector<MyVector>
 Node::ccwSortedVectorList()
 {
-	/*Element* elem = nullptr;
+	Element* elem = nullptr;
 	Element* start = nullptr;
 	MyVector v, v0, v1;
 	std::vector<MyVector> boundaryVectors, vectors;
-	double ang;
+
 	for ( auto edge : edgeList )
 	{
 		auto e = edge;
@@ -235,7 +235,7 @@ Node::ccwSortedVectorList()
 
 		elem = v0.edge->element1;
 		auto e = elem->neighborEdge( this, v0.edge );
-		v = e.getVector( this );
+		v = e->getVector( this );
 		v.edge = e;
 
 		if ( v0.isCWto( v ) )
@@ -284,7 +284,7 @@ Node::ccwSortedVectorList()
 	start = elem;
 	do
 	{
-		v = e.getVector( this );
+		v = e->getVector( this );
 		v.edge = e;
 		Msg::debug( "... VS.add(" + v.descr() + ")" );
 		VS.push_back( v );
@@ -301,15 +301,13 @@ Node::ccwSortedVectorList()
 		VS.push_back( v );
 	}
 
-	return VS;*/
-
-	return std::vector<MyVector>();
+	return VS;
 }
 
 std::vector<Edge*> 
 Node::calcCCWSortedEdgeList( Edge* b0, Edge* b1 )
 {
-	/*MyVector v, v0, v1;
+	MyVector v, v0, v1;
 	Edge* e;
 	std::vector<MyVector> vectors;
 
@@ -389,15 +387,13 @@ Node::calcCCWSortedEdgeList( Edge* b0, Edge* b1 )
 		edges[i] = v.edge;
 	}
 
-	return edges;*/
-
-	return std::vector<Edge*>();
+	return edges;
 }
 
 std::vector<Node*> 
 Node::ccwSortedNeighbors()
 {
-	/*Msg::debug("Entering Node.ccwSortedNeighbors(..)");
+	Msg::debug("Entering Node.ccwSortedNeighbors(..)");
 	Element* elem;
 	MyVector v, v0, v1;
 
@@ -465,13 +461,13 @@ Node::ccwSortedNeighbors()
 	Element* start = elem;
 	Quad* q;
 	e = v0.edge;
-	Msg::debug( "... 1st node: " + e->otherNode( this ).descr() );
+	Msg::debug( "... 1st node: " + e->otherNode( this )->descr() );
 
 	int i = 0;
 	do
 	{
 		ccwNodeList[i++] = e->otherNode( this );
-		if ( !elem->IsQuad() )
+		if ( !elem->IsAQuad() )
 		{
 			return std::vector<Node*>();
 		}
@@ -487,15 +483,13 @@ Node::ccwSortedNeighbors()
 	}
 
 	Msg::debug( "Leaving Node.ccwSortedNeighbors(..): # nodes: " + std::to_string( i ) );
-	return ccwNodeList;*/
-
-	return std::vector<Node*>();
+	return ccwNodeList;
 }
 
 double
 Node::meanNeighborEdgeLength()
 {
-	/*double sumLengths = 0.0, len, j = 0;
+	double sumLengths = 0.0, len, j = 0;
 
 	for ( auto e : edgeList )
 	{
@@ -507,39 +501,35 @@ Node::meanNeighborEdgeLength()
 			sumLengths += len;
 		}
 	}
-	return sumLengths / j;*/
-	return 0.0;
+	return sumLengths / j;
 }
 
 int
 Node::nrOfAdjElements()
 {
-	//return adjElements().size();
-	return -1;
+	return static_cast<int>(adjElements().size());
 }
 
 std::vector<Element*>
 Node::adjElements()
 {
-	/*Edge* e;
+	Edge* e;
 	std::vector<Element*> list;
 
 	for ( auto element : edgeList )
 	{
 		e = element;
-		if ( !std::find( list.begin(), list.end(), e->element1 ) )
+		if ( std::find( list.begin(), list.end(), e->element1 ) == list.end() )
 		{
 			list.push_back( e->element1 );
 		}
 
-		if ( e->element2 != nullptr && !std::find( list.begin(), list.end(), e->element2 ) )
+		if ( e->element2 != nullptr && std::find( list.begin(), list.end(), e->element2 ) == list.end() )
 		{
 			list.push_back( e->element2 );
 		}
 	}
-	return list;*/
-
-	return std::vector<Element*>();
+	return list;
 }
 
 int
@@ -551,24 +541,23 @@ Node::nrOfAdjQuads()
 std::vector<Element*> 
 Node::adjQuads()
 {
-	/*Edge* e;
+	Edge* e;
 	std::vector<Element*> list;
 
 	for ( auto element : edgeList )
 	{
 		e = element;
-		if ( e->element1->IsAQuad() && !std::find( list.begin(), list.end(), e->element1 ) )
+		if ( e->element1->IsAQuad() && std::find( list.begin(), list.end(), e->element1 ) == list.end() )
 		{
 			list.push_back( e->element1 );
 		}
-		else if ( e->element2 != nullptr && e->element2->IsAQuad() && !std::find( list.begin(), list.end(), e->element2 ) )
+		else if ( e->element2 != nullptr && e->element2->IsAQuad() && 
+				  std::find( list.begin(), list.end(), e->element2 ) == list.end() )
 		{
 			list.push_back( e->element2 );
 		}
 	}
-	return list;*/
-
-	return std::vector<Element*>();
+	return list;
 }
 
 int
@@ -580,28 +569,27 @@ Node::nrOfAdjTriangles()
 std::vector<Triangle*>
 Node::adjTriangles()
 {
-	/*std::vector<Triangle*> list;
+	std::vector<Triangle*> list;
 
 	for ( auto e : edgeList )
 	{
-		if ( e->element1->IsATriangle() && !std::find( list.begin(), list.end(), e->element1 ) )
+		if ( e->element1->IsATriangle() && std::find( list.begin(), list.end(), e->element1 ) == list.end() )
 		{
 			list.push_back( static_cast<Triangle*>(e->element1) );
 		}
-		else if ( e->element2 != nullptr && e->element2->IsATriangle() && !std::find( list.begin(), list.end(), e->element2 ) )
+		else if ( e->element2 != nullptr && e->element2->IsATriangle() && 
+				  std::find( list.begin(), list.end(), e->element2 ) == list.end() )
 		{
 			list.push_back( static_cast<Triangle*>(e->element2) );
 		}
 	}
-	return list;*/
-
-	return std::vector<Triangle*>();
+	return list;
 }
 
 MyVector 
 Node::laplacianMoveVector()
 {
-	/*MyVector c, cJSum(origin, origin);
+	MyVector c, cJSum(origin, origin);
 	Node* nJ;
 
 	for ( auto e : edgeList )
@@ -610,17 +598,15 @@ Node::laplacianMoveVector()
 		c = MyVector( *this, *nJ );
 		cJSum = cJSum.plus( c );
 	}
-	cJSum = cJSum.div( edgeList.size() );
-	return cJSum;*/
-
-	return MyVector();
+	cJSum = cJSum.div( static_cast<double>(edgeList.size()) );
+	return cJSum;
 }
 
 Node* 
 Node::laplacianSmooth()
 {
 	//RC - Should maybe not return a pointer?
-	/*MyVector c, cJSum(origin, origin);
+	MyVector c, cJSum(origin, origin);
 	Node* nJ;
 
 	for ( auto e:edgeList )
@@ -629,17 +615,15 @@ Node::laplacianSmooth()
 		c = MyVector( *this,* nJ );
 		cJSum = cJSum.plus( c );
 	}
-	cJSum = cJSum.div( edgeList.size() );
-	return new Node( x + cJSum.x, y + cJSum.y );*/
-
-	return nullptr;
+	cJSum = cJSum.div( static_cast<double>(edgeList.size()) );
+	return new Node( x + cJSum.x, y + cJSum.y );
 }
 
 Node*
 Node::laplacianSmoothExclude( Node* node )
 {
 	//RC - Should maybe not return a pointer?
-	/*MyVector c, cJSum(origin, origin);
+	MyVector c, cJSum(origin, origin);
 	Node* nJ;
 
 	for ( auto e : edgeList )
@@ -651,23 +635,21 @@ Node::laplacianSmoothExclude( Node* node )
 			cJSum = cJSum.plus( c );
 		}
 	}
-	cJSum = cJSum.div( edgeList.size() - 1 ); // -1 because node is excluded
-	return new Node( x + cJSum.x, y + cJSum.y );*/
-
-	return nullptr;
+	cJSum = cJSum.div( static_cast<double>(edgeList.size()) - 1 ); // -1 because node is excluded
+	return new Node( x + cJSum.x, y + cJSum.y );
 }
 
 Node* 
 Node::modifiedLWLaplacianSmooth()
 {
-	/*Msg::debug("Entering Node.modifiedLWLaplacianSmooth()...");
+	Msg::debug("Entering Node.modifiedLWLaplacianSmooth()...");
 	Msg::debug( "this= " + descr() );
 
 	Node* nJ;
 	double cJLengthSum = 0, len;
 	Edge* e, *bEdge1, *bEdge2;
 	MyVector c, cJLengthMulcJSum( origin, origin ), deltaCj, deltaI;
-	int n = edgeList.size();
+	int n = static_cast<int>(edgeList.size());
 	if ( n == 0 )
 	{
 		Msg::error( "...edgeList.size()== 0" );
@@ -718,29 +700,27 @@ Node::modifiedLWLaplacianSmooth()
 
 	auto node = new Node( x + deltaI.x, y + deltaI.y );
 	Msg::debug( "Leaving Node.modifiedLWLaplacianSmooth()... returns node= " + node->descr() );
-	return node;*/
-
-	return nullptr;
+	return node;
 }
 
 int
 Node::nrOfFrontEdges()
 {
 	int fronts = 0;
-	/*for ( auto e : edgeList )
+	for ( auto e : edgeList )
 	{
 		if ( e->frontEdge )
 		{
 			fronts++;
 		}
-	}*/
+	}
 	return fronts;
 }
 
 Node* 
 Node::blackerSmooth( Node* nJ, Edge* front1, Edge* front2, double ld )
 {
-	/*Msg::debug("Entering blackerSmooth(..)...");
+	Msg::debug("Entering blackerSmooth(..)...");
 
 	Node* nI = this;
 	Node originNode( 0, 0 );
@@ -766,27 +746,27 @@ Node::blackerSmooth( Node* nJ, Edge* front1, Edge* front2, double ld )
 		// Sorting vMJ, vMK, and vML in ccw order:
 		if ( nI == n1 )
 		{
-			vMJ = MyVector( origin, n2 );
-			vMK = MyVector( origin, n4 );
-			vML = MyVector( origin, n3 );
+			vMJ = MyVector( origin, *n2 );
+			vMK = MyVector( origin, *n4 );
+			vML = MyVector( origin, *n3 );
 		}
 		else if ( nI == n2 )
 		{
-			vMJ = MyVector( origin, n4 );
-			vMK = MyVector( origin, n3 );
-			vML = MyVector( origin, n1 );
+			vMJ = MyVector( origin, *n4 );
+			vMK = MyVector( origin, *n3 );
+			vML = MyVector( origin, *n1 );
 		}
 		else if ( nI == n3 )
 		{
-			vMJ = MyVector( origin, n1 );
-			vMK = MyVector( origin, n2 );
-			vML = MyVector( origin, n4 );
+			vMJ = MyVector( origin, *n1 );
+			vMK = MyVector( origin, *n2 );
+			vML = MyVector( origin, *n4 );
 		}
 		else
 		{ // if (nI==n4) {
-			vMJ = MyVector( origin, n3 );
-			vMK = MyVector( origin, n1 );
-			vML = MyVector( origin, n2 );
+			vMJ = MyVector( origin, *n3 );
+			vMK = MyVector( origin, *n1 );
+			vML = MyVector( origin, *n2 );
 		}
 
 		vMXsum = vMXsum.plus( vMJ );
@@ -794,7 +774,7 @@ Node::blackerSmooth( Node* nJ, Edge* front1, Edge* front2, double ld )
 		vMXsum = vMXsum.minus( vMK );
 	}
 
-	MyVector vImarked = vMXsum.div( adjQuads.size() );
+	MyVector vImarked = vMXsum.div( static_cast<double>(adjQuads.size()) );
 	MyVector deltaA = vImarked.minus( vI );
 
 	if ( adjQuads.size() != 2 || nrOfFrontEdges() > 2 )
@@ -823,14 +803,14 @@ Node::blackerSmooth( Node* nJ, Edge* front1, Edge* front2, double ld )
 		deltaI = deltaI.mul( 0.5 );
 		Msg::debug( "Leaving blackerSmooth(..)..." );
 		return new Node( x + deltaI.x, y + deltaI.y );
-	}*/
+	}
 	return nullptr;
 }
 
 MyVector 
 Node::angularSmoothnessAdjustment( Node* nJ, Edge* f1, Edge* f2, double ld )
 {
-	/*const double kZero = 1e-12;
+	const double kZero = 1e-12;
 	Msg::debug( "Entering angularSmoothnessAdjustment(..) ..." );
 	Node* nI = this;
 	Msg::debug( "nI= " + nI->descr() );
@@ -854,12 +834,12 @@ Node::angularSmoothnessAdjustment( Node* nJ, Edge* f1, Edge* f2, double ld )
 
 	Msg::debug( "nIp1= " + nIp1->descr() );
 
-	if ( nIm1.equals( *nI ) )
+	if ( nIm1->equals( nI ) )
 	{
 		Msg::error( "nIm1.equals(nI)" );
 	}
 
-	if ( nIp1.equals( *nI ) )
+	if ( nIp1->equals( nI ) )
 	{
 		Msg::error( "nIp1.equals(nI)" );
 	}
@@ -868,9 +848,9 @@ Node::angularSmoothnessAdjustment( Node* nJ, Edge* f1, Edge* f2, double ld )
 	// this should be okay, in fact...
 	// Msg::error("nIm1.equals(nIp1)");
 
-	MyVector pI1 = MyVector( *nJ, nIm1 );
-	MyVector pI = MyVector( *nJ, nI );
-	MyVector pI2 = MyVector( *nJ, nIp1 );
+	MyVector pI1 = MyVector( *nJ, *nIm1 );
+	MyVector pI = MyVector( *nJ, *nI );
+	MyVector pI2 = MyVector( *nJ, *nIp1 );
 
 	double pI1Angle = pI1.posAngle();
 	double pI2Angle = pI2.posAngle();
@@ -961,7 +941,7 @@ Node::angularSmoothnessAdjustment( Node* nJ, Edge* f1, Edge* f2, double ld )
 	Msg::debug( "pB2Ray= " + pB2Ray.descr() );
 	Msg::debug( "pB2Ray= " + pB2Ray.values() );
 	auto q = pB2Ray.pointIntersectsAt( line );
-	double lq = q->length( *nJ );
+	double lq = q->length( nJ );
 	if ( std::isnan( lq ) )
 	{
 		Msg::error( "lq is NaN!!!" );
@@ -979,7 +959,7 @@ Node::angularSmoothnessAdjustment( Node* nJ, Edge* f1, Edge* f2, double ld )
 
 	MyVector deltaC = pB2.minus( pI );
 	Msg::debug( "Leaving angularSmoothnessAdjustment(..) returns " + deltaC.descr() );
-	return deltaC;*/
+	return deltaC;
 
 	return MyVector();
 }
@@ -987,21 +967,21 @@ Node::angularSmoothnessAdjustment( Node* nJ, Edge* f1, Edge* f2, double ld )
 bool
 Node::invertedOrZeroAreaElements( const std::vector<Element*>& elements )
 {
-	/*for ( auto elem : elements )
+	for ( auto elem : elements )
 	{
 		if ( elem->invertedOrZeroArea() )
 		{
 			Msg::debug( "Node.invertedOrZeroAreaElements(..): invertedOrZeroArea: " + elem->descr() );
 			return true;
 		}
-	}*/
+	}
 	return false;
 }
 
 bool
 Node::incrAdjustUntilNotInvertedOrZeroArea( Node* old, const std::vector<Element*>& elements )
 {
-	/*Msg::debug("Entering incrAdjustUntilNotInvertedOrZeroArea(..)");
+	Msg::debug("Entering incrAdjustUntilNotInvertedOrZeroArea(..)");
 	Msg::debug( "..this: " + descr() );
 	Msg::debug( "..old: " + old->descr() );
 
@@ -1056,8 +1036,8 @@ Node::incrAdjustUntilNotInvertedOrZeroArea( Node* old, const std::vector<Element
 				steps = (int)(back.y / yinc);
 			}
 
-			Msg::debug( "...back.x is: " + std::to_string( back->x ));
-			Msg::debug( "...back.y is: " + std::to_string( back->y ));
+			Msg::debug( "...back.x is: " + std::to_string( back.x ));
+			Msg::debug( "...back.y is: " + std::to_string( back.y ));
 
 			Msg::debug( "...xinc is: " + std::to_string( xinc ));
 			Msg::debug( "...yinc is: " + std::to_string( yinc ));
@@ -1098,77 +1078,77 @@ Node::incrAdjustUntilNotInvertedOrZeroArea( Node* old, const std::vector<Element
 		return true;
 	}
 
-	Msg::debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );*/
+	Msg::debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
 	return false;
 }
 
 bool 
 Node::boundaryNode()
 {
-	/*for ( auto e : edgeList )
+	for ( auto e : edgeList )
 	{
 		if ( e->boundaryEdge() )
 		{
 			return true;
 		}
-	}*/
+	}
 	return false;
 }
 
 bool
 Node::boundaryOrTriangleNode()
 {
-	/*for ( auto e : edgeList )
+	for ( auto e : edgeList )
 	{
 		if ( e->boundaryOrTriangleEdge() )
 		{
 			return true;
 		}
-	}*/
+	}
 	return false;
 }
 
 bool
 Node::frontNode()
 {
-	/*for ( auto e : edgeList )
+	for ( auto e : edgeList )
 	{
 		if ( e->isFrontEdge() )
 		{
 			return true;
 		}
-	}*/
+	}
 	return false;
 }
 
 Edge* 
 Node::anotherFrontEdge( Edge* known )
 {
-	/*for ( auto e : edgeList )
+	for ( auto e : edgeList )
 	{
 		if ( e != known && e->isFrontEdge() )
 		{
 			return e;
 		}
-	}*/
+	}
 	return nullptr;
 }
 
 Edge* 
 Node::anotherBoundaryEdge( Edge* known )
 {
-	/*for ( auto e : edgeList )
+	for ( auto e : edgeList )
 	{
 		if ( e != known && e->boundaryEdge() )
 		{
 			return e;
 		}
-	}*/
+	}
 	return nullptr;
 }
 
 double 
-Node::length( Node* n )
+Node::length( Node* n ) const
 {
 	double xDiff = x - n->x;
 	double yDiff = y - n->y;
@@ -1176,7 +1156,7 @@ Node::length( Node* n )
 }
 
 double
-Node::length( double x, double y )
+Node::length( double x, double y ) const
 {
 	double xDiff = this->x - x;
 	double yDiff = this->y - y;
@@ -1187,7 +1167,7 @@ bool
 Node::onLine( Edge* e )
 {
 	//RC - all double should be BigDecimal
-	/*double x1 = e->leftNode->x;
+	double x1 = e->leftNode->x;
 	double y1 = e->leftNode->y;
 	double x2 = e->rightNode->x;
 	double y2 = e->rightNode->y;
@@ -1208,28 +1188,25 @@ Node::onLine( Edge* e )
 	else
 	{
 		return false;
-	}*/
-	return false;
+	}
 }
 
 int 
 Node::inHalfplane( Triangle* t, Edge* e )
 {
-	//return inHalfplane( e->leftNode, e->rightNode, t->oppositeOfEdge( e ) );
-	return 0;
+	return inHalfplane( e->leftNode, e->rightNode, t->oppositeOfEdge( e ) );
 }
 
 int
 Node::inHalfplane( Edge* e, Node* n )
 {
-	//return inHalfplane( e->leftNode, e->rightNode, n );
-	return 0;
+	return inHalfplane( e->leftNode, e->rightNode, n );
 }
 
 int
 Node::inHalfplane( Node* l1, Node* l2, Node* n )
 {
-	/*auto compare = [](double Value)
+	auto compare = [](double Value)
 		{
 			const double kPZero = 1e-12;
 			const double kNZero = -1e-12;
@@ -1282,7 +1259,7 @@ Node::inHalfplane( Node* l1, Node* l2, Node* n )
 	else
 	{
 		return -1;
-	}*/
+	}
 
 	return 0;
 }
@@ -1290,7 +1267,7 @@ Node::inHalfplane( Node* l1, Node* l2, Node* n )
 bool 
 Node::inBoundedPlane( Edge* e )
 {
-	/*auto normal1 = e->unitNormalAt( e->leftNode );
+	auto normal1 = e->unitNormalAt( e->leftNode );
 	auto normal2 = e->unitNormalAt( e->rightNode );
 
 	int a = inHalfplane( normal1, e->rightNode );
@@ -1307,14 +1284,14 @@ Node::inBoundedPlane( Edge* e )
 	{
 		Msg::debug( "Node.inBoundedPlane(..): returns false" );
 		return false;
-	}*/
+	}
 	return false;
 }
 
 bool
 Node::inCircle( Node* p1, Node* p2, Node* p3 )
 {
-	/*Msg::debug("Entering inCircle(..)");
+	Msg::debug("Entering inCircle(..)");
 
 	double cosAlpha = (p3->x - p2->x) * (p1->x - p2->x) + (p3->y - p2->y) * (p1->y - p2->y);
 	double cosBeta = (p1->x - x) * (p3->x - x) + (p1->y - y) * (p3->y - y);
@@ -1343,46 +1320,46 @@ Node::inCircle( Node* p1, Node* p2, Node* p3 )
 			Msg::debug( "Leaving inCircle(..), failed last check, returns false" );
 			return false;
 		}
-	}*/
+	}
 	return false;
 }
 
 void
 Node::merge( Node* n )
 {
-	//auto oldN = n->copyXY();
+	auto oldN = n->copyXY();
 
-	//n->setXY( *this );
-	//for (auto e:edgeList )
-	//{
-	//	auto ind = std::find( edgeList.begin(), edgeList.end(), e );
-	//	if ( ind == edgeList.end() )
-	//	{
-	//		e->replaceNode( n, this );
-	//		edgeList.push_back( e );
-	//	}
-	//	else
-	//	{ // collapsed edges must be removed
-	//		if ( e->leftNode == e->rightNode )
-	//		{
-	//			edgeList.erase( ind );
-	//		}
-	//	}
-	//}
-	//n->setXY( *oldN );
+	n->setXY( *this );
+	for (auto e:edgeList )
+	{
+		auto ind = std::find( edgeList.begin(), edgeList.end(), e );
+		if ( ind == edgeList.end() )
+		{
+			e->replaceNode( n, this );
+			edgeList.push_back( e );
+		}
+		else
+		{ // collapsed edges must be removed
+			if ( e->leftNode == e->rightNode )
+			{
+				edgeList.erase( ind );
+			}
+		}
+	}
+	n->setXY( *oldN );
 }
 
 std::vector<Edge*> 
 Node::frontEdgeList()
 {
 	std::vector<Edge*> list;
-	/*for ( auto e : edgeList )
+	for ( auto e : edgeList )
 	{
 		if ( e->frontEdge )
 		{
 			list.push_back( e );
 		}
-	}*/
+	}
 	return list;
 }
 
@@ -1402,7 +1379,7 @@ Node::hasEdge( Edge* e )
 uint8_t 
 Node::valence()
 {
-	/*uint8_t temp = static_cast<uint8_t>(edgeList.size());
+	uint8_t temp = static_cast<uint8_t>(edgeList.size());
 	if ( !boundaryNode() )
 	{
 		return temp;
@@ -1427,15 +1404,15 @@ Node::valence()
 			return (temp);
 		}
 
-	}*/
+	}
 	return 0;
 }
 
 void
 Node::createValencePattern( const std::vector<Node*>& ccwNodes )
 {
-	/*Msg::debug("Entering Node.createValencePattern(..)");
-	int j = edgeList.size() * 2;
+	Msg::debug("Entering Node.createValencePattern(..)");
+	int j = static_cast<int>(edgeList.size() * 2);
 	if ( j >= 128 )
 	{
 		Msg::error( "Number of edges adjacent node " + descr() + " was greater than expected (" + std::to_string(edgeList.size()) + "-2 >= 64)" );
@@ -1449,13 +1426,13 @@ Node::createValencePattern( const std::vector<Node*>& ccwNodes )
 	{
 		pattern[i + 2] = ccwNodes[i]->valence();
 	}
-	Msg::debug( "Leaving Node.createValencePattern(..)" );*/
+	Msg::debug( "Leaving Node.createValencePattern(..)" );
 }
 
 void 
 Node::createValencePattern( uint8_t ccwNodesSize, const std::vector<Node*>& ccwNodes )
 {
-	/*Msg::debug("Entering Node.createValencePattern(" + std::to_string(ccwNodesSize) + ", Node [])");
+	Msg::debug("Entering Node.createValencePattern(" + std::to_string(ccwNodesSize) + ", Node [])");
 	pattern.resize(ccwNodesSize + 2); // +2 for size and c.valence()
 	pattern[0] = ccwNodesSize + 2;
 	pattern[1] = valence();
@@ -1465,7 +1442,7 @@ Node::createValencePattern( uint8_t ccwNodesSize, const std::vector<Node*>& ccwN
 		Msg::debug( "...i== " + std::to_string( i ) );
 		pattern[i + 2] = ccwNodes[i]->valence();
 	}
-	Msg::debug( "Leaving Node.createValencePattern(byte, Node [])" );*/
+	Msg::debug( "Leaving Node.createValencePattern(byte, Node [])" );
 }
 
 int
@@ -1485,7 +1462,7 @@ Node::irregNeighborNodes()
 int 
 Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 {
-	/*Msg::debug("Entering patternMatch(..)");
+	Msg::debug("Entering patternMatch(..)");
 	if ( pattern[0] != pattern2[0] || pattern[1] != pattern2[1] )
 	{
 		Msg::debug( "Leaving patternMatch(..): mismatch" );
@@ -1509,7 +1486,7 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 				matches = 1;
 				jstart = j;
 				Msg::debug( "... rolling pattern..." );
-				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + j + "]: " + std::to_string( pattern[j] ));
+				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ));
 				break;
 			}
 			else if ( pattern[j] == 3 && (pattern2[2] == 3 || pattern2[2] == 14 || pattern2[2] == 0) )
@@ -1518,7 +1495,7 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 				matches = 1;
 				jstart = j;
 				Msg::debug( "... rolling pattern..." );
-				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + j + "]: " + std::to_string( pattern[j] ) );
+				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 				break;
 			}
 			else if ( pattern[j] == 4 && (pattern2[2] == 4 || pattern2[2] == 14 || pattern2[2] == 24 || pattern2[2] == 0) )
@@ -1527,7 +1504,7 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 				matches = 1;
 				jstart = j;
 				Msg::debug( "... rolling pattern..." );
-				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + j + "]: " + std::to_string( pattern[j] ) );
+				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 				break;
 			}
 			else if ( pattern[j] >= 5 && (pattern2[2] == 5 || pattern2[2] == 24 || pattern2[2] == 0) )
@@ -1536,7 +1513,7 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 				matches = 1;
 				jstart = j;
 				Msg::debug( "... rolling pattern..." );
-				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + j + "]: " + std::to_string( pattern[j] ) );
+				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 				break;
 			}
 		}
@@ -1596,7 +1573,7 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 		}
 		jstart += 2;
 	}
-	Msg::debug( "Leaving patternMatch(..): mismatch" );*/
+	Msg::debug( "Leaving patternMatch(..): mismatch" );
 	return -1;
 }
 
@@ -1605,7 +1582,7 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2,
 					const std::vector<bool>& vertexPat,
 					const std::vector<double>& angles )
 {
-	/*Msg::debug("Entering patternMatch(byte [], boolean [], double [])");
+	Msg::debug("Entering patternMatch(byte [], boolean [], double [])");
 	if ( pattern[0] != pattern2[0] || pattern[1] != pattern2[1] )
 	{
 		Msg::debug( "Leaving patternMatch(byte [], boolean [], double []): mismatch" );
@@ -1626,7 +1603,7 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2,
 		{
 			if ( pattern[j] == 2 && (pattern2[2] == 2 || pattern2[2] == 14 || pattern2[2] == 0) )
 			{
-				if ( fitsVertexPat( stataic_cast<uint8_t>(j - 2), angles, vertexPat, pattern[0] - 2 ) )
+				if ( fitsVertexPat( static_cast<uint8_t>(j - 2), angles, vertexPat, pattern[0] - 2 ) )
 				{
 					matches = 1;
 					jstart = j;
@@ -1726,7 +1703,7 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2,
 		}
 		jstart += 2;
 	}
-	Msg::debug( "Leaving patternMatch(byte [], boolean [], double []): mismatch" );*/
+	Msg::debug( "Leaving patternMatch(byte [], boolean [], double []): mismatch" );
 	return -1;
 }
 
@@ -1736,7 +1713,7 @@ Node::fitsVertexPat( uint8_t start,
 					 const std::vector<bool>& vertexPat,
 					 int len )
 {
-	/*Msg::debug("Entering Node.fitsVertexPat(..)");
+	Msg::debug("Entering Node.fitsVertexPat(..)");
 	int i, j = start, k = 0, l;
 	do
 	{
@@ -1759,9 +1736,9 @@ Node::fitsVertexPat( uint8_t start,
 			{
 				if ( !vertexPat[l] && ang[i] < ang[j] )
 				{
-					Msg::debug( "ang[" + i + "] < ang[" + j + "]" );
-					Msg::debug( "ang[" + i + "]== " + std::to_string( toDegrees * ang[i] ) );
-					Msg::debug( "ang[" + j + "]== " + std::to_string( toDegrees * ang[j] ) );
+					Msg::debug( "ang[" + std::to_string( i ) + "] < ang[" + std::to_string( j ) + "]" );
+					Msg::debug( "ang[" + std::to_string( i ) + "]== " + std::to_string( toDegrees * ang[i] ) );
+					Msg::debug( "ang[" + std::to_string( j ) + "]== " + std::to_string( toDegrees * ang[j] ) );
 					Msg::debug( "Leaving Node.fitsVertexPat(..): false" );
 					return false;
 				}
@@ -1786,7 +1763,7 @@ Node::fitsVertexPat( uint8_t start,
 		k++;
 	} while ( j != start );
 
-	Msg::debug( "Leaving Node.fitsVertexPat(..): true" );*/
+	Msg::debug( "Leaving Node.fitsVertexPat(..): true" );
 	return true;
 }
 
@@ -1794,7 +1771,7 @@ std::vector<double>
 Node::surroundingAngles( std::vector<Node*>& ccwNeighbors,
 						 int len )
 {
-	/*Msg::debug( "Entering Node.surroundingAngles(..)" );
+	Msg::debug( "Entering Node.surroundingAngles(..)" );
 	Quad* q, *qa, *qb;
 	Edge* e, *ep, *en;
 	Node *n, *np, *nn, *no;
@@ -1840,7 +1817,7 @@ Node::surroundingAngles( std::vector<Node*>& ccwNeighbors,
 		}
 	}
 	Msg::debug( "Leaving Node.surroundingAngles(..)" );
-	return angles;*/
+	return angles;
 
 	return std::vector<double>();
 }
@@ -1850,7 +1827,7 @@ Node::boundaryPatternMatch( const std::vector<uint8_t>& pattern2,
 							const std::vector<bool>& bpat,
 							const std::vector<Node*>& ccwNeighbors )
 {
-	/*Msg::debug( "Entering boundaryPatternMatch(..)" );
+	Msg::debug( "Entering boundaryPatternMatch(..)" );
 
 	if ( pattern[0] != pattern2[0] || pattern[1] != pattern2[1] || bpat[0] != boundaryNode() )
 	{
@@ -1900,7 +1877,7 @@ Node::boundaryPatternMatch( const std::vector<uint8_t>& pattern2,
 			return false;
 		}
 	}
-	Msg::debug( "Leaving boundaryPatternMatch(..): match" );*/
+	Msg::debug( "Leaving boundaryPatternMatch(..): match" );
 	return true;
 }
 
@@ -1909,7 +1886,7 @@ Node::boundaryPatternMatchSpecial( const std::vector<uint8_t>& pattern2,
 								   const std::vector<bool>& bpat,
 								   const std::vector<Node*>& ccwNeighbors )
 {
-	/*Msg::debug( "Entering boundaryPatternMatchSpecial(..)" );
+	Msg::debug( "Entering boundaryPatternMatchSpecial(..)" );
 
 	if ( pattern[0] != pattern2[0] || pattern[1] != pattern2[1] || bpat[0] != boundaryNode() )
 	{
@@ -2007,14 +1984,14 @@ Node::boundaryPatternMatchSpecial( const std::vector<uint8_t>& pattern2,
 			return k;
 		}
 	}
-	Msg::debug( "Leaving boundaryPatternMatchSpecial(..): mismatch" );*/
+	Msg::debug( "Leaving boundaryPatternMatchSpecial(..): mismatch" );
 	return -1;
 }
 
 Edge*
 Node::commonEdge( Node* n )
 {
-	/*Node* other;
+	Node* other;
 	for ( auto e : edgeList )
 	{
 		other = e->otherNode( this );
@@ -2022,15 +1999,15 @@ Node::commonEdge( Node* n )
 		{
 			return e;
 		}
-	}*/
+	}
 	return nullptr;
 }
 
 bool 
 Node::replaceWithStdMesh()
 {
-	/*Msg::debug( "Entering replaceWithStdMesh(..)" );
-	Msg::debug( "Leaving replaceWithStdMesh(..)" );*/
+	Msg::debug( "Entering replaceWithStdMesh(..)" );
+	Msg::debug( "Leaving replaceWithStdMesh(..)" );
 	return true;
 }
 

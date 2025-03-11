@@ -266,9 +266,9 @@ public:
 	 //
 	Edge* anotherBoundaryEdge( Edge* known );
 
-	double length( Node* n );
+	double length( Node* n ) const;
 
-	double length( double x, double y );
+	double length( double x, double y ) const;
 
 	//
 	 // Determine if a node is on the line (of infinite length) that e is a part of.

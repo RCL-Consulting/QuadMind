@@ -146,7 +146,9 @@
     <ClInclude Include="Element.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="GeomBasics.h" />
     <ClInclude Include="Msg.h" />
+    <ClInclude Include="MyLine.h" />
     <ClInclude Include="MyVector.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="Node.h" />
@@ -155,9 +157,12 @@
     <ClInclude Include="Triangle.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Dart.cpp" />
     <ClCompile Include="Edge.cpp" />
     <ClCompile Include="Element.cpp" />
+    <ClCompile Include="GeomBasics.cpp" />
     <ClCompile Include="Msg.cpp" />
+    <ClCompile Include="MyLine.cpp" />
     <ClCompile Include="MyVector.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="pch.cpp">

@@ -101,5 +101,10 @@ public:
 	inline static const double defaultGAMMA = 0.8; // 0.8
 	inline static const int defaultMAXITER = 5;
 
+	template <typename T>
+	bool contains( const std::vector<T>& vec, const T& elem )
+	{
+		return std::find( vec.begin(), vec.end(), elem ) != vec.end();
+	}
 	// The origin, only used as a reference.
 };

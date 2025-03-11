@@ -25,6 +25,12 @@
     <Filter Include="Header Files\Viewer">
       <UniqueIdentifier>{9b348648-f0f4-4f5a-bdda-23f5b5a6c8c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Meshing">
+      <UniqueIdentifier>{c623f174-e110-4d7b-87ce-8e5f7f43a085}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Meshing">
+      <UniqueIdentifier>{33882666-50e5-44d1-8a15-a1b4edecb25c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -63,6 +69,12 @@
     <ClInclude Include="Constants.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="MyLine.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="GeomBasics.h">
+      <Filter>Header Files\Meshing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="QMorphLib.cpp">
@@ -94,6 +106,15 @@
     </ClCompile>
     <ClCompile Include="Quad.cpp">
       <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Dart.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MyLine.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="GeomBasics.cpp">
+      <Filter>Source Files\Meshing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

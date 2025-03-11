@@ -150,7 +150,7 @@ Edge::alterRightState( bool newRightState )
 Edge* 
 Edge::evalPotSideEdge( Edge* frontNeighbor, Node* n )
 {
-	/*Msg::debug("Entering Edge.evalPotSideEdge(..)");
+	Msg::debug("Entering Edge.evalPotSideEdge(..)");
 	Element* tri = getTriangleElement(), *quad = getQuadElement();
 	double ang;
 
@@ -163,7 +163,7 @@ Edge::evalPotSideEdge( Edge* frontNeighbor, Node* n )
 		ang = PIx2 - sumAngle( quad, n, frontNeighbor );
 	}
 
-	Msg::debug( "sumAngle(..) between " + descr() + " and " + frontNeighbor.descr() + ": " + std::to_string( toDegrees * ang ) );
+	Msg::debug( "sumAngle(..) between " + descr() + " and " + frontNeighbor->descr() + ": " + std::to_string( toDegrees * ang ) );
 
 	Msg::debug( "Leaving Edge.evalPotSideEdge(..)" );
 	if ( ang < PIx3div4 )
@@ -173,14 +173,14 @@ Edge::evalPotSideEdge( Edge* frontNeighbor, Node* n )
 	else
 	{
 		return nullptr;
-	}*/
+	}
 	return nullptr;
 }
 
 void 
 Edge::classifyStateOfFrontEdge()
 {
-	/*Msg::debug("Entering Edge.classifyStateOfFrontEdge()");
+	Msg::debug("Entering Edge.classifyStateOfFrontEdge()");
 	Msg::debug( "this: " + descr() );
 	Edge* lfn = leftFrontNeighbor, *rfn = rightFrontNeighbor;
 
@@ -242,13 +242,13 @@ Edge::classifyStateOfFrontEdge()
 
 	// Add this to a stateList:
 	stateList[getState()].push_back( this );
-	Msg::debug( "Leaving Edge.classifyStateOfFrontEdge()" );*/
+	Msg::debug( "Leaving Edge.classifyStateOfFrontEdge()" );
 }
 
 bool
 Edge::isLargeTransition( Edge* e )
 {
-	/*double ratio;
+	double ratio;
 	double e1Len = length();
 	double e2Len = e->length();
 
@@ -268,14 +268,14 @@ Edge::isLargeTransition( Edge* e )
 	else
 	{
 		return false;
-	}*/
+	}
 	return false;
 }
 
 Edge*
 Edge::getNextFront()
 {
-	/*Edge* current, * selected = nullptr;
+	Edge* current, * selected = nullptr;
 	int selState, curState = 2, i;
 
 	// Select a front preferrably in stateList[2]
@@ -329,8 +329,7 @@ Edge::getNextFront()
 			}
 		}
 	}
-	return selected;*/
-	return nullptr;
+	return selected;
 }
 
 void 
@@ -348,24 +347,24 @@ Edge::markAllSelectable()
 void 
 Edge::printStateLists()
 {
-	/*if ( Msg::debugMode )
+	if ( Msg::debugMode )
 	{
 		std::cout << "frontsInState 1-1:";
-		for ( Edge edge : stateList[2] )
+		for ( auto edge : stateList[2] )
 		{
 			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")";
 		}
 		std::cout << "frontsInState 0-1 and 1-0:";
-		for ( Edge edge : stateList[1] )
+		for ( auto edge : stateList[1] )
 		{
 			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")";
 		}
 		std::cout << "frontsInState 0-0:";
-		for ( Edge edge : stateList[0] )
+		for ( auto edge : stateList[0] )
 		{
 			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")";
 		}
-	}*/
+	}
 }
 
 bool
@@ -384,16 +383,15 @@ Edge::leftTo( Edge* e )
 bool 
 Edge::isFrontEdge()
 {
-	/*if ( (element1->IsTriangle() && !(element2->IsTriangle())) ||
-		 (element2->IsTriangle() && !(element1->IsTriangle())) )
+	if ( (element1->IsATriangle() && !(element2->IsATriangle())) ||
+		 (element2->IsATriangle() && !(element1->IsATriangle())) )
 	{
 		return true;
 	}
 	else
 	{
 		return false;
-	}*/
-	return false;
+	}
 }
 
 std::string
@@ -417,7 +415,7 @@ Edge::length()
 bool
 Edge::replaceNode( Node* n1, Node* n2 )
 {
-	/*if ( leftNode->equals( n1 ) )
+	if ( leftNode->equals( n1 ) )
 	{
 		leftNode = n2;
 	}
@@ -429,15 +427,15 @@ Edge::replaceNode( Node* n1, Node* n2 )
 	{
 		return false;
 	}
-	len = computeLength();*/
+	len = computeLength();
 	return true;
 }
 
 void 
 Edge::seamWith( Edge* e )
 {
-	/*Node* nK = commonNode(e);
-	Node* nKp1 = otherNode( nK ), *nKm1 = e.otherNode( nK ), *other;
+	Node* nK = commonNode(e);
+	Node* nKp1 = otherNode( nK ), *nKm1 = e->otherNode( nK ), *other;
 	bool found = false;
 	Edge* eI, *eJ;
 
@@ -499,7 +497,7 @@ Edge::seamWith( Edge* e )
 				nKp1->edgeList.erase( Iter );
 			}
 		}
-	}*/
+	}
 }
 
 Node*
@@ -542,7 +540,7 @@ Edge::angleAt( Node* n )
 	// If this is CW to x-axis, then return pos acos, else return neg acos
 	// double x= leftNode->x-rightNode.x;
 	// double y= leftNode->y-rightNode.y;
-	/*auto other = otherNode( n );
+	auto other = otherNode( n );
 
 	double x = n->x - other->x;
 	double y = n->y - other->y;
@@ -581,14 +579,14 @@ Edge::angleAt( Node* n )
 				return acos( -x / hyp );
 			}
 		}
-	}*/
+	}
 	return 0.0;
 }
 
 double 
 Edge::sumAngle( Element* sElem, Node* n, Edge* eEdge )
 {
-	/*Msg::debug("Entering sumAngle(..)");
+	Msg::debug("Entering sumAngle(..)");
 	Msg::debug( "this: " + descr() );
 	if ( sElem != nullptr )
 	{
@@ -637,14 +635,13 @@ Edge::sumAngle( Element* sElem, Node* n, Edge* eEdge )
 		ang = PIx2 - iang;
 	}
 	Msg::debug( "Leaving sumAngle(..), returning " + std::to_string( toDegrees * ang ) );
-	return ang;*/
-	return 0.0;
+	return ang;
 }
 
 Edge* 
 Edge::firstFrontEdgeAt( Element* sElem, Node* n )
 {
-	/*Element* curElem = sElem;
+	Element* curElem = sElem;
 	Edge* curEdge = this;
 
 	while ( !curEdge->frontEdge )
@@ -652,14 +649,13 @@ Edge::firstFrontEdgeAt( Element* sElem, Node* n )
 		curEdge = curElem->neighborEdge( n, curEdge );
 		curElem = curElem->neighbor( curEdge );
 	}
-	return curEdge;*/
-	return nullptr;
+	return curEdge;
 }
 
 double
 Edge::computePosAngle( Edge* edge, Node* n )
 {
-	/*double a, b, c;
+	double a, b, c;
 	if ( edge == this )
 	{
 		Msg::warning( "Edge.computePosAngle(..): The parameter Edge is the same as this Edge." );
@@ -722,34 +718,32 @@ Edge::computePosAngle( Edge* edge, Node* n )
 	{
 		return acos( itemp );
 	}
-	*/
-	return 0.0;
+	
 }
 
 double 
 Edge::computeCCWAngle( Edge* edge )
 {
-	/*auto n = commonNode( edge );
+	auto n = commonNode( edge );
 	double temp = computePosAngle( edge, n );
 
 	MyVector thisVector = getVector( n );
 	MyVector edgeVector = edge->getVector( n );
 
-	if ( thisVector->isCWto( edgeVector ) )
+	if ( thisVector.isCWto( edgeVector ) )
 	{
 		return temp;
 	}
 	else
 	{
 		return PIx2 - temp;
-	}*/
-	return 0.0;
+	}
 }
 
 Node* 
 Edge::commonNode( Edge* e )
 {
-	/*if ( hasNode( e->leftNode ) )
+	if ( hasNode( e->leftNode ) )
 	{
 		return e->leftNode;
 	}
@@ -760,14 +754,13 @@ Edge::commonNode( Edge* e )
 	else
 	{
 		return nullptr;
-	}*/
-	return nullptr;
+	}
 }
 
 Element*
 Edge::commonElement( Edge* e )
 {
-	/*if ( hasElement( e->element1 ) )
+	if ( hasElement( e->element1 ) )
 	{
 		return e->element1;
 	}
@@ -778,8 +771,7 @@ Edge::commonElement( Edge* e )
 	else
 	{
 		return nullptr;
-	}*/
-	return nullptr;
+	}
 }
 
 void
@@ -818,7 +810,7 @@ Edge::tryToDisconnectNodes()
 void 
 Edge::connectToTriangle( Triangle* triangle )
 {
-	/*if ( hasElement( triangle ) )
+	if ( hasElement( triangle ) )
 	{
 		return;
 	}
@@ -833,13 +825,13 @@ Edge::connectToTriangle( Triangle* triangle )
 	else
 	{
 		Msg::error( "Edge.connectToTriangle(..): An edge cannot be connected to more than two elements. edge= " + descr() );
-	}*/
+	}
 }
 
 void
 Edge::connectToQuad( Quad* q )
 {
-	/*if ( hasElement( q ) )
+	if ( hasElement( q ) )
 	{
 		return;
 	}
@@ -854,13 +846,13 @@ Edge::connectToQuad( Quad* q )
 	else
 	{
 		Msg::error( "Edge.connectToQuad(..):An edge cannot be connected to more than two elements." );
-	}*/
+	}
 }
 
 void 
 Edge::connectToElement( Element* elem )
 {
-	/*if ( hasElement( elem ) )
+	if ( hasElement( elem ) )
 	{
 		return;
 	}
@@ -875,13 +867,13 @@ Edge::connectToElement( Element* elem )
 	else
 	{
 		Msg::error( "Edge.connectToElement(..):An edge cannot be connected to more than two elements." );
-	}*/
+	}
 }
 
 void
 Edge::disconnectFromElement( Element* elem )
 {
-	/*if ( element1 == elem )
+	if ( element1 == elem )
 	{
 		element1 = element2;
 		element2 = nullptr;
@@ -892,14 +884,14 @@ Edge::disconnectFromElement( Element* elem )
 	}
 	else
 	{
-		Msg::error( "Edge " + descr() + " is not connected to element " + elem.descr() + "." );
-	}*/
+		Msg::error( "Edge " + descr() + " is not connected to element " + elem->descr() + "." );
+	}
 }
 
 Node*
 Edge::oppositeNode( Node* wrongNode )
 {
-	/*Node* candidate;
+	Node* candidate;
 	Edge* otherEdge;
 
 	// Pick one of the other edges in element1
@@ -949,19 +941,18 @@ Edge::oppositeNode( Node* wrongNode )
 			candidate = otherEdge->rightNode;
 		}
 	}
-	return candidate;*/
-	return nullptr;
+	return candidate;
 }
 
 Edge* 
 Edge::unitNormalAt( Node* n )
 {
-	/*Msg::debug( "Entering Edge.unitNormalAt(..)" );
+	Msg::debug( "Entering Edge.unitNormalAt(..)" );
 
 	double xdiff = rightNode->x - leftNode->x;
 	double ydiff = rightNode->y - leftNode->y;
 
-	Msg::debug( "this: " + descr() + ", n: " + n.descr() );
+	Msg::debug( "this: " + descr() + ", n: " + n->descr() );
 
 	double c = sqrt( xdiff * xdiff + ydiff * ydiff );
 
@@ -971,14 +962,13 @@ Edge::unitNormalAt( Node* n )
 	Node* newNode = new Node( xn, yn );
 
 	Msg::debug( "Leaving Edge.unitNormalAt(..)" );
-	return new Edge( n, newNode );*/
-	return nullptr;
+	return new Edge( n, newNode );
 }
 
 Edge*
 Edge::getSwappedEdge()
 {
-	/*if ( element2 == nullptr )
+	if ( element2 == nullptr )
 	{
 		Msg::warning( "getSwappedEdge: Cannot swap a boundary edge." );
 		return nullptr;
@@ -993,14 +983,13 @@ Edge::getSwappedEdge()
 	Node* m = this->oppositeNode( n );
 	Edge* swappedEdge = new Edge( n, m );
 
-	return swappedEdge;*/
-	return nullptr;
+	return swappedEdge;
 }
 
 void
 Edge::swapToAndSetElementsFor( Edge* e )
 {
-	/*Msg::debug("Entering Edge.swapToAndSetElementsFor(..)");
+	Msg::debug("Entering Edge.swapToAndSetElementsFor(..)");
 	if ( element1 == nullptr || element2 == nullptr )
 	{
 		Msg::error( "Edge.swapToAndSetElementsFor(..): both elements not set" );
@@ -1011,10 +1000,10 @@ Edge::swapToAndSetElementsFor( Edge* e )
 
 	Msg::debug( "...this: " + descr() );
 
-	Edge e1 = element1->neighborEdge( leftNode, this );
-	Edge e2 = element1->neighborEdge( e1->otherNode( leftNode ), e1 );
-	Edge e3 = element2->neighborEdge( rightNode, this );
-	Edge e4 = element2->neighborEdge( e3->otherNode( rightNode ), e3 );
+	Edge* e1 = element1->neighborEdge( leftNode, this );
+	Edge* e2 = element1->neighborEdge( e1->otherNode( leftNode ), e1 );
+	Edge* e3 = element2->neighborEdge( rightNode, this );
+	Edge* e4 = element2->neighborEdge( e3->otherNode( rightNode ), e3 );
 
 	element2->disconnectEdges(); // important: element2 *first*, then element1
 	element1->disconnectEdges();
@@ -1022,15 +1011,15 @@ Edge::swapToAndSetElementsFor( Edge* e )
 	auto t1 = new Triangle( e, e2, e3 );
 	auto t2 = new Triangle( e, e4, e1 );
 
-	t1.connectEdges();
-	t2.connectEdges();
+	t1->connectEdges();
+	t2->connectEdges();
 
 	// Update edgeLists at this.leftNode and this.rightNode
 	// and at e.leftNode and e.rightNode:
 	disconnectNodes();
 	e->connectNodes();
 
-	Msg::debug( "Leaving Edge.swapToAndSetElementsFor(..)" );*/
+	Msg::debug( "Leaving Edge.swapToAndSetElementsFor(..)" );
 }
 
 MyVector
@@ -1042,7 +1031,7 @@ Edge::getVector()
 MyVector 
 Edge::getVector( Node* origin )
 {
-	/*if ( origin->equals(leftNode) )
+	if ( origin->equals(leftNode) )
 	{
 		return MyVector( *leftNode, *rightNode );
 	}
@@ -1054,14 +1043,13 @@ Edge::getVector( Node* origin )
 	{
 		Msg::error( "Edge::getVector(Node): Node not an endpoint in this edge." );
 		return MyVector();
-	}*/
-	return MyVector();
+	}
 }
 
 bool
 Edge::bordersToTriangle()
 {
-	/*if ( element1->IsATriangle() )
+	if ( element1->IsATriangle() )
 	{
 		return true;
 	}
@@ -1072,8 +1060,7 @@ Edge::bordersToTriangle()
 	else
 	{
 		return false;
-	}*/
-	return false;
+	}
 }
 
 bool 
@@ -1092,15 +1079,14 @@ Edge::boundaryEdge()
 bool
 Edge::boundaryOrTriangleEdge()
 {
-	/*if ( element1 == nullptr || element2 == nullptr || element1->IsATriangle() || element2->IsATriangle() )
+	if ( element1 == nullptr || element2 == nullptr || element1->IsATriangle() || element2->IsATriangle() )
 	{
 		return true;
 	}
 	else
 	{
 		return false;
-	}*/
-	return false;
+	}
 }
 
 bool
@@ -1158,7 +1144,7 @@ Edge::hasFrontNeighbor( Edge* e )
 Node*
 Edge::otherNode( Node* n )
 {
-	/*if ( n->equals( leftNode ) )
+	if ( n->equals( leftNode ) )
 	{
 		return rightNode;
 	}
@@ -1172,8 +1158,7 @@ Edge::otherNode( Node* n )
 		Msg::debug( "n: " + n->descr() );
 		Msg::error( "Edge.otherNode(Node): n is not on this edge" );
 		return nullptr;
-	}*/
-	return nullptr;
+	}
 }
 
 Node*
@@ -1217,7 +1202,7 @@ Edge::lowerNode()
 bool
 Edge::noTrianglesInOrbit( Edge* e, Quad* startQ )
 {
-	/*Msg::debug( "Entering Edge.noTrianglesInOrbit(..)" );
+	Msg::debug( "Entering Edge.noTrianglesInOrbit(..)" );
 	Edge* curEdge = this;
 	Element* curElem = startQ;
 	Node* n = commonNode( e );
@@ -1250,14 +1235,14 @@ Edge::noTrianglesInOrbit( Edge* e, Quad* startQ )
 		}
 	} while ( curEdge != e );
 
-	Msg::debug( "Leaving Edge.noTrianglesInOrbit(..), returns true" );*/
+	Msg::debug( "Leaving Edge.noTrianglesInOrbit(..), returns true" );
 	return true;
 }
 
 Edge*
 Edge::findLeftFrontNeighbor( const std::vector<Edge*>& frontList2 )
 {
-	/*std::vector<Edge*> list;
+	std::vector<Edge*> list;
 	Edge* candidate = nullptr;
 	double candAng = std::numeric_limits<double>::infinity(), curAng;
 	Triangle* t = nullptr;
@@ -1291,14 +1276,14 @@ Edge::findLeftFrontNeighbor( const std::vector<Edge*>& frontList2 )
 		}
 		return candidate;
 	}
-	Msg::warning( "findLeftFrontNeighbor(..): Returning null" );*/
+	Msg::warning( "findLeftFrontNeighbor(..): Returning null" );
 	return nullptr;
 }
 
 Edge*
 Edge::findRightFrontNeighbor( const std::vector<Edge*>& frontList2 )
 {
-	/*std::vector<Edge*> list;
+	std::vector<Edge*> list;
 	Edge* candidate = nullptr;
 	double candAng = std::numeric_limits<double>::infinity(), curAng;
 	Triangle* t = nullptr;
@@ -1335,14 +1320,14 @@ Edge::findRightFrontNeighbor( const std::vector<Edge*>& frontList2 )
 		Msg::debug( "findRightFrontNeighbor(): Returning candidate " + candidate->descr() );
 		return candidate;
 	}
-	Msg::warning( "findRightFrontNeighbor(..): List.size== " + std::to_string( list.size() ) + ". Returning null" );*/
+	Msg::warning( "findRightFrontNeighbor(..): List.size== " + std::to_string( list.size() ) + ". Returning null" );
 	return nullptr;
 }
 
 void
 Edge::setFrontNeighbor( Edge* e )
 {
-	/*if ( e->hasNode( leftNode ) )
+	if ( e->hasNode( leftNode ) )
 	{
 		leftFrontNeighbor = e;
 	}
@@ -1353,7 +1338,7 @@ Edge::setFrontNeighbor( Edge* e )
 	else
 	{
 		Msg::warning( "Edge.setFrontNeighbor(..): Could not set." );
-	}*/
+	}
 }
 
 bool
@@ -1414,7 +1399,7 @@ Edge::splitTrianglesAt( Node* nN, Node* ben,
 						std::vector<Triangle*>& triangleList,
 						std::vector<Edge*>& edgeList )
 {
-	/*Msg::debug("Entering Edge.splitTrianglesAt(..)");
+	Msg::debug("Entering Edge.splitTrianglesAt(..)");
 	Edge* eK1 = new Edge( leftNode, nN );
 	Edge* eK2 = new Edge( rightNode, nN );
 
@@ -1467,10 +1452,10 @@ Edge::splitTrianglesAt( Node* nN, Node* ben,
 	triangleList.push_back( t21 );
 	triangleList.push_back( t22 );
 
-	Msg::debug( "...Created triangle " + t11.descr() );
-	Msg::debug( "...Created triangle " + t12.descr() );
-	Msg::debug( "...Created triangle " + t21.descr() );
-	Msg::debug( "...Created triangle " + t22.descr() );
+	Msg::debug( "...Created triangle " + t11->descr() );
+	Msg::debug( "...Created triangle " + t12->descr() );
+	Msg::debug( "...Created triangle " + t21->descr() );
+	Msg::debug( "...Created triangle " + t22->descr() );
 
 	Msg::debug( "Leaving Edge.splitTrianglesAt(..)" );
 	if ( eK1->hasNode( ben ) )
@@ -1485,8 +1470,7 @@ Edge::splitTrianglesAt( Node* nN, Node* ben,
 	{
 		Msg::error( "" );
 		return nullptr;
-	}*/
-	return nullptr;
+	}
 }
 
 Edge* 
@@ -1495,7 +1479,7 @@ Edge::splitTrianglesAtMyMidPoint( std::vector<Triangle*>& triangleList,
 								  std::vector<Node*>& nodeList,
 								  Edge* baseEdge )
 {
-	/*Msg::debug("Entering Edge.splitTrianglesAtMyMidPoint(..).");
+	Msg::debug("Entering Edge.splitTrianglesAtMyMidPoint(..).");
 
 	Edge* lowerEdge;
 	Node* ben = baseEdge->commonNode( this );
@@ -1509,14 +1493,13 @@ Edge::splitTrianglesAtMyMidPoint( std::vector<Triangle*>& triangleList,
 	lowerEdge = splitTrianglesAt( mid, ben, triangleList, edgeList );
 
 	Msg::debug( "Leaving Edge.splitTrianglesAtMyMidPoint(..)." );
-	return lowerEdge;*/
-	return nullptr;
+	return lowerEdge;
 }
 
 Edge*
 Edge::nextQuadEdgeAt( Node* n, Element* startElem )
 {
-	/*Msg::debug( "Entering Edge.nextQuadEdgeAt(..)" );
+	Msg::debug( "Entering Edge.nextQuadEdgeAt(..)" );
 	Element* elem;
 	Edge* e;
 	int i = 3;
@@ -1539,32 +1522,30 @@ Edge::nextQuadEdgeAt( Node* n, Element* startElem )
 	else
 	{
 		return nullptr;
-	}*/
-	return nullptr;
+	}
 }
 
 Quad* 
 Edge::getQuadElement()
 {
-	/*if ( element1->IsAQuad() )
+	if ( element1->IsAQuad() )
 	{
 		return static_cast<Quad*>(element1);
 	}
-	else if ( element2 instanceof Quad )
+	else if ( element2->IsAQuad() )
 	{
 		return static_cast<Quad*>(element2);
 	}
 	else
 	{
 		return nullptr;
-	}*/
-	return nullptr;
+	}
 }
 
 Triangle* 
 Edge::getTriangleElement()
 {
-	/*if ( element1->IsATriangle() )
+	if ( element1->IsATriangle() )
 	{
 		return static_cast<Triangle*>(element1);
 	}
@@ -1575,14 +1556,13 @@ Edge::getTriangleElement()
 	else
 	{
 		return nullptr;
-	}*/
-	return nullptr;
+	}
 }
 
 Quad* 
 Edge::getQuadWithEdge( Edge* e )
 {
-	/*if ( element1->IsAQuad() && element1->hasEdge( e ) )
+	if ( element1->IsAQuad() && element1->hasEdge( e ) )
 	{
 		return static_cast<Quad*>(element1);
 	}
@@ -1593,8 +1573,7 @@ Edge::getQuadWithEdge( Edge* e )
 	else
 	{
 		return nullptr;
-	}*/
-	return nullptr;
+	}
 }
 
 Edge* 
@@ -1617,7 +1596,7 @@ Edge::frontNeighborAt( Node* n )
 Edge*
 Edge::nextFrontNeighbor( Edge* prev )
 {
-	/*if ( leftFrontNeighbor != prev )
+	if ( leftFrontNeighbor != prev )
 	{
 		return leftFrontNeighbor;
 	}
@@ -1629,14 +1608,13 @@ Edge::nextFrontNeighbor( Edge* prev )
 	{
 		Msg::error( "Edge.nextFrontNeighbor(Edge): Cannot find a suitable next edge." );
 		return nullptr;
-	}*/
-	return nullptr;
+	}
 }
 
 Edge* 
 Edge::trueFrontNeighborAt( Node* n )
 {
-	/*Element* curElem = getTriangleElement();
+	Element* curElem = getTriangleElement();
 	Edge* curEdge = this;
 
 	if ( !hasNode( n ) )
@@ -1650,8 +1628,7 @@ Edge::trueFrontNeighborAt( Node* n )
 		curElem = curElem->neighbor( curEdge );
 	} while ( !curEdge->isFrontEdge() );
 
-	return curEdge;*/
-	return nullptr;
+	return curEdge;
 }
 
 std::string 

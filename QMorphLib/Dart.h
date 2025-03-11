@@ -9,10 +9,10 @@ class Element;
 class Dart
 {
 public:
-	Dart();
-	Dart( Node* n, Edge* e, Element* elem ) { this->n = n; this->e = e; this->elem = elem; }
+	Dart()=default;
+	Dart( Node* n, Edge* e, Element* elem );
 	
-	std::string descr() { return "(elem: " + elem->descr() + ", e: " + e->descr() + ", n: " + n->descr() + ")"; }
+	std::string descr();
 private:
 	Node* n = nullptr;
 	Edge* e = nullptr;
