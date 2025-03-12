@@ -94,399 +94,27 @@ public:
 	static std::vector<Element*> loadMesh();
 
 	// Load a triangle mesh from a file. //
-	/*public static List<Triangle> loadTriangleMesh()
-	{
-		FileInputStream fis;
-		Node node1, node2, node3;
-		Edge edge1, edge2, edge3;
-		Triangle t;
-
-		triangleList = new ArrayList<>();
-		edgeList = new ArrayList<>();
-		List<Node> usNodeList = new ArrayList<>();
-
-		try
-		{
-			fis = new FileInputStream( meshDirectory + meshFilename );
-			BufferedReader in = new BufferedReader( new InputStreamReader( fis ) );
-			double x1, x2, x3, y1, y2, y3, len1 = 0, len2 = 0, len3 = 0, ang1 = 0, ang2 = 0, ang3 = 0;
-
-			try
-			{
-				String inputLine;
-				inputLine = in.readLine();
-				while ( inputLine != null )
-				{
-					cInd = 0;
-					x1 = nextDouble( inputLine );
-					y1 = nextDouble( inputLine );
-					x2 = nextDouble( inputLine );
-					y2 = nextDouble( inputLine );
-					x3 = nextDouble( inputLine );
-					y3 = nextDouble( inputLine );
-
-					node1 = new Node( x1, y1 );
-					if ( !usNodeList.contains( node1 ) )
-					{
-						usNodeList.add( node1 );
-					}
-					else
-					{
-						node1 = usNodeList.get( usNodeList.indexOf( node1 ) );
-					}
-					node2 = new Node( x2, y2 );
-					if ( !usNodeList.contains( node2 ) )
-					{
-						usNodeList.add( node2 );
-					}
-					else
-					{
-						node2 = usNodeList.get( usNodeList.indexOf( node2 ) );
-					}
-					node3 = new Node( x3, y3 );
-					if ( !usNodeList.contains( node3 ) )
-					{
-						usNodeList.add( node3 );
-					}
-					else
-					{
-						node3 = usNodeList.get( usNodeList.indexOf( node3 ) );
-					}
-
-					edge1 = new Edge( node1, node2 );
-					if ( !edgeList.contains( edge1 ) )
-					{
-						edgeList.add( edge1 );
-					}
-					else
-					{
-						edge1 = edgeList.get( edgeList.indexOf( edge1 ) );
-					}
-					edge1.leftNode.connectToEdge( edge1 );
-					edge1.rightNode.connectToEdge( edge1 );
-
-					edge2 = new Edge( node2, node3 );
-					if ( !edgeList.contains( edge2 ) )
-					{
-						edgeList.add( edge2 );
-					}
-					else
-					{
-						edge2 = edgeList.get( edgeList.indexOf( edge2 ) );
-					}
-					edge2.leftNode.connectToEdge( edge2 );
-					edge2.rightNode.connectToEdge( edge2 );
-
-					edge3 = new Edge( node1, node3 );
-					if ( !edgeList.contains( edge3 ) )
-					{
-						edgeList.add( edge3 );
-					}
-					else
-					{
-						edge3 = edgeList.get( edgeList.indexOf( edge3 ) );
-					}
-					edge3.leftNode.connectToEdge( edge3 );
-					edge3.rightNode.connectToEdge( edge3 );
-
-					if ( meshLenOpt )
-					{
-						len1 = nextDouble( inputLine );
-						len2 = nextDouble( inputLine );
-						len3 = nextDouble( inputLine );
-					}
-
-					if ( meshAngOpt )
-					{
-						ang1 = nextDouble( inputLine );
-						ang2 = nextDouble( inputLine );
-						ang3 = nextDouble( inputLine );
-					}
-					t = new Triangle( edge1, edge2, edge3, len1, len2, len3, ang1, ang2, ang3, meshLenOpt, meshAngOpt );
-					t.connectEdges();
-					triangleList.add( t );
-					inputLine = in.readLine();
-				}
-			}
-			catch ( Exception e )
-			{
-				Msg.error( "Cannot read triangle-mesh data." );
-			}
-		}
-		catch ( Exception e )
-		{
-			Msg.error( "File " + meshFilename + " not found." );
-		}
-		nodeList = usNodeList; // sortNodes(usNodeList);
-		return triangleList;
-	}
+	static std::vector<Triangle*> loadTriangleMesh();
 
 	// A method to read node files. //
-	public static List<Node> loadNodes()
-	{
-		FileInputStream fis;
-		Node node1, node2, node3, node4;
-		ArrayList<Node> usNodeList = new ArrayList<>();
-
-		try
-		{
-			fis = new FileInputStream( meshDirectory + meshFilename );
-			BufferedReader in = new BufferedReader( new InputStreamReader( fis ) );
-			double x1, x2, x3, y1, y2, y3, x4, y4;
-
-			try
-			{
-				String inputLine;
-				inputLine = in.readLine();
-				while ( inputLine != null )
-				{
-					cInd = 0;
-					x1 = nextDouble( inputLine );
-					y1 = nextDouble( inputLine );
-					x2 = nextDouble( inputLine );
-					y2 = nextDouble( inputLine );
-					x3 = nextDouble( inputLine );
-					y3 = nextDouble( inputLine );
-					x4 = nextDouble( inputLine );
-					y4 = nextDouble( inputLine );
-
-					if ( !Double.isNaN( x1 ) && !Double.isNaN( y1 ) )
-					{
-						node1 = new Node( x1, y1 );
-						if ( !usNodeList.contains( node1 ) )
-						{
-							usNodeList.add( node1 );
-						}
-					}
-					if ( !Double.isNaN( x2 ) && !Double.isNaN( y2 ) )
-					{
-						node2 = new Node( x2, y2 );
-						if ( !usNodeList.contains( node2 ) )
-						{
-							usNodeList.add( node2 );
-						}
-					}
-					if ( !Double.isNaN( x3 ) && !Double.isNaN( y3 ) )
-					{
-						node3 = new Node( x3, y3 );
-						if ( !usNodeList.contains( node3 ) )
-						{
-							usNodeList.add( node3 );
-						}
-					}
-					if ( !Double.isNaN( x4 ) && !Double.isNaN( y4 ) )
-					{
-						node4 = new Node( x4, y4 );
-						if ( !usNodeList.contains( node4 ) )
-						{
-							usNodeList.add( node4 );
-						}
-					}
-					inputLine = in.readLine();
-				}
-			}
-			catch ( Exception e )
-			{
-				Msg.error( "Cannot read node file data." );
-			}
-		}
-		catch ( Exception e )
-		{
-			Msg.error( "File " + meshFilename + " not found." );
-		}
-
-		// nodeList= sortNodes(usNodeList);
-		nodeList = usNodeList;
-		return usNodeList;
-	}
+	static std::vector<Node*> loadNodes();
 
 	//
 	// Method for writing to a LaTeX drawing format (need the epic and eepic
 	// packages).
 	//
-	public static boolean exportMeshToLaTeX( String filename, int unitlength, double xcorr, double ycorr, boolean visibleNodes )
-	{
-		FileOutputStream fos;
-		Edge edge;
-		Node n;
-		int i;
-		ArrayList<Edge> boundary = new ArrayList<>();
-
-		findExtremeNodes();
-
-		// Collect boundary edges in a list
-		for ( i = 0; i < edgeList.size(); i++ )
-		{
-			edge = edgeList.get( i );
-			if ( edge.boundaryEdge() )
-			{
-				boundary.add( edge );
-			}
-		}
-
-		try
-		{
-			fos = new FileOutputStream( filename );
-			BufferedWriter out = new BufferedWriter( new OutputStreamWriter( fos ) );
-			double x1, x2, x3, x4, y1, y2, y3, y4;
-			double width = rightmost.x - leftmost.x, height = uppermost.y - lowermost.y;
-
-			try
-			{
-
-				out.write( "% Include in the header of your file:" );
-				out.newLine();
-				out.write( "% \\usepackage{epic, eepic}" );
-				out.newLine();
-				out.newLine();
-				out.write( "\\begin{figure}[!Htbp]" );
-				out.newLine();
-				out.write( "\\begin{center}" );
-				out.newLine();
-				out.write( "\\setlength{\\unitlength}{" + unitlength + "mm}" );
-				out.newLine();
-				out.write( "\\begin{picture}(" + width + "," + height + ")" );
-				out.newLine();
-				out.write( "\\filltype{black}" );
-				out.newLine();
-
-				// All boundary edges...
-				out.write( "\\thicklines" );
-				out.newLine();
-				for ( i = 0; i < boundary.size(); i++ )
-				{
-					edge = boundary.get( i );
-
-					x1 = edge.leftNode.x + xcorr;
-					y1 = edge.leftNode.y + ycorr;
-					x2 = edge.rightNode.x + xcorr;
-					y2 = edge.rightNode.y + ycorr;
-
-					out.write( "\\drawline[1](" + x1 + "," + y1 + ")(" + x2 + "," + y2 + ")" );
-					out.newLine();
-				}
-
-				// All other edges...
-				out.write( "\\thinlines" );
-				out.newLine();
-				for ( i = 0; i < edgeList.size(); i++ )
-				{
-					edge = edgeList.get( i );
-
-					if ( !edge.boundaryEdge() )
-					{
-						x1 = edge.leftNode.x + xcorr;
-						y1 = edge.leftNode.y + ycorr;
-						x2 = edge.rightNode.x + xcorr;
-						y2 = edge.rightNode.y + ycorr;
-
-						out.write( "\\drawline[1](" + x1 + "," + y1 + ")(" + x2 + "," + y2 + ")" );
-						out.newLine();
-					}
-				}
-
-				// All nodes...
-				if ( visibleNodes )
-				{
-					for ( i = 0; i < nodeList.size(); i++ )
-					{
-						n = nodeList.get( i );
-						out.write( "\\put(" + (n.x + xcorr) + "," + (n.y + ycorr) + "){\\circle*{0.1}}" );
-						out.newLine();
-					}
-				}
-
-				out.write( "\\end{picture}" );
-				out.newLine();
-				out.write( "\\end{center}" );
-				out.newLine();
-				out.write( "\\end{figure}" );
-				out.newLine();
-
-				out.close();
-			}
-			catch ( Exception e )
-			{
-				Msg.error( "Cannot write quad-mesh data export file." );
-			}
-		}
-		catch ( Exception e )
-		{
-			Msg.error( "File " + filename + " not found." );
-		}
-		return true;
-	}
+	static bool exportMeshToLaTeX( const std::string& filename,
+								   int unitlength,
+								   double xcorr,
+								   double ycorr,
+								   bool visibleNodes );
 
 	// Write all elements in elementList to a file. //
-	public static boolean writeQuadMesh( String filename, List< ? extends Element> list )
-	{
-		FileOutputStream fos;
-		Element elem;
-		Triangle t;
-		Quad q;
-
-		try
-		{
-			fos = new FileOutputStream( filename );
-			BufferedWriter out = new BufferedWriter( new OutputStreamWriter( fos ) );
-			double x1, x2, x3, x4, y1, y2, y3, y4;
-
-			try
-			{
-				for ( Object element : list )
-				{
-					elem = (Element)element;
-					if ( elem instanceof Quad )
-					{
-						q = (Quad)elem;
-						x1 = q.edgeList[base].leftNode.x;
-						y1 = q.edgeList[base].leftNode.y;
-						x2 = q.edgeList[base].rightNode.x;
-						y2 = q.edgeList[base].rightNode.y;
-						x3 = q.edgeList[left].otherNode( q.edgeList[base].leftNode ).x;
-						y3 = q.edgeList[left].otherNode( q.edgeList[base].leftNode ).y;
-						x4 = q.edgeList[right].otherNode( q.edgeList[base].rightNode ).x;
-						y4 = q.edgeList[right].otherNode( q.edgeList[base].rightNode ).y;
-
-						out.write( x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + x3 + ", " + y3 + ", " + x4 + ", " + y4 );
-					}
-					else
-					{
-						t = (Triangle)elem;
-						x1 = t.edgeList[0].leftNode.x;
-						y1 = t.edgeList[0].leftNode.y;
-						x2 = t.edgeList[0].rightNode.x;
-						y2 = t.edgeList[0].rightNode.y;
-						if ( !t.edgeList[1].leftNode.equals( t.edgeList[0].leftNode ) && !t.edgeList[1].leftNode.equals( t.edgeList[0].rightNode ) )
-						{
-							x3 = t.edgeList[1].leftNode.x;
-							y3 = t.edgeList[1].leftNode.y;
-						}
-						else
-						{
-							x3 = t.edgeList[1].rightNode.x;
-							y3 = t.edgeList[1].rightNode.y;
-						}
-						out.write( x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + x3 + ", " + y3 );
-					}
-					out.newLine();
-				}
-				out.close();
-			}
-			catch ( Exception e )
-			{
-				Msg.error( "Cannot write quad-mesh data." );
-			}
-		}
-		catch ( Exception e )
-		{
-			Msg.error( "File " + filename + " not found." );
-		}
-		return true;
-	}
+	static bool writeQuadMesh( const std::string& filename,
+							   std::vector<Element*>& list );
 
 	// Write all elements in elementList and triangleList to a file. //
-	public static boolean writeMesh( String filename )
+	static bool writeMesh( const std::string& filename )
 	{
 		FileOutputStream fos = null;
 		Element elem;
@@ -621,7 +249,7 @@ public:
 	}
 
 	// Write all nodes in nodeList to a file. //
-	public static boolean writeNodes( String filename )
+	/*public static boolean writeNodes(String filename)
 	{
 		FileOutputStream fos;
 
@@ -655,54 +283,13 @@ public:
 			Msg.error( "Could not open file " + filename );
 		}
 		return true;
-	}
+	}*/
 
 	// Find the leftmost, rightmost, uppermost, and lowermost nodes. //
-	public static void findExtremeNodes()
-	{
-		// nodeList= sortNodes(nodeList);
-		if ( nodeList == null || nodeList.size() == 0 )
-		{
-			leftmost = null;
-			rightmost = null;
-			uppermost = null;
-			lowermost = null;
-			return;
-		}
-
-		leftmost = nodeList.get( 0 );
-		rightmost = leftmost;
-		uppermost = leftmost;
-		lowermost = leftmost;
-
-		Node curNode;
-		for ( int i = 1; i < nodeList.size(); i++ )
-		{
-			curNode = nodeList.get( i );
-
-			if ( (curNode.x < leftmost.x) || (curNode.x == leftmost.x && curNode.y > leftmost.y) )
-			{
-				leftmost = curNode;
-			}
-			if ( (curNode.x > rightmost.x) || (curNode.x == rightmost.x && curNode.y < rightmost.y) )
-			{
-				rightmost = curNode;
-			}
-
-			if ( (curNode.y > uppermost.y) || (curNode.y == uppermost.y && curNode.x < uppermost.x) )
-			{
-				uppermost = curNode;
-			}
-			if ( (curNode.y < lowermost.y) || (curNode.y == lowermost.y && curNode.x < lowermost.x) )
-			{
-				lowermost = curNode;
-			}
-		}
-
-	}
+	static void findExtremeNodes();
 
 	// Sort nodes left to right. Higher y-values are preferred to lower ones. //
-	public static List<Node> sortNodes( List<Node> unsortedNodes )
+	/*public static List<Node> sortNodes(List<Node> unsortedNodes)
 	{
 		List<Node> sortedNodes = new ArrayList<>();
 		Node curNode, candNode;

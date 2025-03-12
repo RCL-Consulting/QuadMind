@@ -753,3 +753,573 @@ GeomBasics::printQuads( const std::vector<Element*> list )
 	Msg::debug( "quadList: (size== " + std::to_string( list.size() ) + ")" );
 	printElements( list );
 }
+
+std::vector<Triangle*>
+GeomBasics::loadTriangleMesh()
+{
+	Node* node1, *node2, *node3;
+	Edge* edge1, *edge2, *edge3;
+	Triangle* t;
+
+	triangleList.clear();
+	edgeList.clear();
+	std::vector<Node*> usNodeList;
+
+	try
+	{
+		std::ifstream fis( meshDirectory + meshFilename );
+		double x1, x2, x3, y1, y2, y3, len1 = 0, len2 = 0, len3 = 0, ang1 = 0, ang2 = 0, ang3 = 0;
+
+		try
+		{
+			std::string inputLine;
+			std::getline( fis, inputLine );
+			while ( !fis.eof() )
+			{
+				cInd = 0;
+				x1 = nextDouble( inputLine );
+				y1 = nextDouble( inputLine );
+				x2 = nextDouble( inputLine );
+				y2 = nextDouble( inputLine );
+				x3 = nextDouble( inputLine );
+				y3 = nextDouble( inputLine );
+
+				node1 = new Node( x1, y1 );
+				auto NodeIter = find_equal( usNodeList, node1 );
+				if ( NodeIter != usNodeList.end() )
+				{
+					usNodeList.push_back( node1 );
+				}
+				else
+				{
+					delete node1;
+					node1 = *NodeIter;
+				}
+				
+				node2 = new Node( x2, y2 );
+				NodeIter = find_equal( usNodeList, node2 );
+				if ( NodeIter != usNodeList.end() )
+				{
+					usNodeList.push_back( node2 );
+				}
+				else
+				{
+					delete node2;
+					node2 = *NodeIter;
+				}
+				
+				node3 = new Node( x3, y3 );
+				NodeIter = find_equal( usNodeList, node3 );
+				if ( NodeIter != usNodeList.end() )
+				{
+					usNodeList.push_back( node3 );
+				}
+				else
+				{
+					delete node3;
+					node3 = *NodeIter;
+				}
+
+				edge1 = new Edge( node1, node2 );
+				auto EdgeIter = find_equal( edgeList, edge1 );
+				if ( EdgeIter != edgeList.end() )
+				{
+					edgeList.push_back( edge1 );
+				}
+				else
+				{
+					delete edge1;
+					edge1 = *EdgeIter;
+				}
+				edge1->leftNode->connectToEdge( edge1 );
+				edge1->rightNode->connectToEdge( edge1 );
+
+				edge2 = new Edge( node2, node3 );
+				EdgeIter = find_equal( edgeList, edge2 );
+				if ( EdgeIter != edgeList.end() )
+				{
+					edgeList.push_back( edge2 );
+				}
+				else
+				{
+					delete edge2;
+					edge2 = *EdgeIter;
+				}
+				edge2->leftNode->connectToEdge( edge2 );
+				edge2->rightNode->connectToEdge( edge2 );
+
+				edge3 = new Edge( node1, node3 );
+				EdgeIter = find_equal( edgeList, edge3 );
+				if ( EdgeIter != edgeList.end() )
+				{
+					edgeList.push_back( edge3 );
+				}
+				else
+				{
+					delete edge3;
+					edge3 = *EdgeIter;
+				}
+				edge3->leftNode->connectToEdge( edge3 );
+				edge3->rightNode->connectToEdge( edge3 );
+
+				if ( meshLenOpt )
+				{
+					len1 = nextDouble( inputLine );
+					len2 = nextDouble( inputLine );
+					len3 = nextDouble( inputLine );
+				}
+
+				if ( meshAngOpt )
+				{
+					ang1 = nextDouble( inputLine );
+					ang2 = nextDouble( inputLine );
+					ang3 = nextDouble( inputLine );
+				}
+				t = new Triangle( edge1, edge2, edge3, len1, len2, len3, ang1, ang2, ang3, meshLenOpt, meshAngOpt );
+				t->connectEdges();
+				triangleList.push_back( t );
+				std::getline( fis, inputLine );
+			}
+		}
+		catch ( ... )
+		{
+			Msg::error( "Cannot read triangle-mesh data." );
+		}
+	}
+	catch ( ... )
+	{
+		Msg::error( "File " + meshFilename + " not found." );
+	}
+	nodeList = usNodeList; // sortNodes(usNodeList);
+	return triangleList;
+}
+
+std::vector<Node*> 
+GeomBasics::loadNodes()
+{
+	Node* node1, *node2, *node3, *node4;
+	std::vector<Node*> usNodeList;
+
+	try
+	{
+		std::ifstream fis( meshDirectory + meshFilename );
+		double x1, x2, x3, y1, y2, y3, x4, y4;
+
+		try
+		{
+			std::string inputLine;
+			std::getline( fis, inputLine );
+			while ( fis.eof() )
+			{
+				cInd = 0;
+				x1 = nextDouble( inputLine );
+				y1 = nextDouble( inputLine );
+				x2 = nextDouble( inputLine );
+				y2 = nextDouble( inputLine );
+				x3 = nextDouble( inputLine );
+				y3 = nextDouble( inputLine );
+				x4 = nextDouble( inputLine );
+				y4 = nextDouble( inputLine );
+
+				if ( !std::isnan( x1 ) && !std::isnan( y1 ) )
+				{
+					node1 = new Node( x1, y1 );
+					if ( !contains( usNodeList, node1 ) )
+					{
+						usNodeList.push_back( node1 );
+					}
+				}
+				if ( !std::isnan( x2 ) && !std::isnan( y2 ) )
+				{
+					node2 = new Node( x2, y2 );
+					if ( !contains( usNodeList, node2 ) )
+					{
+						usNodeList.push_back( node2 );
+					}
+				}
+				if ( !std::isnan( x3 ) && !std::isnan( y3 ) )
+				{
+					node3 = new Node( x3, y3 );
+					if ( !contains( usNodeList, node3 ) )
+					{
+						usNodeList.push_back( node3 );
+					}
+				}
+				if ( !std::isnan( x4 ) && !std::isnan( y4 ) )
+				{
+					node4 = new Node( x4, y4 );
+					if ( !contains( usNodeList, node4 ) )
+					{
+						usNodeList.push_back( node4 );
+					}
+				}
+				std::getline( fis, inputLine );
+			}
+		}
+		catch ( ... )
+		{
+			Msg::error( "Cannot read node file data." );
+		}
+	}
+	catch ( ... )
+	{
+		Msg::error( "File " + meshFilename + " not found." );
+	}
+
+	// nodeList= sortNodes(usNodeList);
+	nodeList = usNodeList;
+	return usNodeList;
+}
+
+bool
+GeomBasics::exportMeshToLaTeX( const std::string& filename,
+							   int unitlength,
+							   double xcorr,
+							   double ycorr,
+							   bool visibleNodes )
+{
+	Edge* edge;
+	Node* n;
+	int i;
+	std::vector<Edge*> boundary;
+
+	findExtremeNodes();
+
+	// Collect boundary edges in a list
+	for ( i = 0; i < edgeList.size(); i++ )
+	{
+		edge = edgeList.at( i );
+		if ( edge->boundaryEdge() )
+		{
+			boundary.push_back( edge );
+		}
+	}
+
+	try
+	{
+		std::ofstream fos( filename );
+		double x1, x2, y1, y2;
+		double width = rightmost->x - leftmost->x, height = uppermost->y - lowermost->y;
+
+		try
+		{
+			fos << "% Include in the header of your file:\n";
+			fos << "\n";
+			fos << "% \\usepackage{epic, eepic}\n";
+			fos << "\n"; 
+			fos << "\n";
+			fos << "\\begin{figure}[!Htbp]\n";
+			fos << "\n";
+			fos << "\\begin{center}\n";
+			fos << "\n";
+			fos << "\\setlength{\\unitlength}{" << unitlength << "mm}\n";
+			fos << "\n";
+			fos << "\\begin{picture}(" << width << "," << height << ")\n";
+			fos << "\n"; 
+			fos << "\\filltype{black}\n";
+			fos << "\n"; 
+
+			// All boundary edges...
+			fos << "\\thicklines\n";
+			fos << "\n";
+			for ( i = 0; i < boundary.size(); i++ )
+			{
+				edge = boundary.at( i );
+
+				x1 = edge->leftNode->x + xcorr;
+				y1 = edge->leftNode->y + ycorr;
+				x2 = edge->rightNode->x + xcorr;
+				y2 = edge->rightNode->y + ycorr;
+
+				fos << "\\drawline[1](" << x1 << "," << y1 << ")(" << x2 << "," << y2 << ")\n";
+				fos << "\n";
+			}
+
+			// All other edges...
+			fos << "\\thinlines\n";
+			fos << "\n";
+			for ( i = 0; i < edgeList.size(); i++ )
+			{
+				edge = edgeList.at( i );
+
+				if ( !edge->boundaryEdge() )
+				{
+					x1 = edge->leftNode->x + xcorr;
+					y1 = edge->leftNode->y + ycorr;
+					x2 = edge->rightNode->x + xcorr;
+					y2 = edge->rightNode->y + ycorr;
+
+					fos << "\\drawline[1](" << x1 << "," << y1 << ")(" << x2 << "," << y2 << ")\n";
+					fos << "\n";
+				}
+			}
+
+			// All nodes...
+			if ( visibleNodes )
+			{
+				for ( i = 0; i < nodeList.size(); i++ )
+				{
+					n = nodeList.at( i );
+					fos << "\\put(" << (n->x + xcorr) << "," << (n->y + ycorr) << "){\\circle*{0.1}}\n";
+					fos << "\n";
+				}
+			}
+
+			fos << "\\end{picture}\n";
+			fos << "\n";
+			fos << "\\end{center}\n";
+			fos << "\n";
+			fos << "\\end{figure}\n";
+			fos << "\n";
+
+			fos.close();
+		}
+		catch ( ... )
+		{
+			Msg::error( "Cannot write quad-mesh data export file." );
+		}
+	}
+	catch ( ... )
+	{
+		Msg::error( "File " + filename + " not found." );
+	}
+	return true;
+}
+
+void
+GeomBasics::findExtremeNodes()
+{
+	// nodeList= sortNodes(nodeList);
+	if ( nodeList.size() == 0 )
+	{
+		leftmost = nullptr;
+		rightmost = nullptr;
+		uppermost = nullptr;
+		lowermost = nullptr;
+		return;
+	}
+
+	leftmost = nodeList.at( 0 );
+	rightmost = leftmost;
+	uppermost = leftmost;
+	lowermost = leftmost;
+
+	Node* curNode;
+	for ( int i = 1; i < nodeList.size(); i++ )
+	{
+		curNode = nodeList.at( i );
+
+		if ( (curNode->x < leftmost->x) || (curNode->x == leftmost->x && curNode->y > leftmost->y) )
+		{
+			leftmost = curNode;
+		}
+		if ( (curNode->x > rightmost->x) || (curNode->x == rightmost->x && curNode->y < rightmost->y) )
+		{
+			rightmost = curNode;
+		}
+
+		if ( (curNode->y > uppermost->y) || (curNode->y == uppermost->y && curNode->x < uppermost->x) )
+		{
+			uppermost = curNode;
+		}
+		if ( (curNode->y < lowermost->y) || (curNode->y == lowermost->y && curNode->x < lowermost->x) )
+		{
+			lowermost = curNode;
+		}
+	}
+}
+
+bool 
+GeomBasics::writeQuadMesh( const std::string& filename,
+						   std::vector<Element*>& list )
+{
+	try
+	{
+		std::ofstream fos( filename );
+		double x1, x2, x3, x4, y1, y2, y3, y4;
+
+		try
+		{
+			for ( auto element : list )
+			{
+				if ( element->IsAQuad() )
+				{
+					auto q = static_cast<Quad*>(element);
+					x1 = q->edgeList[base]->leftNode->x;
+					y1 = q->edgeList[base]->leftNode->y;
+					x2 = q->edgeList[base]->rightNode->x;
+					y2 = q->edgeList[base]->rightNode->y;
+					x3 = q->edgeList[left]->otherNode( q->edgeList[base]->leftNode )->x;
+					y3 = q->edgeList[left]->otherNode( q->edgeList[base]->leftNode )->y;
+					x4 = q->edgeList[right]->otherNode( q->edgeList[base]->rightNode )->x;
+					y4 = q->edgeList[right]->otherNode( q->edgeList[base]->rightNode )->y;
+
+					fos <<
+						x1 << ", " << y1 << ", " << x2 << ", " << y2 << ", " << x3 << ", " <<
+						y3 << ", " << x4 << ", " << y4 << "\n";
+				}
+				else
+				{
+					auto t = static_cast<Triangle*>(element);
+					x1 = t->edgeList[0]->leftNode->x;
+					y1 = t->edgeList[0]->leftNode->y;
+					x2 = t->edgeList[0]->rightNode->x;
+					y2 = t->edgeList[0]->rightNode->y;
+					if ( !t->edgeList[1]->leftNode->equals( t->edgeList[0]->leftNode ) && !t->edgeList[1]->leftNode->equals( t->edgeList[0]->rightNode ) )
+					{
+						x3 = t->edgeList[1]->leftNode->x;
+						y3 = t->edgeList[1]->leftNode->y;
+					}
+					else
+					{
+						x3 = t->edgeList[1]->rightNode->x;
+						y3 = t->edgeList[1]->rightNode->y;
+					}
+					fos << x1 << ", " << y1 << ", " << x2 << ", " << y2 << ", " << x3 << ", " << y3 << "\n";;
+				}
+				fos << "\n";
+			}
+			fos.close();
+		}
+		catch ( ... )
+		{
+			Msg::error( "Cannot write quad-mesh data." );
+		}
+	}
+	catch ( ... )
+	{
+		Msg::error( "File " + filename + " not found." );
+	}
+	return true;
+}
+
+bool 
+GeomBasics::writeMesh( const std::string& filename )
+{
+	Element* elem;
+	Triangle* t;
+	Quad* q;
+
+	std::ofstream fos;
+	try
+	{
+		fos = std::ofstream( filename );
+	}
+	catch ( ... )
+	{
+		Msg::error( "File " + filename + " not found." );
+	}
+
+	double x1, x2, x3, x4, y1, y2, y3, y4;
+
+	for ( Object element : triangleList )
+	{
+		t = (Triangle)element;
+		x1 = t.edgeList[0].leftNode.x;
+		y1 = t.edgeList[0].leftNode.y;
+		x2 = t.edgeList[0].rightNode.x;
+		y2 = t.edgeList[0].rightNode.y;
+		if ( !t.edgeList[1].leftNode.equals( t.edgeList[0].leftNode ) && !t.edgeList[1].leftNode.equals( t.edgeList[0].rightNode ) )
+		{
+			x3 = t.edgeList[1].leftNode.x;
+			y3 = t.edgeList[1].leftNode.y;
+		}
+		else
+		{
+			x3 = t.edgeList[1].rightNode.x;
+			y3 = t.edgeList[1].rightNode.y;
+		}
+		try
+		{
+			out.write( x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + x3 + ", " + y3 );
+			out.newLine();
+		}
+		catch ( Exception e )
+		{
+			Msg.error( "Cannot write quad-mesh data." );
+		}
+
+	}
+
+	if ( elementList != null )
+	{
+		for ( Object element : elementList )
+		{
+
+			if ( element instanceof Quad )
+			{
+				q = (Quad)element;
+
+				x1 = q.edgeList[base].leftNode.x;
+				y1 = q.edgeList[base].leftNode.y;
+				x2 = q.edgeList[base].rightNode.x;
+				y2 = q.edgeList[base].rightNode.y;
+				x3 = q.edgeList[left].otherNode( q.edgeList[base].leftNode ).x;
+				y3 = q.edgeList[left].otherNode( q.edgeList[base].leftNode ).y;
+				if ( !q.isFake )
+				{
+					x4 = q.edgeList[right].otherNode( q.edgeList[base].rightNode ).x;
+					y4 = q.edgeList[right].otherNode( q.edgeList[base].rightNode ).y;
+					try
+					{
+						out.write( x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + x3 + ", " + y3 + ", " + x4 + ", " + y4 );
+						out.newLine();
+					}
+					catch ( Exception e )
+					{
+						Msg.error( "Cannot write quad-mesh data." );
+					}
+
+				}
+				else
+				{
+					try
+					{
+						out.write( x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + x3 + ", " + y3 );
+					}
+					catch ( Exception e )
+					{
+						Msg.error( "Cannot write quad-mesh data." );
+					}
+				}
+			}
+			else if ( element instanceof Triangle )
+			{
+				t = (Triangle)element;
+				x1 = t.edgeList[0].leftNode.x;
+				y1 = t.edgeList[0].leftNode.y;
+				x2 = t.edgeList[0].rightNode.x;
+				y2 = t.edgeList[0].rightNode.y;
+				if ( !t.edgeList[1].leftNode.equals( t.edgeList[0].leftNode ) && !t.edgeList[1].leftNode.equals( t.edgeList[0].rightNode ) )
+				{
+					x3 = t.edgeList[1].leftNode.x;
+					y3 = t.edgeList[1].leftNode.y;
+				}
+				else
+				{
+					x3 = t.edgeList[1].rightNode.x;
+					y3 = t.edgeList[1].rightNode.y;
+				}
+				try
+				{
+					out.write( x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + x3 + ", " + y3 );
+					out.newLine();
+				}
+				catch ( Exception e )
+				{
+					Msg.error( "Cannot write quad-mesh data." );
+				}
+			}
+		}
+	}
+
+	try
+	{
+		out.close();
+	}
+	catch ( Exception e )
+	{
+		Msg.error( "Cannot write quad-mesh data." );
+	}
+	return true;
+}
