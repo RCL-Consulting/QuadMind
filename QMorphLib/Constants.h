@@ -2,6 +2,10 @@
 
 #include <numbers>
 #include <cmath>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <algorithm>
 
 /*
  * This class holds the program "constants". That is, they are given as
@@ -102,9 +106,31 @@ public:
 	inline static const int defaultMAXITER = 5;
 
 	template <typename T>
-	bool contains( const std::vector<T>& vec, const T& elem )
+	static bool contains( const std::vector<T*>& vec, const T* item )
 	{
-		return std::find( vec.begin(), vec.end(), elem ) != vec.end();
+		return std::find( vec.begin(), vec.end(), item ) != vec.end();
+	}
+
+	template <typename T>
+	static auto find_equal( const std::vector<T*>& vec, const T* item )
+	{
+		auto Iter = std::find_if( vec.begin(), vec.end(), [&item]( const T* i )
+								 {
+									 return i->equals(item);
+								 } );
+		return Iter;
+	}
+
+	static std::vector<std::string> splitString( const std::string& str, char delimiter )
+	{
+		std::vector<std::string> tokens;
+		std::stringstream ss( str );
+		std::string token;
+		while ( std::getline( ss, token, delimiter ) )
+		{
+			tokens.push_back( token );
+		}
+		return tokens;
 	}
 	// The origin, only used as a reference.
 };

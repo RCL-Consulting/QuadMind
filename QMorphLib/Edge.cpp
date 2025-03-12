@@ -36,7 +36,7 @@ Edge::Edge( Edge* e )
 }
 
 bool 
-Edge::equals( Edge* o )
+Edge::equals( const Edge* o ) const
 {
 	if ( leftNode->equals( o->leftNode ) && rightNode->equals( o->rightNode ) )
 	{

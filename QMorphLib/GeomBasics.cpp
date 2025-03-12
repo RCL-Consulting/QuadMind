@@ -6,7 +6,9 @@
 #include "Node.h"
 #include "Triangle.h"
 #include "Quad.h"
-#include "Msg::h"
+#include "MyVector.h"
+
+#include <fstream>
 
 std::vector<Element*> GeomBasics::elementList;
 std::vector<Triangle*> GeomBasics::triangleList;
@@ -19,6 +21,8 @@ Node* GeomBasics::uppermost = nullptr;
 Node* GeomBasics::lowermost = nullptr;
 
 bool GeomBasics::m_step = false;
+
+size_t GeomBasics::cInd = 0;
 
 GeomBasics* GeomBasics::curMethod = nullptr;
 TopoCleanup* GeomBasics::topoCleanup = nullptr;
@@ -282,7 +286,6 @@ GeomBasics::meshMetricsReport()
 void
 GeomBasics::detectInvertedElements()
 {
-	int i;
 	for ( auto elem : elementList )
 	{
 		if ( elem != nullptr && elem->inverted() )
@@ -377,133 +380,376 @@ GeomBasics::consistencyCheck()
 		}
 
 		if ( e->element1 != nullptr &&
-			 !triangleList.contains( e->element1 ) &&
-			 !elementList.contains( e->element1 ) )
+			 !contains( triangleList, static_cast<Triangle*>(e->element1) ) &&
+			 !contains( elementList, e->element1 ) )
 		{
 			Msg::warning( "element1 of edge " + e->descr() + " is not found in triangleList or elementList" );
 		}
 
 		if ( e->element2 != nullptr && 
-			 !triangleList.contains( e->element2 ) &&
-			 !elementList.contains( e->element2 ) )
+			 !contains( triangleList, static_cast<Triangle*>(e->element2) ) &&
+			 !contains( elementList, e->element2 ) )
 		{
 			Msg::warning( "element2 of edge " + e->descr() + " is not found in triangleList or elementList" );
 		}
 
-		if ( nodeList.indexOf( e->leftNode ) == -1 )
+		if( !contains( nodeList, e->leftNode) )
 		{
 			Msg::warning( "leftNode of edge " + e->descr() + " not found in nodeList." );
 		}
-		if ( nodeList.indexOf( e->rightNode ) == -1 )
+		if ( !contains( nodeList, e->rightNode ) )
 		{
 			Msg::warning( "rightNode of edge " + e->descr() + " not found in nodeList." );
 		}
 	}
 
-	Triangle t;
-	Node na, nb, nc;
+	Node* na, *nb, *nc;
 	double cross1;
 
-	for ( Object element : triangleList )
+	for ( auto t : triangleList )
 	{
-		t = (Triangle)element;
-		if ( !t.edgeList[0].hasElement( t ) )
+		if ( !t->edgeList[0]->hasElement( t ) )
 		{
-			Msg::warning( "edgeList[0] of triangle " + t.descr() + " has not got that triangle as an adjacent element" );
+			Msg::warning( "edgeList[0] of triangle " + t->descr() + " has not got that triangle as an adjacent element" );
 		}
 
-		if ( !t.edgeList[1].hasElement( t ) )
+		if ( !t->edgeList[1]->hasElement( t ) )
 		{
-			Msg::warning( "edgeList[1] of triangle " + t.descr() + " has not got that triangle as an adjacent element" );
+			Msg::warning( "edgeList[1] of triangle " + t->descr() + " has not got that triangle as an adjacent element" );
 		}
 
-		if ( !t.edgeList[2].hasElement( t ) )
+		if ( !t->edgeList[2]->hasElement( t ) )
 		{
-			Msg::warning( "edgeList[2] of triangle " + t.descr() + " has not got that triangle as an adjacent element" );
+			Msg::warning( "edgeList[2] of triangle " + t->descr() + " has not got that triangle as an adjacent element" );
 		}
 
-		if ( t.edgeList[0].commonNode( t.edgeList[1] ) == null )
+		if ( t->edgeList[0]->commonNode( t->edgeList[1] ) == nullptr )
 		{
-			Msg::warning( "edgeList[0] and edgeList[1] of triangle " + t.descr() + " has no common Node" );
+			Msg::warning( "edgeList[0] and edgeList[1] of triangle " + t->descr() + " has no common Node" );
 		}
-		if ( t.edgeList[1].commonNode( t.edgeList[2] ) == null )
+		if ( t->edgeList[1]->commonNode( t->edgeList[2] ) == nullptr )
 		{
-			Msg::warning( "edgeList[1] and edgeList[2] of triangle " + t.descr() + " has no common Node" );
+			Msg::warning( "edgeList[1] and edgeList[2] of triangle " + t->descr() + " has no common Node" );
 		}
-		if ( t.edgeList[2].commonNode( t.edgeList[0] ) == null )
+		if ( t->edgeList[2]->commonNode( t->edgeList[0] ) == nullptr )
 		{
-			Msg::warning( "edgeList[2] and edgeList[0] of triangle " + t.descr() + " has no common Node" );
+			Msg::warning( "edgeList[2] and edgeList[0] of triangle " + t->descr() + " has no common Node" );
 		}
 
-		na = t.edgeList[0].leftNode;
-		nb = t.edgeList[0].rightNode;
-		nc = t.oppositeOfEdge( t.edgeList[0] );
+		na = t->edgeList[0]->leftNode;
+		nb = t->edgeList[0]->rightNode;
+		nc = t->oppositeOfEdge( t->edgeList[0] );
 
-		cross1 = cross( na, nc, nb, nc ); // The cross product nanc x nbnc
+		cross1 = cross( *na, *nc, *nb, *nc ); // The cross product nanc x nbnc
 
 		if ( cross1 == 0 )
 		{
-			Msg::warning( "Degenerate triangle in triangleList, t= " + t.descr() );
+			Msg::warning( "Degenerate triangle in triangleList, t= " + t->descr() );
 		}
 	}
 
-	Element elem;
-	Quad q;
-	for ( Object element : elementList )
+	for ( auto element : elementList )
 	{
-		elem = (Element)element;
-		if ( elem == null )
+		if ( element == nullptr )
 		{
 			Msg::debug( "elementList has a null-entry." );
 		}
-		else if ( elem instanceof Quad )
+		else if ( element->IsAQuad() )
 		{
-			q = (Quad)elem;
+			auto q = static_cast<Quad*>(element);
 
-			if ( !q.edgeList[base].hasElement( q ) )
+			if ( !q->edgeList[base]->hasElement( q ) )
 			{
-				Msg::warning( "edgeList[base] of quad " + q.descr() + " has not got that quad as an adjacent element" );
-			}
-
-			if ( !q.edgeList[left].hasElement( q ) )
-			{
-				Msg::warning( "edgeList[left] of quad " + q.descr() + " has not got that quad as an adjacent element" );
+				Msg::warning( "edgeList[base] of quad " + q->descr() + " has not got that quad as an adjacent element" );
 			}
 
-			if ( !q.edgeList[right].hasElement( q ) )
+			if ( !q->edgeList[left]->hasElement( q ) )
 			{
-				Msg::warning( "edgeList[right] of quad " + q.descr() + " has not got that quad as an adjacent element" );
+				Msg::warning( "edgeList[left] of quad " + q->descr() + " has not got that quad as an adjacent element" );
 			}
 
-			if ( !q.isFake && !q.edgeList[top].hasElement( q ) )
+			if ( !q->edgeList[right]->hasElement( q ) )
 			{
-				Msg::warning( "edgeList[top] of quad " + q.descr() + " has not got that quad as an adjacent element" );
+				Msg::warning( "edgeList[right] of quad " + q->descr() + " has not got that quad as an adjacent element" );
 			}
 
-			if ( q.edgeList[base].commonNode( q.edgeList[left] ) == null )
+			if ( !q->isFake && !q->edgeList[top]->hasElement( q ) )
 			{
-				Msg::warning( "edgeList[base] and edgeList[left] of quad " + q.descr() + " has no common Node" );
-			}
-			if ( q.edgeList[base].commonNode( q.edgeList[right] ) == null )
-			{
-				Msg::warning( "edgeList[base] and edgeList[right] of quad " + q.descr() + " has no common Node" );
-			}
-			if ( !q.isFake && q.edgeList[left].commonNode( q.edgeList[top] ) == null )
-			{
-				Msg::warning( "edgeList[left] and edgeList[top] of quad " + q.descr() + " has no common Node" );
-			}
-			if ( !q.isFake && q.edgeList[right].commonNode( q.edgeList[top] ) == null )
-			{
-				Msg::warning( "edgeList[right] and edgeList[top] of quad " + q.descr() + " has no common Node" );
+				Msg::warning( "edgeList[top] of quad " + q->descr() + " has not got that quad as an adjacent element" );
 			}
 
-			if ( q.isFake && q.edgeList[left].commonNode( q.edgeList[right] ) == null )
+			if ( q->edgeList[base]->commonNode( q->edgeList[left] ) == nullptr )
 			{
-				Msg::warning( "edgeList[left] and edgeList[right] of fake quad " + q.descr() + " has no common Node" );
+				Msg::warning( "edgeList[base] and edgeList[left] of quad " + q->descr() + " has no common Node" );
+			}
+			if ( q->edgeList[base]->commonNode( q->edgeList[right] ) == nullptr )
+			{
+				Msg::warning( "edgeList[base] and edgeList[right] of quad " + q->descr() + " has no common Node" );
+			}
+			if ( !q->isFake && q->edgeList[left]->commonNode( q->edgeList[top] ) == nullptr )
+			{
+				Msg::warning( "edgeList[left] and edgeList[top] of quad " + q->descr() + " has no common Node" );
+			}
+			if ( !q->isFake && q->edgeList[right]->commonNode( q->edgeList[top] ) == nullptr )
+			{
+				Msg::warning( "edgeList[right] and edgeList[top] of quad " + q->descr() + " has no common Node" );
+			}
+
+			if ( q->isFake && q->edgeList[left]->commonNode( q->edgeList[right] ) == nullptr )
+			{
+				Msg::warning( "edgeList[left] and edgeList[right] of fake quad " + q->descr() + " has no common Node" );
 			}
 		}
 	}
 
 	Msg::debug( "Leaving consistencyCheck()" );
 
+}
+
+double 
+GeomBasics::cross( const Node& o1, const Node& p1, const Node& o2, const Node& p2 )
+{
+	double x1 = p1.x - o1.x;
+	double x2 = p2.x - o2.x;
+	double y1 = p1.y - o1.y;
+	double y2 = p2.y - o2.y;
+	return x1 * y2 - x2 * y1;
+}
+
+std::vector<Element*>
+GeomBasics::loadMesh()
+{
+	Node* node1, *node2, *node3, *node4;
+	Edge* edge1, *edge2, *edge3, *edge4;
+	Triangle* t;
+	Quad* q;
+
+	elementList.clear();
+	triangleList.clear();
+	edgeList.clear();
+	std::vector<Node*> usNodeList;
+
+	try
+	{
+		std::ifstream fis( meshDirectory + meshFilename );
+		//BufferedReader in = new BufferedReader( new InputStreamReader( fis ) );
+		double x1, x2, x3, x4, y1, y2, y3, y4;
+		int i = 0;
+
+		try
+		{
+			std::string inputLine;
+			std::getline( fis, inputLine );
+			while ( !fis.eof() )
+			{
+				cInd = 0;
+				x1 = nextDouble( inputLine );
+				y1 = nextDouble( inputLine );
+				x2 = nextDouble( inputLine );
+				y2 = nextDouble( inputLine );
+				x3 = nextDouble( inputLine );
+				y3 = nextDouble( inputLine );
+				x4 = nextDouble( inputLine );
+				y4 = nextDouble( inputLine );
+
+				node1 = new Node( x1, y1 );
+				auto NodeIter = find_equal( usNodeList, node1 );
+				if ( NodeIter != usNodeList.end() )
+				{
+					usNodeList.push_back( node1 );
+				}
+				else
+				{
+					delete node1;
+					node1 = *NodeIter;
+				}
+
+				node2 = new Node( x2, y2 );
+				NodeIter = find_equal( usNodeList, node2 );
+				if ( NodeIter != usNodeList.end() )
+				{
+					usNodeList.push_back( node2 );
+				}
+				else
+				{
+					delete node2;
+					node2 = *NodeIter;
+				}
+
+				node3 = new Node( x3, y3 );
+				NodeIter = find_equal( usNodeList, node3 );
+				if ( NodeIter != usNodeList.end() )
+				{
+					usNodeList.push_back( node3 );
+				}
+				else
+				{
+					delete node3;
+					node3 = *NodeIter;
+				}
+				
+				edge1 = new Edge( node1, node2 );
+				auto EdgeIter = find_equal( edgeList, edge1 );
+				if ( EdgeIter != edgeList.end() )
+				{
+					edgeList.push_back( edge1 );
+					edge1->connectNodes();
+				}
+				else
+				{
+					delete edge1;
+					edge1 = *EdgeIter;
+				}
+				
+				edge2 = new Edge( node1, node3 );
+				EdgeIter = find_equal( edgeList, edge2 );
+				if ( EdgeIter != edgeList.end() )
+				{
+					edgeList.push_back( edge2 );
+					edge2->connectNodes();
+				}
+				else
+				{
+					delete edge2;
+					edge2 = *EdgeIter;
+				}
+				
+				if ( !std::isnan( x4 ) && !std::isnan( y4 ) )
+				{
+					node4 = new Node( x4, y4 );
+					auto NodeIter = find_equal( usNodeList, node4 );
+					if ( NodeIter != usNodeList.end() )
+					{
+						usNodeList.push_back( node4 );
+					}
+					else
+					{
+						delete node4;
+						node4 = *NodeIter;
+					}
+
+					edge3 = new Edge( node2, node4 );
+					EdgeIter = find_equal( edgeList, edge3 );
+					if ( EdgeIter != edgeList.end() )
+					{
+						edgeList.push_back( edge3 );
+						edge3->connectNodes();
+					}
+					else
+					{
+						delete edge3;
+						edge3 = *EdgeIter;
+					}
+
+					edge4 = new Edge( node3, node4 );
+					EdgeIter = find_equal( edgeList, edge4 );
+					if ( EdgeIter != edgeList.end() )
+					{
+						edgeList.push_back( edge4 );
+						edge4->connectNodes();
+					}
+					else
+					{
+						delete edge4;
+						edge4 = *EdgeIter;
+					}
+
+					q = new Quad( edge1, edge2, edge3, edge4 );
+					q->connectEdges();
+					elementList.push_back( q );
+				}
+				else
+				{
+					edge3 = new Edge( node2, node3 );
+					auto EdgeIter = find_equal( edgeList, edge3 );
+					if ( EdgeIter != edgeList.end() )
+					{
+						edgeList.push_back( edge3 );
+						edge3->connectNodes();
+					}
+					else
+					{
+						delete edge3;
+						edge3 = *EdgeIter;
+					}
+
+					t = new Triangle( edge1, edge2, edge3 );
+					t->connectEdges();
+					triangleList.push_back( t );
+				}
+				std::getline( fis, inputLine );
+			}
+		}
+		catch ( ... )
+		{
+			Msg::error( "Cannot read triangle-mesh data." );
+		}
+	}
+	catch ( ... )
+	{
+		Msg::error( "File " + meshFilename + " not found." );
+	}
+
+	nodeList = usNodeList; // sortNodes(usNodeList);
+	return elementList;
+}
+
+double 
+GeomBasics::nextDouble( const std::string& iline )
+{
+	auto List = splitString( iline, ',' );
+
+	std::string ndouble;
+	if ( cInd >= List.size() )
+	{
+		return std::numeric_limits<double>::quiet_NaN();
+	}
+	
+	auto nInd = iline.find( ",", cInd );
+	if ( nInd == std::string::npos )
+	{
+		nInd = iline.length();
+	}
+
+	try
+	{
+		++cInd;
+		return std::stod( List[cInd] );
+	}
+	catch ( const std::invalid_argument& )
+	{
+		--cInd;
+		throw std::runtime_error( "Invalid double value at the specified position" );
+	}
+	catch ( const std::out_of_range& )
+	{
+		--cInd;
+		throw std::runtime_error( "Double value out of range at the specified position" );
+	}
+}
+
+void
+GeomBasics::printVectors( const std::vector<MyVector>& vectorList )
+{
+	if ( Msg::debugMode )
+	{
+		for ( MyVector v : vectorList )
+		{
+			v.printMe();
+		}
+	}
+}
+
+void
+GeomBasics::printTriangles( const std::vector<Triangle*>& triangleList )
+{
+	Msg::debug( "triangleList: (size== " + std::to_string( triangleList.size() ) + ")" );
+	printElements( triangleList );
+}
+
+void
+GeomBasics::printQuads( const std::vector<Element*> list )
+{
+	Msg::debug( "quadList: (size== " + std::to_string( list.size() ) + ")" );
+	printElements( list );
 }

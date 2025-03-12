@@ -11,7 +11,7 @@
 Node Node::origin{ 0.0, 0.0 };
 
 bool 
-Node::equals( Node* node )
+Node::equals( const Node* node ) const
 {
 	const double kZero = 1e-12;
 	if ( abs( x - node->x ) < kZero && abs( y - node->y ) < kZero )

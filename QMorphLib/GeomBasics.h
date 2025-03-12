@@ -6,6 +6,7 @@
  */
 
 #include "Constants.h"
+#include "Msg.h"
 
 #include <vector>
 #include <string>
@@ -16,6 +17,7 @@ class Node;
 class Edge;
 class TopoCleanup;
 class GlobalSmooth;
+class MyVector;
 
 class GeomBasics : Constants
 {
@@ -57,6 +59,7 @@ public:
 
 private:
 	static GeomBasics* curMethod;
+	static size_t cInd;
 
 public:
 	static void setCurMethod( GeomBasics* method );
@@ -64,9 +67,7 @@ public:
 	static GeomBasics* getCurMethod();
 
 	// This method should be implemented in each of the subclasses. //
-	virtual void step()
-	{
-	}
+	virtual void step()	{}
 
 	// Delete all the edges in the mesh. //
 	static void clearEdges();
@@ -90,167 +91,10 @@ public:
 	static void consistencyCheck();
 
 	// Load a mesh from a file. //
-	/*public static List<Element> loadMesh()
-	{
-		FileInputStream fis;
-		Node node1, node2, node3, node4;
-		Edge edge1, edge2, edge3, edge4;
-		Triangle t;
-		Quad q;
-
-		elementList = new ArrayList<>();
-		triangleList = new ArrayList<>();
-		edgeList = new ArrayList<>();
-		ArrayList<Node> usNodeList = new ArrayList<>();
-
-		try
-		{
-			fis = new FileInputStream( meshDirectory + meshFilename );
-			BufferedReader in = new BufferedReader( new InputStreamReader( fis ) );
-			double x1, x2, x3, x4, y1, y2, y3, y4;
-			int i = 0;
-
-			try
-			{
-				String inputLine;
-				inputLine = in.readLine();
-				while ( inputLine != null )
-				{
-					cInd = 0;
-					x1 = nextDouble( inputLine );
-					y1 = nextDouble( inputLine );
-					x2 = nextDouble( inputLine );
-					y2 = nextDouble( inputLine );
-					x3 = nextDouble( inputLine );
-					y3 = nextDouble( inputLine );
-					x4 = nextDouble( inputLine );
-					y4 = nextDouble( inputLine );
-
-					node1 = new Node( x1, y1 );
-					if ( !usNodeList.contains( node1 ) )
-					{
-						usNodeList.add( node1 );
-					}
-					else
-					{
-						node1 = usNodeList.get( usNodeList.indexOf( node1 ) );
-					}
-					node2 = new Node( x2, y2 );
-					if ( !usNodeList.contains( node2 ) )
-					{
-						usNodeList.add( node2 );
-					}
-					else
-					{
-						node2 = usNodeList.get( usNodeList.indexOf( node2 ) );
-					}
-					node3 = new Node( x3, y3 );
-					if ( !usNodeList.contains( node3 ) )
-					{
-						usNodeList.add( node3 );
-					}
-					else
-					{
-						node3 = usNodeList.get( usNodeList.indexOf( node3 ) );
-					}
-
-					edge1 = new Edge( node1, node2 );
-					if ( !edgeList.contains( edge1 ) )
-					{
-						edgeList.add( edge1 );
-						edge1.connectNodes();
-					}
-					else
-					{
-						edge1 = edgeList.get( edgeList.indexOf( edge1 ) );
-					}
-
-					edge2 = new Edge( node1, node3 );
-					if ( !edgeList.contains( edge2 ) )
-					{
-						edgeList.add( edge2 );
-						edge2.connectNodes();
-					}
-					else
-					{
-						edge2 = edgeList.get( edgeList.indexOf( edge2 ) );
-					}
-
-					if ( !Double.isNaN( x4 ) && !Double.isNaN( y4 ) )
-					{
-						node4 = new Node( x4, y4 );
-						if ( !usNodeList.contains( node4 ) )
-						{
-							usNodeList.add( node4 );
-						}
-						else
-						{
-							node4 = usNodeList.get( usNodeList.indexOf( node4 ) );
-						}
-
-						edge3 = new Edge( node2, node4 );
-						if ( !edgeList.contains( edge3 ) )
-						{
-							edgeList.add( edge3 );
-							edge3.connectNodes();
-						}
-						else
-						{
-							edge3 = edgeList.get( edgeList.indexOf( edge3 ) );
-						}
-
-						edge4 = new Edge( node3, node4 );
-						if ( !edgeList.contains( edge4 ) )
-						{
-							edgeList.add( edge4 );
-							edge4.connectNodes();
-						}
-						else
-						{
-							edge4 = edgeList.get( edgeList.indexOf( edge4 ) );
-						}
-
-						q = new Quad( edge1, edge2, edge3, edge4 );
-						q.connectEdges();
-						elementList.add( q );
-					}
-					else
-					{
-						edge3 = new Edge( node2, node3 );
-						if ( !edgeList.contains( edge3 ) )
-						{
-							edgeList.add( edge3 );
-							edge3.connectNodes();
-						}
-						else
-						{
-							edge3 = edgeList.get( edgeList.indexOf( edge3 ) );
-						}
-
-						t = new Triangle( edge1, edge2, edge3 );
-						t.connectEdges();
-						triangleList.add( t );
-						// elementList.add(t);
-					}
-					inputLine = in.readLine();
-				}
-			}
-			catch ( Exception e )
-			{
-				Msg.error( "Cannot read triangle-mesh data." );
-			}
-		}
-		catch ( Exception e )
-		{
-			Msg.error( "File " + meshFilename + " not found." );
-		}
-
-		nodeList = usNodeList; // sortNodes(usNodeList);
-		return elementList;
-	}
+	static std::vector<Element*> loadMesh();
 
 	// Load a triangle mesh from a file. //
-	public static List<Triangle> loadTriangleMesh()
+	/*public static List<Triangle> loadTriangleMesh()
 	{
 		FileInputStream fis;
 		Node node1, node2, node3;
@@ -897,9 +741,7 @@ public:
 		}
 
 		return sortedNodes;
-	}
-
-	private static int cInd = 0;
+	}*/
 
 	//
 	// Method to assist the different load... methods.
@@ -908,61 +750,27 @@ public:
 	// @return the next double value from iline. If no more numbers, then return
 	//         NaN.
 	//
-	private static double nextDouble( String iline )
-	{
-		String ndouble;
-		if ( cInd > iline.length() )
-		{
-			return Double.NaN;
-		}
-		int nInd = iline.indexOf( ",", cInd );
-		if ( nInd == -1 )
-		{
-			nInd = iline.length();
-		}
+private:
+	static double nextDouble( const std::string& iline );
 
-		ndouble = iline.substring( cInd, nInd );
-		cInd = nInd + 1;
-		return Double.valueOf( ndouble ).doubleValue();
-	}
+public:
+	static void printVectors( const std::vector<MyVector>& vectorList );
 
-	public static void printVectors( List<MyVector> vectorList )
+	template <typename T>
+	static void printElements( const std::vector<T*>& list )
 	{
-		if ( Msg.debugMode )
+		if ( Msg::debugMode )
 		{
-			for ( MyVector v : vectorList )
-			{
-				v.printMe();
-			}
+			for ( auto element : list )
+				element->printMe();
 		}
 	}
 
-	public static void printElements( List< ? extends Element> list )
-	{
-		if ( Msg.debugMode )
-		{
-			Element elem;
-			for ( Object element : list )
-			{
-				elem = (Element)element;
-				elem.printMe();
-			}
-		}
-	}
+	static void printTriangles( const std::vector<Triangle*>& triangleList );
 
-	public static void printTriangles( List<Triangle> triangleList )
-	{
-		Msg.debug( "triangleList: (size== " + triangleList.size() + ")" );
-		printElements( triangleList );
-	}
+	static void printQuads( const std::vector<Element*> list );
 
-	public static void printQuads( List<Element> list )
-	{
-		Msg.debug( "quadList: (size== " + list.size() + ")" );
-		printElements( list );
-	}
-
-	public static void printEdgeList( List<Edge> list )
+	/*public static void printEdgeList(List<Edge> list)
 	{
 		if ( Msg.debugMode )
 		{
@@ -1322,7 +1130,7 @@ public:
 
 		Msg.debug( "Leaving GeomBasics.repairZeroAreaTriangles()" );
 		return res;
-	}
+	}*/
 
 	//
 	// A method for fast computation of the cross product of two vectors.
@@ -1333,12 +1141,5 @@ public:
 	// @param p2 endpoint of second vector
 	// @return the cross product of the two vectors
 	//
-	public static double cross( Node o1, Node p1, Node o2, Node p2 )
-	{
-		double x1 = p1.x - o1.x;
-		double x2 = p2.x - o2.x;
-		double y1 = p1.y - o1.y;
-		double y2 = p2.y - o2.y;
-		return x1 * y2 - x2 * y1;
-	}*/
+	static double cross( const Node& o1, const Node& p1, const Node& o2, const Node& p2 );
 }; // End of class GeomBasics

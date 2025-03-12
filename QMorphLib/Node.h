@@ -46,7 +46,7 @@ public:
 
 	static Node origin;
 
-	bool equals( Node* node );
+	bool equals( const Node* node ) const;
 
 	// @return a "real" copy of this node with a shallow copy of its edgeList. 
 	Node* copy();

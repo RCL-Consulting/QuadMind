@@ -42,7 +42,7 @@ public:
 	// Create a clone of Edge e with all the important fields
 	Edge( Edge* e );
 
-	bool equals( Edge* o );
+	bool equals( const Edge* o ) const;
 
 	// Return a copy of the edge
 	Edge* copy();
