@@ -121,7 +121,7 @@ public:
 		return Iter;
 	}
 
-	static std::vector<std::string> splitString( const std::string& str, char delimiter )
+	virtual std::vector<std::string> splitString( const std::string& str, char delimiter )
 	{
 		std::vector<std::string> tokens;
 		std::stringstream ss( str );

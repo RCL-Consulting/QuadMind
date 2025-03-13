@@ -75,6 +75,9 @@
     <ClInclude Include="GeomBasics.h">
       <Filter>Header Files\Meshing</Filter>
     </ClInclude>
+    <ClInclude Include="DelaunayMeshGen.h">
+      <Filter>Header Files\Meshing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="QMorphLib.cpp">
@@ -114,6 +117,9 @@
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="GeomBasics.cpp">
+      <Filter>Source Files\Meshing</Filter>
+    </ClCompile>
+    <ClCompile Include="DelaunayMeshGen.cpp">
       <Filter>Source Files\Meshing</Filter>
     </ClCompile>
   </ItemGroup>

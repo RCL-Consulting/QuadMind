@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Dart.h" />
+    <ClInclude Include="DelaunayMeshGen.h" />
     <ClInclude Include="Edge.h" />
     <ClInclude Include="Element.h" />
     <ClInclude Include="framework.h" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Dart.cpp" />
+    <ClCompile Include="DelaunayMeshGen.cpp" />
     <ClCompile Include="Edge.cpp" />
     <ClCompile Include="Element.cpp" />
     <ClCompile Include="GeomBasics.cpp" />
