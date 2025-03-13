@@ -1196,9 +1196,6 @@ GeomBasics::writeQuadMesh( const std::string& filename,
 bool 
 GeomBasics::writeMesh( const std::string& filename )
 {
-	Element* elem;
-	Triangle* t;
-	Quad* q;
 
 	std::ofstream fos;
 	try
@@ -1208,118 +1205,519 @@ GeomBasics::writeMesh( const std::string& filename )
 	catch ( ... )
 	{
 		Msg::error( "File " + filename + " not found." );
+		return false;
 	}
 
 	double x1, x2, x3, x4, y1, y2, y3, y4;
 
-	for ( Object element : triangleList )
+	for ( auto t : triangleList )
 	{
-		t = (Triangle)element;
-		x1 = t.edgeList[0].leftNode.x;
-		y1 = t.edgeList[0].leftNode.y;
-		x2 = t.edgeList[0].rightNode.x;
-		y2 = t.edgeList[0].rightNode.y;
-		if ( !t.edgeList[1].leftNode.equals( t.edgeList[0].leftNode ) && !t.edgeList[1].leftNode.equals( t.edgeList[0].rightNode ) )
+		x1 = t->edgeList[0]->leftNode->x;
+		y1 = t->edgeList[0]->leftNode->y;
+		x2 = t->edgeList[0]->rightNode->x;
+		y2 = t->edgeList[0]->rightNode->y;
+		if ( !t->edgeList[1]->leftNode->equals( t->edgeList[0]->leftNode ) && !t->edgeList[1]->leftNode->equals( t->edgeList[0]->rightNode ) )
 		{
-			x3 = t.edgeList[1].leftNode.x;
-			y3 = t.edgeList[1].leftNode.y;
+			x3 = t->edgeList[1]->leftNode->x;
+			y3 = t->edgeList[1]->leftNode->y;
 		}
 		else
 		{
-			x3 = t.edgeList[1].rightNode.x;
-			y3 = t.edgeList[1].rightNode.y;
+			x3 = t->edgeList[1]->rightNode->x;
+			y3 = t->edgeList[1]->rightNode->y;
 		}
 		try
 		{
-			out.write( x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + x3 + ", " + y3 );
-			out.newLine();
+			fos << x1 << ", " << y1 << ", " << x2 << ", " << y2 << ", " << x3 << ", " << y3 << "\n";
+			fos << "\n";
 		}
-		catch ( Exception e )
+		catch ( ... )
 		{
-			Msg.error( "Cannot write quad-mesh data." );
+			Msg::error( "Cannot write quad-mesh data." );
 		}
-
 	}
 
-	if ( elementList != null )
+	for ( auto element : elementList )
 	{
-		for ( Object element : elementList )
+
+		if ( element->IsAQuad() )
 		{
+			auto q = static_cast<Quad*>(element);
 
-			if ( element instanceof Quad )
+			x1 = q->edgeList[base]->leftNode->x;
+			y1 = q->edgeList[base]->leftNode->y;
+			x2 = q->edgeList[base]->rightNode->x;
+			y2 = q->edgeList[base]->rightNode->y;
+			x3 = q->edgeList[left]->otherNode( q->edgeList[base]->leftNode )->x;
+			y3 = q->edgeList[left]->otherNode( q->edgeList[base]->leftNode )->y;
+			if ( !q->isFake )
 			{
-				q = (Quad)element;
-
-				x1 = q.edgeList[base].leftNode.x;
-				y1 = q.edgeList[base].leftNode.y;
-				x2 = q.edgeList[base].rightNode.x;
-				y2 = q.edgeList[base].rightNode.y;
-				x3 = q.edgeList[left].otherNode( q.edgeList[base].leftNode ).x;
-				y3 = q.edgeList[left].otherNode( q.edgeList[base].leftNode ).y;
-				if ( !q.isFake )
-				{
-					x4 = q.edgeList[right].otherNode( q.edgeList[base].rightNode ).x;
-					y4 = q.edgeList[right].otherNode( q.edgeList[base].rightNode ).y;
-					try
-					{
-						out.write( x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + x3 + ", " + y3 + ", " + x4 + ", " + y4 );
-						out.newLine();
-					}
-					catch ( Exception e )
-					{
-						Msg.error( "Cannot write quad-mesh data." );
-					}
-
-				}
-				else
-				{
-					try
-					{
-						out.write( x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + x3 + ", " + y3 );
-					}
-					catch ( Exception e )
-					{
-						Msg.error( "Cannot write quad-mesh data." );
-					}
-				}
-			}
-			else if ( element instanceof Triangle )
-			{
-				t = (Triangle)element;
-				x1 = t.edgeList[0].leftNode.x;
-				y1 = t.edgeList[0].leftNode.y;
-				x2 = t.edgeList[0].rightNode.x;
-				y2 = t.edgeList[0].rightNode.y;
-				if ( !t.edgeList[1].leftNode.equals( t.edgeList[0].leftNode ) && !t.edgeList[1].leftNode.equals( t.edgeList[0].rightNode ) )
-				{
-					x3 = t.edgeList[1].leftNode.x;
-					y3 = t.edgeList[1].leftNode.y;
-				}
-				else
-				{
-					x3 = t.edgeList[1].rightNode.x;
-					y3 = t.edgeList[1].rightNode.y;
-				}
+				x4 = q->edgeList[right]->otherNode( q->edgeList[base]->rightNode )->x;
+				y4 = q->edgeList[right]->otherNode( q->edgeList[base]->rightNode )->y;
 				try
 				{
-					out.write( x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + x3 + ", " + y3 );
-					out.newLine();
+					fos << x1 << ", " << y1 << ", " << x2 << ", " << y2 << ", " << x3 << ", " 
+						<< y3 << ", " << x4 << ", " << y4 << "\n";
+					fos << "\n";
 				}
-				catch ( Exception e )
+				catch ( ... )
 				{
-					Msg.error( "Cannot write quad-mesh data." );
+					Msg::error( "Cannot write quad-mesh data." );
 				}
+
+			}
+			else
+			{
+				try
+				{
+					fos << x1 << ", " << y1 << ", " << x2 << ", " << y2 << ", " << x3 << ", " << y3 << "\n";
+				}
+				catch ( ... )
+				{
+					Msg::error( "Cannot write quad-mesh data." );
+				}
+			}
+		}
+		else if ( element->IsATriangle() )
+		{
+			auto t = static_cast<Triangle*>(element);
+			x1 = t->edgeList[0]->leftNode->x;
+			y1 = t->edgeList[0]->leftNode->y;
+			x2 = t->edgeList[0]->rightNode->x;
+			y2 = t->edgeList[0]->rightNode->y;
+			if ( !t->edgeList[1]->leftNode->equals( t->edgeList[0]->leftNode ) && !t->edgeList[1]->leftNode->equals( t->edgeList[0]->rightNode ) )
+			{
+				x3 = t->edgeList[1]->leftNode->x;
+				y3 = t->edgeList[1]->leftNode->y;
+			}
+			else
+			{
+				x3 = t->edgeList[1]->rightNode->x;
+				y3 = t->edgeList[1]->rightNode->y;
+			}
+			try
+			{
+				fos << x1 << ", " << y1 << ", " << x2 << ", " << y2 << ", " << x3 << ", " << y3 << "\n";
+				fos << "\n";
+			}
+			catch ( ... )
+			{
+				Msg::error( "Cannot write quad-mesh data." );
 			}
 		}
 	}
 
 	try
 	{
-		out.close();
+		fos.close();
 	}
-	catch ( Exception e )
+	catch ( ... )
 	{
-		Msg.error( "Cannot write quad-mesh data." );
+		Msg::error( "Cannot write quad-mesh data." );
 	}
 	return true;
+}
+
+bool 
+GeomBasics::writeNodes( const std::string& filename )
+{
+	try
+	{
+		std::ofstream fos( filename );
+		double x, y;
+
+		try
+		{
+			for ( auto n : nodeList )
+			{
+				x = n->x;
+				y = n->y;
+				fos << x << ", " << y << "\n";
+				fos << "\n";
+			}
+			fos.close();
+		}
+		catch ( ... )
+		{
+			Msg::error( "Cannot write node data." );
+		}
+	}
+	catch ( ... )
+	{
+		Msg::error( "Could not open file " + filename );
+	}
+	return true;
+}
+
+std::vector<Node*> 
+GeomBasics::sortNodes( std::vector<Node*>& unsortedNodes )
+{
+	std::vector<Node*> sortedNodes;
+	Node* curNode, *candNode;
+	while ( unsortedNodes.size() > 0 )
+	{
+		curNode = unsortedNodes.at( 0 );
+		for ( int i = 1; i < unsortedNodes.size(); i++ )
+		{
+			candNode = unsortedNodes.at( i );
+			if ( candNode->x < curNode->x || (candNode->x == curNode->x && candNode->y < curNode->y) )
+			{
+				curNode = candNode;
+			}
+		}
+		sortedNodes.push_back( curNode );
+		unsortedNodes.erase( unsortedNodes.begin() );
+	}
+
+	// Find the leftmost, rightmost, uppermost, and lowermost nodes.
+	leftmost = sortedNodes.front();
+	rightmost = sortedNodes.back();
+	uppermost = leftmost;
+	lowermost = leftmost;
+
+	for ( int i = 1; i < sortedNodes.size(); i++ )
+	{
+		curNode = sortedNodes.at( i );
+		if ( curNode->y > uppermost->y )
+		{
+			uppermost = curNode;
+		}
+		if ( curNode->y < lowermost->y )
+		{
+			lowermost = curNode;
+		}
+	}
+
+	return sortedNodes;
+}
+
+void 
+GeomBasics::printEdgeList( const std::vector<Edge*>& list )
+{
+	if ( Msg::debugMode )
+	{
+		for ( auto edge : list )
+			edge->printMe();
+	}
+}
+
+void 
+GeomBasics::printNodes( const std::vector<Node*>& nodeList )
+{
+	if ( Msg::debugMode )
+	{
+		Msg::debug( "nodeList:" );
+		for ( auto node : nodeList )
+			node->printMe();
+	}
+}
+
+void
+GeomBasics::printValences()
+{
+	for ( auto n : nodeList )
+	{
+		Msg::debug( "Node " + n->descr() + " has valence " + std::to_string( n->valence() ) );
+	}
+}
+
+void
+GeomBasics::printValPatterns()
+{
+	for ( auto n : nodeList )
+	{
+		if ( !n->boundaryNode() )
+		{
+			auto neighbors = n->ccwSortedNeighbors();
+			n->createValencePattern( neighbors );
+			Msg::debug( "Node " + n->descr() + " has valence pattern " + n->valDescr() );
+		}
+	}
+}
+
+void 
+GeomBasics::printAnglesAtSurrondingNodes()
+{
+	for ( auto n : nodeList )
+	{
+		if ( !n->boundaryNode() )
+		{
+			auto neighbors = n->ccwSortedNeighbors();
+			n->createValencePattern( neighbors );
+			auto angles = n->surroundingAngles( neighbors, n->pattern[0] - 2 );
+
+			Msg::debug( "Angles at the nodes surrounding node " + n->descr() + ":" );
+			for ( int j = 0; j < n->pattern[0] - 2; j++ )
+			{
+				Msg::debug( "angles[" + std::to_string( j ) + "]== " + std::to_string( toDegrees * angles[j] ) + " (in degrees)" );
+			}
+		}
+	}
+}
+
+bool
+GeomBasics::inversionCheckAndRepair( Node* newN, Node* oldPos )
+{
+	Msg::debug( "Entering inversionCheckAndRepair(..), node oldPos: " + oldPos->descr() );
+
+	auto elements = newN->adjElements();
+	if ( newN->invertedOrZeroAreaElements( elements ) )
+	{
+		if ( !newN->incrAdjustUntilNotInvertedOrZeroArea( oldPos, elements ) )
+		{
+			for ( auto element : elements )
+			{
+				if ( element->invertedOrZeroArea() )
+				{
+					Msg::error( "It seems that an element was inverted initially: " + element->descr() );
+					break;
+				}
+			}
+
+			return false;
+		}
+		Msg::debug( "Leaving inversionCheckAndRepair(..)" );
+		return true;
+	}
+	else
+	{
+		Msg::debug( "Leaving inversionCheckAndRepair(..)" );
+		return false;
+	}
+}
+
+Node*
+GeomBasics::safeNewPosWhenCollapsingQuad( Quad* q, Node* n1, Node* n2 )
+{
+	Msg::debug( "Entering safeNewPosWhenCollapsingQuad(..)" );
+
+	auto n = q->centroid();
+	MyVector back2n1( *n, *n1 ), back2n2( *n, *n2 );
+	double startX = n->x, startY = n->y;
+	double xstepn1 = back2n1.x / 50.0, ystepn1 = back2n1.y / 50.0, xstepn2 = back2n2.x / 50.0, ystepn2 = back2n2.y / 50.0;
+
+	int steps2n1, steps2n2, i;
+	std::vector<Element*> l1 = n1->adjElements(), l2 = n2->adjElements();
+
+	if ( !q->anyInvertedElementsWhenCollapsed( n, n1, n2, l1, l2 ) )
+	{
+		Msg::debug( "Leaving safeNewPosWhenCollapsingQuad(..): found" );
+		return n;
+	}
+
+	// Calculate the parameters for direction n to n1
+	if ( abs( xstepn1 ) < COINCTOL || abs( ystepn1 ) < COINCTOL )
+	{
+		Msg::debug( "...ok, resorting to use of minimum increment" );
+		if ( abs( back2n1.x ) < abs( back2n1.y ) )
+		{
+			if ( back2n1.x < 0 )
+			{
+				xstepn1 = -COINCTOL;
+			}
+			else
+			{
+				xstepn1 = COINCTOL;
+			}
+
+			// abs(ystepn1/xstepn1) = abs(n1.y/n1.x)
+			ystepn1 = abs( n1->y ) * COINCTOL / abs( n1->x );
+			if ( back2n1.y < 0 )
+			{
+				ystepn1 = -ystepn1;
+			}
+
+			steps2n1 = (int)(back2n1.x / xstepn1);
+		}
+		else
+		{
+			if ( back2n1.y < 0 )
+			{
+				ystepn1 = -COINCTOL;
+			}
+			else
+			{
+				ystepn1 = COINCTOL;
+			}
+
+			// abs(xstepn1/ystepn1) = abs(n1.x/n1.y)
+			xstepn1 = abs( n1->x ) * COINCTOL / abs( n1->y );
+			if ( back2n1.x < 0 )
+			{
+				xstepn1 = -xstepn1;
+			}
+
+			steps2n1 = (int)(back2n1.y / ystepn1);
+		}
+	}
+	else
+	{
+		xstepn1 = back2n1.x / 50.0;
+		ystepn1 = back2n1.x / 50.0;
+		steps2n1 = 50;
+	}
+
+	// Calculate the parameters for direction n to n2
+	if ( abs( xstepn2 ) < COINCTOL || abs( ystepn2 ) < COINCTOL )
+	{
+		Msg::debug( "...ok, resorting to use of minimum increment" );
+		if ( abs( back2n2.x ) < abs( back2n2.y ) )
+		{
+			if ( back2n2.x < 0 )
+			{
+				xstepn2 = -COINCTOL;
+			}
+			else
+			{
+				xstepn2 = COINCTOL;
+			}
+
+			// abs(ystepn2/xstepn2) = abs(n2.y/n2.x)
+			ystepn2 = abs( n2->y ) * COINCTOL / abs( n2->x );
+			if ( back2n2.y < 0 )
+			{
+				ystepn2 = -ystepn2;
+			}
+
+			steps2n2 = (int)(back2n2.x / xstepn2);
+		}
+		else
+		{
+			if ( back2n2.y < 0 )
+			{
+				ystepn2 = -COINCTOL;
+			}
+			else
+			{
+				ystepn2 = COINCTOL;
+			}
+
+			// abs(xstepn2/ystepn2) = abs(n2.x/n2.y)
+			xstepn2 = abs( n2->x ) * COINCTOL / abs( n2->y );
+			if ( back2n2.x < 0 )
+			{
+				xstepn2 = -xstepn2;
+			}
+
+			steps2n2 = (int)(back2n2.y / ystepn2);
+		}
+	}
+	else
+	{
+		xstepn2 = back2n2.x / 50.0;
+		ystepn2 = back2n2.x / 50.0;
+		steps2n2 = 50;
+	}
+
+	Msg::debug( "...back2n1.x is: " + std::to_string( back2n1.x ) );
+	Msg::debug( "...back2n1.y is: " + std::to_string( back2n1.y ) );
+	Msg::debug( "...xstepn1 is: " + std::to_string( xstepn1 ) );
+	Msg::debug( "...ystepn1 is: " + std::to_string( ystepn1 ) );
+
+	Msg::debug( "...back2n2.x is: " + std::to_string( back2n2.x ) );
+	Msg::debug( "...back2n2.y is: " + std::to_string( back2n2.y ) );
+	Msg::debug( "...xstepn2 is: " + std::to_string( xstepn2 ) );
+	Msg::debug( "...ystepn2 is: " + std::to_string( ystepn2 ) );
+
+	// Try to find a location
+	for ( i = 1; i <= steps2n1 || i <= steps2n2; i++ )
+	{
+		if ( i <= steps2n1 )
+		{
+			n->x = startX + xstepn1 * i;
+			n->y = startY + ystepn1 * i;
+			if ( !q->anyInvertedElementsWhenCollapsed( n, n1, n2, l1, l2 ) )
+			{
+				Msg::debug( "Leaving safeNewPosWhenCollapsingQuad(..): found" );
+				return n;
+			}
+		}
+		if ( i <= steps2n2 )
+		{
+			n->x = startX + xstepn2 * i;
+			n->y = startY + ystepn2 * i;
+			if ( !q->anyInvertedElementsWhenCollapsed( n, n1, n2, l1, l2 ) )
+			{
+				Msg::debug( "Leaving safeNewPosWhenCollapsingQuad(..): found" );
+				return n;
+			}
+		}
+	}
+
+	Msg::debug( "Leaving safeNewPosWhenCollapsingQuad(..): not found" );
+	return nullptr;
+}
+
+bool 
+GeomBasics::repairZeroAreaTriangles()
+{
+	Msg::debug( "Entering GeomBasics.repairZeroAreaTriangles()" );
+	bool res = false;
+	Edge* e, * eS, * e1, * e2;
+
+	for ( int i = 0; i < triangleList.size(); i++ )
+	{
+		if ( !triangleList.at( i )->IsATriangle() )
+		{
+			continue;
+		}
+		auto t = triangleList.at( i );
+		if ( t->zeroArea() )
+		{
+			e = t->longestEdge();
+			e1 = t->otherEdge( e );
+			e2 = t->otherEdge( e, e1 );
+			res = true;
+
+			Msg::debug( "...longest edge is " + e->descr() );
+			if ( !e->boundaryEdge() )
+			{
+				Msg::debug( "...longest edge not on boundary!" );
+				auto old1 = std::find( triangleList.begin(), triangleList.end(), e->element1 );
+				auto old2 = std::find( triangleList.begin(), triangleList.end(), e->element2 );
+				eS = e->getSwappedEdge();
+				e->swapToAndSetElementsFor( eS );
+
+				*old1 = nullptr;
+				*old2 = nullptr;
+
+				triangleList.push_back( static_cast<Triangle*>(eS->element1) );
+				triangleList.push_back( static_cast<Triangle*>(eS->element2) );
+
+				edgeList.erase( std::find( edgeList.begin(), edgeList.end(), e ) );
+				edgeList.push_back( eS );
+			}
+			else
+			{
+				// The zero area triangle has its longest edge on the boundary...
+				// Then we can just remove the triangle and the long edge!
+				// Note that we now get a new boundary node...
+				Msg::debug( "...longest edge is on boundary!" );
+				auto Iter = std::find( edgeList.begin(), edgeList.end(), e );
+				*Iter = nullptr;
+				t->disconnectEdges();
+				edgeList.erase( Iter );
+				e->disconnectNodes();
+			}
+
+		}
+	}
+
+	// Remove those entries that were set to null above.
+	int i = 0;
+	do
+	{
+		auto t = triangleList.at( i );
+		if ( t == nullptr )
+		{
+			triangleList.erase( triangleList.begin() + i );
+		}
+		else
+		{
+			i++;
+		}
+	} while ( i < triangleList.size() );
+
+	Msg::debug( "Leaving GeomBasics.repairZeroAreaTriangles()" );
+	return res;
 }
