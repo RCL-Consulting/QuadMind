@@ -13,7 +13,7 @@ Dart::Dart( Node* n, Edge* e, Element* elem )
 }
 
 std::string 
-Dart::descr() 
+Dart::descr() const
 { 
 	return "(elem: " + elem->descr() + ", e: " + e->descr() + ", n: " + n->descr() + ")"; 
 }

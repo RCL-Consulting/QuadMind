@@ -12,8 +12,8 @@ public:
 	Dart()=default;
 	Dart( Node* n, Edge* e, Element* elem );
 	
-	std::string descr();
-private:
+	std::string descr() const;
+
 	Node* n = nullptr;
 	Edge* e = nullptr;
 	Element* elem = nullptr;

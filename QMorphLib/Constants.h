@@ -121,7 +121,7 @@ public:
 		return Iter;
 	}
 
-	virtual std::vector<std::string> splitString( const std::string& str, char delimiter )
+	static std::vector<std::string> splitString( const std::string& str, char delimiter )
 	{
 		std::vector<std::string> tokens;
 		std::stringstream ss( str );
@@ -133,4 +133,6 @@ public:
 		return tokens;
 	}
 	// The origin, only used as a reference.
+
+	virtual void dummyPolyMorph() {};
 };

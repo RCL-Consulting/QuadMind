@@ -20,7 +20,7 @@ class TopoCleanup;
 class GlobalSmooth;
 class MyVector;
 
-class GeomBasics : Constants
+class GeomBasics : public Constants
 {
 public:
 	static std::vector<Element*> elementList;

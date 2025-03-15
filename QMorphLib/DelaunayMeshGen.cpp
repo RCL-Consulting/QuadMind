@@ -199,7 +199,7 @@ DelaunayMeshGen::swap( Edge* e )
 	Triangle* t1 = static_cast<Triangle*>(e->element1);
 	Triangle* t2 = static_cast<Triangle*>(e->element2);
 
-	if ( t1 == nullptr | t2 == nullptr )
+	if ( t1 == nullptr || t2 == nullptr )
 	{
 		Msg::debug( "Leaving recSwapDelaunay(..), this is a boundary Edge" );
 		return;
@@ -346,7 +346,7 @@ DelaunayMeshGen::insertNode( Node* n, bool remainDelaunay )
 	Triangle* t, *t1, *t2 = nullptr, *t3, *t4 = nullptr, *oldt1, *oldt2;
 
 	Edge* e, *e1 = nullptr, *e2, *e3, *e4 = nullptr, *e12, *e22 = nullptr, *e32, *e42 = nullptr,
-		*eOld, *b0 = nullptr, *b1 = nullptr;
+		*b0 = nullptr, *b1 = nullptr;
 	Node* node, *nNode, *pNode, *other, *other2, *n0, *n1;
 	std::vector<Edge*> boundaryEdges;
 	int i, j;
@@ -664,5 +664,129 @@ DelaunayMeshGen::insertNode( Node* n, bool remainDelaunay )
 				}
 			}
 		}
+	}
+}
+
+void 
+DelaunayMeshGen::makeDelaunayTriangle( Triangle* t, Edge* e, Node* n )
+{
+	Msg::debug( "Entering makeDelaunayTriangle(..)" );
+	Msg::debug( "checking triangle t= " + t->descr() );
+	
+	Edge* e1, *e2;
+	Triangle* t1, *t2;
+	Node* p1, *p2, *p3, *opposite = t->oppositeOfEdge( e );
+	auto q = new Quad( e, opposite, n );
+
+	if ( !q->isStrictlyConvex() )
+	{
+		Msg::debug( "Leaving makeDelaunayTriangle(..): non-convex quad" );
+
+		auto j = std::find( irNodes.begin(), irNodes.end(), e->leftNode );
+		if ( j == irNodes.end() )
+		{
+			irNodes.push_back( e->leftNode );
+		}
+
+		j = std::find( irNodes.begin(), irNodes.end(), e->rightNode );
+		if ( j == irNodes.end() )
+		{
+			irNodes.push_back( e->rightNode );
+		}
+
+		return;
+	}
+
+	p1 = q->nextCCWNode( n );
+	p2 = q->nextCCWNode( p1 );
+	p3 = q->nextCCWNode( p2 );
+
+	Msg::debug( "n: " + n->descr() );
+	Msg::debug( "p1: " + p1->descr() );
+	Msg::debug( "p2: " + p2->descr() );
+	Msg::debug( "p3: " + p3->descr() );
+
+	if ( n->inCircle( p1, p2, p3 ) )
+	{
+		{
+			auto j = std::find( irNodes.begin(), irNodes.end(), p1 );
+			if ( j == irNodes.end() )
+			{
+				irNodes.push_back( p1 );
+			}
+
+			j = std::find( irNodes.begin(), irNodes.end(), p2 );
+			if ( j == irNodes.end() )
+			{
+				irNodes.push_back( p2 );
+			}
+
+			j = std::find( irNodes.begin(), irNodes.end(), p3 );
+			if ( j == irNodes.end() )
+			{
+				irNodes.push_back( p3 );
+			}
+		}
+
+		e1 = t->otherEdge( e );
+		t1 = static_cast<Triangle*>(t->neighbor( e1 ));
+		e2 = t->otherEdge( e, e1 );
+		t2 = static_cast<Triangle*>(t->neighbor( e2 ));
+
+		e->disconnectNodes();
+		auto j = std::find( edgeList.begin(), edgeList.end(), e );
+		if ( j != edgeList.end() )
+		{
+			edgeList.erase( j );
+		}
+
+		if ( t1 == nullptr )
+		{
+			e1->disconnectNodes();
+			j = std::find( edgeList.begin(), edgeList.end(), e1 );
+			if ( j != edgeList.end() )
+			{
+				edgeList.erase( j );
+			}
+		}
+		if ( t2 == nullptr )
+		{
+			e2->disconnectNodes();
+			j = std::find( edgeList.begin(), edgeList.end(), e2 );
+			if ( j != edgeList.end() )
+			{
+				edgeList.erase( j );
+			}
+		}
+
+		t->disconnectEdges();
+		triangleList.erase( std::find( triangleList.begin(), triangleList.end(), t ) );
+
+		if ( t1 != nullptr )
+		{
+			makeDelaunayTriangle( t1, e1, n );
+		}
+		if ( t2 != nullptr )
+		{
+			makeDelaunayTriangle( t2, e2, n );
+		}
+
+		Msg::debug( "Leaving makeDelaunayTriangle(..)... done!" );
+	}
+	else
+	{
+		auto j = std::find( irNodes.begin(), irNodes.end(), e->leftNode );
+		if ( j == irNodes.end() )
+		{
+			irNodes.push_back( e->leftNode );
+		}
+
+		j = std::find( irNodes.begin(), irNodes.end(), e->rightNode );
+		if ( j == irNodes.end() )
+		{
+			irNodes.push_back( e->rightNode );
+		}
+
+		Msg::debug( "Leaving makeDelaunayTriangle(..), n lies outside circumcircle" );
 	}
 }
