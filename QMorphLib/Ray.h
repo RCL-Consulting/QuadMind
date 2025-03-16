@@ -31,9 +31,15 @@ public:
 	// passThrough: a point which the ray passes through
 	Ray( const Node& origin, const Node& passThrough );
 
+	Ray() = default;
+
+	Ray( const Ray& );
+
+	Ray& operator=( const Ray& r );
+
 	double cross( const MyVector& v );
 
-	const Node* pointIntersectsAt( const MyVector& d1 );
+	Node* pointIntersectsAt( const MyVector& d1 );
 
 	std::string values();
 
@@ -42,5 +48,5 @@ public:
 	void printMe();
 
 	double x, y; // hyp= 1= sqrt(x^2 + y^2)
-	std::unique_ptr<Node> origin;
+	std::unique_ptr<Node> origin = nullptr;
 };

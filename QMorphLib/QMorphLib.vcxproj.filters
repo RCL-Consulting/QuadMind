@@ -87,6 +87,9 @@
     <ClInclude Include="QMorph.h">
       <Filter>Header Files\Meshing</Filter>
     </ClInclude>
+    <ClInclude Include="MeshLoader.h">
+      <Filter>Header Files\Meshing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="QMorphLib.cpp">
@@ -138,6 +141,9 @@
       <Filter>Source Files\Meshing</Filter>
     </ClCompile>
     <ClCompile Include="QMorph.cpp">
+      <Filter>Source Files\Meshing</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshLoader.cpp">
       <Filter>Source Files\Meshing</Filter>
     </ClCompile>
   </ItemGroup>

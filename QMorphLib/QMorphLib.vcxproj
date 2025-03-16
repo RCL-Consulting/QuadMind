@@ -149,6 +149,7 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="GeomBasics.h" />
     <ClInclude Include="GlobalSmooth.h" />
+    <ClInclude Include="MeshLoader.h" />
     <ClInclude Include="Msg.h" />
     <ClInclude Include="MyLine.h" />
     <ClInclude Include="MyVector.h" />
@@ -167,6 +168,7 @@
     <ClCompile Include="Element.cpp" />
     <ClCompile Include="GeomBasics.cpp" />
     <ClCompile Include="GlobalSmooth.cpp" />
+    <ClCompile Include="MeshLoader.cpp" />
     <ClCompile Include="Msg.cpp" />
     <ClCompile Include="MyLine.cpp" />
     <ClCompile Include="MyVector.cpp" />
