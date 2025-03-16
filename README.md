@@ -1,6 +1,6 @@
-![License](https://img.shields.io/github/license/reniercloete/QuadMind)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/reniercloete/QuadMind)
-![GitHub last commit](https://img.shields.io/github/last-commit/reniercloete/QuadMind)
+![License](https://img.shields.io/github/license/RCL-Consulting/QuadMind)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/RCL-Consulting/QuadMind)
+![GitHub last commit](https://img.shields.io/github/last-commit/RCL-Consulting/QuadMind)
 
 QuadMind - AI assisted meshing
 ==============================
