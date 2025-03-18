@@ -10,6 +10,27 @@ class Triangle;
 class Edge;
 class Node;
 
+class Point2D
+{
+public:
+
+	Point2D( double x, double y ) : x( x ), y( y ) {}
+	Point2D() : x( 0.0 ), y( 0.0 ) {}
+
+	double x = 0.0;
+	double y = 0.0;
+	bool operator==( const Point2D& other ) const
+	{
+		const double kZero = 1e-12;
+		return abs( x - other.x ) < kZero && abs( y - other.y ) < kZero;
+	}
+
+	bool operator<( const Point2D& other ) const
+	{
+		return std::tie( x, y ) < std::tie( other.x, other.y );
+	}
+};
+
 class MeshLoader: public Constants
 {
 public:

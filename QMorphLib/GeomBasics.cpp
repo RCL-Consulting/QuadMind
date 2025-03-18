@@ -531,7 +531,7 @@ GeomBasics::loadMesh()
 
 	try
 	{
-		std::ifstream fis( meshDirectory + meshFilename );
+		std::ifstream fis( meshDirectory + "\\" + meshFilename);
 		//BufferedReader in = new BufferedReader( new InputStreamReader( fis ) );
 		double x1, x2, x3, x4, y1, y2, y3, y4;
 		int i = 0;
@@ -554,7 +554,7 @@ GeomBasics::loadMesh()
 
 				node1 = new Node( x1, y1 );
 				auto NodeIter = find_equal( usNodeList, node1 );
-				if ( NodeIter != usNodeList.end() )
+				if ( NodeIter == usNodeList.end() )
 				{
 					usNodeList.push_back( node1 );
 				}
@@ -566,7 +566,7 @@ GeomBasics::loadMesh()
 
 				node2 = new Node( x2, y2 );
 				NodeIter = find_equal( usNodeList, node2 );
-				if ( NodeIter != usNodeList.end() )
+				if ( NodeIter == usNodeList.end() )
 				{
 					usNodeList.push_back( node2 );
 				}
@@ -578,7 +578,7 @@ GeomBasics::loadMesh()
 
 				node3 = new Node( x3, y3 );
 				NodeIter = find_equal( usNodeList, node3 );
-				if ( NodeIter != usNodeList.end() )
+				if ( NodeIter == usNodeList.end() )
 				{
 					usNodeList.push_back( node3 );
 				}
@@ -590,7 +590,7 @@ GeomBasics::loadMesh()
 				
 				edge1 = new Edge( node1, node2 );
 				auto EdgeIter = find_equal( edgeList, edge1 );
-				if ( EdgeIter != edgeList.end() )
+				if ( EdgeIter == edgeList.end() )
 				{
 					edgeList.push_back( edge1 );
 					edge1->connectNodes();
@@ -603,7 +603,7 @@ GeomBasics::loadMesh()
 				
 				edge2 = new Edge( node1, node3 );
 				EdgeIter = find_equal( edgeList, edge2 );
-				if ( EdgeIter != edgeList.end() )
+				if ( EdgeIter == edgeList.end() )
 				{
 					edgeList.push_back( edge2 );
 					edge2->connectNodes();
@@ -618,7 +618,7 @@ GeomBasics::loadMesh()
 				{
 					node4 = new Node( x4, y4 );
 					auto NodeIter = find_equal( usNodeList, node4 );
-					if ( NodeIter != usNodeList.end() )
+					if ( NodeIter == usNodeList.end() )
 					{
 						usNodeList.push_back( node4 );
 					}
@@ -630,7 +630,7 @@ GeomBasics::loadMesh()
 
 					edge3 = new Edge( node2, node4 );
 					EdgeIter = find_equal( edgeList, edge3 );
-					if ( EdgeIter != edgeList.end() )
+					if ( EdgeIter == edgeList.end() )
 					{
 						edgeList.push_back( edge3 );
 						edge3->connectNodes();
@@ -643,7 +643,7 @@ GeomBasics::loadMesh()
 
 					edge4 = new Edge( node3, node4 );
 					EdgeIter = find_equal( edgeList, edge4 );
-					if ( EdgeIter != edgeList.end() )
+					if ( EdgeIter == edgeList.end() )
 					{
 						edgeList.push_back( edge4 );
 						edge4->connectNodes();
@@ -662,7 +662,7 @@ GeomBasics::loadMesh()
 				{
 					edge3 = new Edge( node2, node3 );
 					auto EdgeIter = find_equal( edgeList, edge3 );
-					if ( EdgeIter != edgeList.end() )
+					if ( EdgeIter == edgeList.end() )
 					{
 						edgeList.push_back( edge3 );
 						edge3->connectNodes();
@@ -713,17 +713,14 @@ GeomBasics::nextDouble( const std::string& iline )
 
 	try
 	{
-		++cInd;
-		return std::stod( List[cInd] );
+		return std::stod( List[cInd++] );
 	}
 	catch ( const std::invalid_argument& )
 	{
-		--cInd;
 		throw std::runtime_error( "Invalid double value at the specified position" );
 	}
 	catch ( const std::out_of_range& )
 	{
-		--cInd;
 		throw std::runtime_error( "Double value out of range at the specified position" );
 	}
 }
@@ -786,7 +783,7 @@ GeomBasics::loadTriangleMesh()
 
 				node1 = new Node( x1, y1 );
 				auto NodeIter = find_equal( usNodeList, node1 );
-				if ( NodeIter != usNodeList.end() )
+				if ( NodeIter == usNodeList.end() )
 				{
 					usNodeList.push_back( node1 );
 				}
@@ -798,7 +795,7 @@ GeomBasics::loadTriangleMesh()
 				
 				node2 = new Node( x2, y2 );
 				NodeIter = find_equal( usNodeList, node2 );
-				if ( NodeIter != usNodeList.end() )
+				if ( NodeIter == usNodeList.end() )
 				{
 					usNodeList.push_back( node2 );
 				}

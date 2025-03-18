@@ -114,11 +114,12 @@ public:
 	template <typename T>
 	static auto find_equal( const std::vector<T*>& vec, const T* item )
 	{
-		auto Iter = std::find_if( vec.begin(), vec.end(), [&item]( const T* i )
-								 {
-									 return i->equals(item);
-								 } );
-		return Iter;
+		return std::find_if( vec.begin(), vec.end(),
+							 [item]( const T* i )
+							 {  // Capture item by value
+								 return i->equals( item );
+							 } );
+
 	}
 
 	static std::vector<std::string> splitString( const std::string& str, char delimiter )
