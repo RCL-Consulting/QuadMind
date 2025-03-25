@@ -2012,7 +2012,7 @@ Node::replaceWithStdMesh()
 }
 
 std::string
-Node::descr()
+Node::descr() const
 {
 	return "(" + std::to_string( x ) + ", " + std::to_string( y ) + ")";
 }

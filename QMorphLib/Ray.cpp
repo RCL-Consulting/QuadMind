@@ -9,15 +9,14 @@
 
 Ray::Ray( const Node& origin, const Edge& relEdge, double angle )
 {
-	/*
 	this->origin = std::make_unique<Node>( origin );
-	double temp = relEdge.angleAt( origin );
-	Msg::debug( "relEdge.angleAt(origin)==" + relEdge.toDegrees*temp + " degrees" );
+	double temp = relEdge.angleAt( &origin );
+	Msg::debug( "relEdge.angleAt(origin)==" + std::to_string( Constants::toDegrees * temp ) + " degrees" );
 	double ang = temp + angle;
-	Msg::debug( "Ray(..): relEdge.angleAt(origin)+ angle== " + relEdge.toDegrees * ang + " degrees" );
+	Msg::debug( "Ray(..): relEdge.angleAt(origin)+ angle== " + std::to_string( Constants::toDegrees * ang ) + " degrees" );
 
 	this->x = cos( ang );
-	this->y = sin( ang );*/
+	this->y = sin( ang );
 }
 
 Ray::Ray( const Node& origin, double angle )
@@ -63,15 +62,13 @@ Ray::cross( const MyVector& v )
 std::string
 Ray::values()
 {
-	//return origin->descr() + ", x= " + std::to_string( x ) + ", y= " + std::to_string( y );
-	return "";
+	return origin->descr() + ", x= " + std::to_string( x ) + ", y= " + std::to_string( y );
 }
 
 std::string 
 Ray::descr()
 {
-	//return origin->descr() + ", (" + std::to_string(x + origin->x) + ", " + std::to_string(y + origin->y) + ")";
-	return "";
+	return origin->descr() + ", (" + std::to_string(x + origin->x) + ", " + std::to_string(y + origin->y) + ")";
 }
 
 void 

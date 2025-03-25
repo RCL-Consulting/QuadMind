@@ -465,7 +465,7 @@ public:
 	 //
 	 // @return a string representation of the node.
 	 //
-	std::string descr();
+	std::string descr() const;
 
 	std::string valDescr();
 

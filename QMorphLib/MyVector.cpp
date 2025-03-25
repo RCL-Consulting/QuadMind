@@ -10,6 +10,7 @@
 MyVector::MyVector( const MyVector& v )
 {
 	origin = std::make_unique<Node>( *v.origin );
+	edge = v.edge;
 	x = v.x;
 	y = v.y;
 }
@@ -53,26 +54,23 @@ MyVector::operator=( const MyVector& v )
 	origin = std::make_unique<Node>( *v.origin );
 	x = v.x;
 	y = v.y;
+	edge = v.edge;
 	return *this;
 }
 
 bool 
-MyVector::equals( const MyVector& o )
+MyVector::equals( const MyVector& v )
 {
-	const double kZero = 0.0;
+	const double kZero = 1e-9;
 	if ( abs( origin->x - origin->x ) > kZero || abs( origin->y - origin->y ) > kZero )
 	{
 		return false;
 	}
 
-	/*if ( x / y != v.x / v.y )
+	if ( abs( x / y - v.x / v.y ) > kZero )
 	{
 		return false;
 	}
-	else
-	{
-		return true;
-	}*/
 
 	return true;
 }

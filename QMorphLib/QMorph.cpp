@@ -477,8 +477,8 @@ QMorph::step()
 		printEdgeList( frontList );
 		Edge::printStateLists();
 		nrOfFronts -= i;
-		Msg::debug( "nr of fronts removed from lowest level: " + i );
-		Msg::debug( "nrOfFronts= " + nrOfFronts );
+		Msg::debug( "nr of fronts removed from lowest level: " + std::to_string( i ) );
+		Msg::debug( "nrOfFronts= " + std::to_string( nrOfFronts ) );
 	}
 	else if ( !finished )
 	{
@@ -892,7 +892,7 @@ QMorph::localSmooth( Quad* q, const std::vector<Edge*>& frontList2 )
 		bottomRightOld = bottomRight->copyXY();
 
 		adjNodes = q->getAdjNodes();
-		adjNodesNew.assign( adjNodes.size(), nullptr );
+		adjNodesNew.reserve( adjNodes.size() );
 
 		// Calculate smoothed pos for each element node and those nodes connected to
 		// the element. If the element has become inverted, then repair it.
@@ -2804,9 +2804,11 @@ QMorph::recoverEdge( Node* nC, Node* nD )
 
 	printEdgeList( nC->edgeList );
 
-	if ( contains( nC->edgeList, S ) )
+	auto iter = find_equal( nC->edgeList, S );
+	if ( iter != nC->edgeList.end() )
+	//if ( contains( nC->edgeList, S ) )
 	{
-		auto iter = std::find( nC->edgeList.begin(), nC->edgeList.end(), S );
+		//auto iter = std::find( nC->edgeList.begin(), nC->edgeList.end(), S );
 		Edge* edge = *iter;
 		Msg::debug( "recoverEdge returns edge " + edge->descr() + " (shortcut)" );
 		return edge;

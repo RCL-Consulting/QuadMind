@@ -8,7 +8,7 @@
 class Msg
 {
 public:
-	inline static bool debugMode = false;
+	inline static bool debugMode = true;
 
 	/** Output an error message and then exit the program. */
 	static void error( const std::string& err );

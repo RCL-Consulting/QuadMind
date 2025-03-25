@@ -383,19 +383,17 @@ Edge::leftTo( Edge* e )
 bool 
 Edge::isFrontEdge()
 {
-	if ( (element1->IsATriangle() && !(element2->IsATriangle())) ||
-		 (element2->IsATriangle() && !(element1->IsATriangle())) )
+	if ( (element1 == nullptr) != (element2 == nullptr) )
 	{
-		return true;
+		auto nonNullPtr = element1 ? element1 : element2;
+		return nonNullPtr->IsATriangle();
 	}
-	else
-	{
-		return false;
-	}
+
+	return false;
 }
 
 std::string
-Edge::descr()
+Edge::descr() const
 {
 	return "(" + std::to_string( leftNode->x ) + ", " + std::to_string( leftNode->y ) + "), (" + std::to_string( rightNode->x ) + ", " + std::to_string( rightNode->y ) + ")";
 }
@@ -403,7 +401,7 @@ Edge::descr()
 void 
 Edge::printMe()
 {
-	std::cout << descr();
+	std::cout << descr() << "\n";
 }
 
 double 
@@ -534,7 +532,7 @@ Edge::length( Node* node1, Node* node2 )
 }
 
 double
-Edge::angleAt( Node* n )
+Edge::angleAt( const Node* n ) const
 {
 	// Math.acos returns values in the range 0.0 through pi, avoiding neg numbers.
 	// If this is CW to x-axis, then return pos acos, else return neg acos
@@ -1142,7 +1140,7 @@ Edge::hasFrontNeighbor( Edge* e )
 }
 
 Node*
-Edge::otherNode( Node* n )
+Edge::otherNode( const Node* n ) const
 {
 	if ( n->equals( leftNode ) )
 	{
@@ -1528,11 +1526,11 @@ Edge::nextQuadEdgeAt( Node* n, Element* startElem )
 Quad* 
 Edge::getQuadElement()
 {
-	if ( element1->IsAQuad() )
+	if ( element1 && element1->IsAQuad() )
 	{
 		return static_cast<Quad*>(element1);
 	}
-	else if ( element2->IsAQuad() )
+	else if ( element2 && element2->IsAQuad() )
 	{
 		return static_cast<Quad*>(element2);
 	}
@@ -1545,11 +1543,11 @@ Edge::getQuadElement()
 Triangle* 
 Edge::getTriangleElement()
 {
-	if ( element1->IsATriangle() )
+	if ( element1 && element1->IsATriangle() )
 	{
 		return static_cast<Triangle*>(element1);
 	}
-	else if ( element2->IsATriangle() )
+	else if ( element2 && element2->IsATriangle() )
 	{
 		return static_cast<Triangle*>(element2);
 	}

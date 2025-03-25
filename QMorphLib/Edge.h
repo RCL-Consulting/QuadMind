@@ -99,7 +99,7 @@ public:
 
 	bool isFrontEdge();
 
-	std::string descr();
+	std::string descr() const;
 
 	void printMe();
 
@@ -137,7 +137,7 @@ public:
 	// to
 	// the right, btw) at node n (which is leftNode or rightNode).
 	// Range: <-180, 180>
-	double angleAt( Node* n );
+	double angleAt( const Node* n ) const;
 
 	// Returns the angle from this Edge to eEdge by summing the angles of the
 	// Elements
@@ -219,7 +219,7 @@ public:
 
 	bool hasFrontNeighbor( Edge* e );
 
-	Node* otherNode( Node* n );
+	Node* otherNode( const Node* n ) const;
 
 	//
 	// Extend this edge at a given node and to a given lenth.
