@@ -108,7 +108,12 @@ public:
 	template <typename T>
 	static bool contains( const std::vector<T*>& vec, const T* item )
 	{
-		return std::find( vec.begin(), vec.end(), item ) != vec.end();
+		return std::find_if( vec.begin(), vec.end(), [item](T* value) 
+							 {
+								 if ( item )
+									 return item->equals( value );
+								 return false;
+							 }) != vec.end();
 	}
 
 	template <typename T>

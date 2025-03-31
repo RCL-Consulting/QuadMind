@@ -13,6 +13,9 @@ Node Node::origin{ 0.0, 0.0 };
 bool 
 Node::equals( const Node* node ) const
 {
+	if ( !node ) return false;
+	if ( this == node )
+		return true;
 	const double kZero = 1e-12;
 	if ( abs( x - node->x ) < kZero && abs( y - node->y ) < kZero )
 	{
@@ -467,7 +470,7 @@ Node::ccwSortedNeighbors()
 	do
 	{
 		ccwNodeList[i++] = e->otherNode( this );
-		if ( !elem->IsAQuad() )
+		if ( !Element::IsAQuad( elem ) )
 		{
 			return std::vector<Node*>();
 		}
@@ -547,11 +550,11 @@ Node::adjQuads()
 	for ( auto element : edgeList )
 	{
 		e = element;
-		if ( e->element1->IsAQuad() && std::find( list.begin(), list.end(), e->element1 ) == list.end() )
+		if ( Element::IsAQuad( e->element1 ) && std::find( list.begin(), list.end(), e->element1 ) == list.end() )
 		{
 			list.push_back( e->element1 );
 		}
-		else if ( e->element2 != nullptr && e->element2->IsAQuad() && 
+		else if ( e->element2 != nullptr && Element::IsAQuad( e->element2 ) &&
 				  std::find( list.begin(), list.end(), e->element2 ) == list.end() )
 		{
 			list.push_back( e->element2 );
@@ -573,11 +576,11 @@ Node::adjTriangles()
 
 	for ( auto e : edgeList )
 	{
-		if ( e->element1->IsATriangle() && std::find( list.begin(), list.end(), e->element1 ) == list.end() )
+		if ( Element::IsATriangle( e->element1 ) && std::find( list.begin(), list.end(), e->element1 ) == list.end() )
 		{
 			list.push_back( static_cast<Triangle*>(e->element1) );
 		}
-		else if ( e->element2 != nullptr && e->element2->IsATriangle() && 
+		else if ( e->element2 != nullptr && Element::IsATriangle( e->element2 ) &&
 				  std::find( list.begin(), list.end(), e->element2 ) == list.end() )
 		{
 			list.push_back( static_cast<Triangle*>(e->element2) );

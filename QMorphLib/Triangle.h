@@ -27,16 +27,6 @@ public:
 	// Makes a copy of the given triangle
 	Triangle( const Triangle& t );
 
-	bool IsAQuad()
-	{
-		return false;
-	}
-
-	bool IsATriangle()
-	{
-		return true;
-	}
-
 	// Create a simple triangle for testing purposes only
 	// (constrainedLaplacianSmooth()
 	// and optBasedSmooth(..))
@@ -53,7 +43,7 @@ public:
 	// Else return false.
 	bool invertedWhenNodeRelocated( Node* n1, Node* n2 );
 
-	bool equals( const Triangle& t );
+	bool equals( const Element* t ) const;
 
 	double angle( Edge* e, Node* n );
 
@@ -180,4 +170,14 @@ public:
 	void printMe();
 
 	std::string toString();
+protected:
+	bool fIsAQuad() const override
+	{
+		return false;
+	}
+
+	bool fIsATriangle() const override
+	{
+		return true;
+	}
 };

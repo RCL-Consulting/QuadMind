@@ -50,15 +50,6 @@ private:
 
 public:
 
-	bool IsAQuad()
-	{
-		return true;
-	}
-
-	bool IsATriangle()
-	{
-		return false;
-	}
 	//
 	// Create a simple quad for testing purposes only (constrainedLaplacianSmooth())
 	// Not tested thoroughly!!!
@@ -90,7 +81,7 @@ public:
 										   const std::vector<Element*>& lK,
 										   const std::vector<Element*>& lKOpp );
 
-	bool equals( Element* o );
+	bool equals( const Element* o ) const;
 
 	// @return edge's index in this quad's edgeList 
 	int indexOf( Edge* e );
@@ -399,4 +390,14 @@ public:
 	void printMe();
 	
 	bool isFake;
+protected:
+	bool fIsAQuad() const
+	{
+		return true;
+	}
+
+	bool fIsATriangle() const
+	{
+		return false;
+	}
 };

@@ -224,7 +224,7 @@ QMorph::countFrontsInNewLoopAt( Edge* b, Edge* side, Edge* otherSide )
 		count = count1stLoop + 1; // Add the new edge between n1 and n3
 	}
 
-	Msg::debug( "Leaving int countFrontsInNewLoopAt(..), returns " + count );
+	Msg::debug( "Leaving int countFrontsInNewLoopAt(..), returns " + std::to_string( count ) );
 	return count;
 }
 
@@ -534,7 +534,8 @@ QMorph::smoothFrontNode( Node* nK, Node* nJ, Quad* myQ, Edge* front1, Edge* fron
 	Edge* eD = new Edge( nK, nJ );
 	if ( contains( nK->edgeList, eD ) )
 	{
-		auto iter = std::find( nK->edgeList.begin(), nK->edgeList.end(), eD );
+		auto iter = find_equal( nK->edgeList, eD );
+		delete eD;
 		eD = *iter;
 	}
 
@@ -563,7 +564,7 @@ QMorph::smoothFrontNode( Node* nK, Node* nJ, Quad* myQ, Edge* front1, Edge* fron
 			// First add the lengths of edges from Triangles ahead of the front
 			for ( auto e : nK->edgeList )
 			{
-				if ( e != eD && e != front1 && e != front2 )
+				if ( !e->equals( eD ) && e != front1 && e != front2 )
 				{
 					ld += e->length();
 					Msg::debug( "from edge ahead of the front adding " + std::to_string( e->length() ) );
@@ -574,7 +575,7 @@ QMorph::smoothFrontNode( Node* nK, Node* nJ, Quad* myQ, Edge* front1, Edge* fron
 			q = front1->getQuadElement();
 			ld += q->edgeList[base]->length();
 			Msg::debug( "adding " + std::to_string( q->edgeList[base]->length() ) );
-			if ( q->edgeList[left] != eD )
+			if ( !q->edgeList[left]->equals( eD ) )
 			{
 				ld += q->edgeList[left]->length();
 				Msg::debug( "adding " + std::to_string( q->edgeList[left]->length() ) );
@@ -588,7 +589,7 @@ QMorph::smoothFrontNode( Node* nK, Node* nJ, Quad* myQ, Edge* front1, Edge* fron
 			q = front2->getQuadElement();
 			ld += q->edgeList[base]->length();
 			Msg::debug( "adding " + std::to_string( q->edgeList[base]->length() ) );
-			if ( q->edgeList[left] != eD )
+			if ( !q->edgeList[left]->equals( eD ) )
 			{
 				ld += q->edgeList[left]->length();
 				Msg::debug( "adding " + std::to_string( q->edgeList[left]->length() ) );
@@ -787,7 +788,7 @@ QMorph::localSmooth( Quad* q, const std::vector<Edge*>& frontList2 )
 		bottomRightOld = bottomRight->copyXY();
 
 		adjNodes = q->getAdjNodes();
-		adjNodesNew.assign( adjNodes.size(), nullptr );
+		adjNodesNew.reserve( adjNodes.size() );
 
 		// Calculate smoothed pos for each element node and those nodes connected to
 		// the element. If the element has become inverted, then repair it.
@@ -1569,7 +1570,7 @@ QMorph::doSeam( Edge* e1, Edge* e2, Node* nK )
 	Node* nKp1 = e1->otherNode( nK );
 	Edge* e0 = recoverEdge( nKm1, nKp1 );
 
-	if ( e0 == nullptr || e0->element1->IsAQuad() || e0->element2->IsAQuad() )
+	if ( e0 == nullptr || Element::IsAQuad( e0->element1 ) || Element::IsAQuad( e0->element2 ) )
 	{
 		Msg::debug( "Leaving doSeam(..), failure" );
 		return nullptr;
@@ -2607,7 +2608,7 @@ QMorph::defineSideEdge( Edge* eF1, Node* nK,
 	if ( (bisected >= ang1 && bisected <= ang2) || elem2 == nullptr )
 	{ // Does vK go through elem1? or is elem1 the only element connected to selected?
 		Msg::debug( "...bisected runs through elem1" );
-		if ( elem1->IsAQuad() )
+		if ( Element::IsAQuad( elem1 ) )
 		{
 			Msg::debug( "Leaving defineSideEdge(..): elem1 is a Quad" );
 			return selected; // have to give up
@@ -2620,7 +2621,7 @@ QMorph::defineSideEdge( Edge* eF1, Node* nK,
 	{ // Nope, it seems vK goes through elem2, not elem1.
 		Msg::debug( "...bisected runs through elem2" );
 
-		if ( elem2->IsAQuad() )
+		if ( Element::IsAQuad( elem2 ) )
 		{
 			Msg::debug( "Leaving defineSideEdge(..): elem2 is a Quad" );
 			return selected; // have to give up
@@ -2644,7 +2645,7 @@ QMorph::defineSideEdge( Edge* eF1, Node* nK,
 	// If e0 belongs to a quad or lies at the boundary,
 	// I cannot swap, so I just return:
 	Element *neighborTriangle = bisectTriangle->neighbor( e0 );
-	if ( e0->frontEdge || neighborTriangle == nullptr || neighborTriangle->IsAQuad() )
+	if ( e0->frontEdge || neighborTriangle == nullptr || Element::IsAQuad( neighborTriangle ) )
 	{
 		Msg::debug( "Leaving defineSideEdge(..), returning selected==" + selected->descr() );
 		return selected;
@@ -2825,7 +2826,7 @@ QMorph::recoverEdge( Node* nC, Node* nD )
 
 	auto V = nC->ccwSortedVectorList();
 	V.push_back( V.at( 0 ) ); // First add first edge to end of list to avoid crash in loops
-	Msg::debug( "V.size()==" + V.size() );
+	Msg::debug( "V.size()==" + std::to_string( V.size() ) );
 	printVectors( V );
 
 	// Aided by V, fill T with elements adjacent nC, in
@@ -2854,7 +2855,7 @@ QMorph::recoverEdge( Node* nC, Node* nD )
 	}
 
 	// Now, get the element attached to nC that contains a part of S, tI:
-	Msg::debug( "T.size()==" + T.size() );
+	Msg::debug( "T.size()==" + std::to_string( T.size() ) );
 	for ( int k = 0; k < T.size(); k++ )
 	{
 		vK = V.at( k );
@@ -2885,7 +2886,7 @@ QMorph::recoverEdge( Node* nC, Node* nD )
 
 	Element *elemI, *elemIp1;
 	elemI = tK;
-	if ( elemI->IsAQuad() )
+	if ( Element::IsAQuad( elemI ) )
 	{
 		Msg::warning( "Leaving recoverEdge(..): intersecting quad, returning null." );
 		return nullptr;
@@ -2917,7 +2918,7 @@ QMorph::recoverEdge( Node* nC, Node* nD )
 			break;
 		}
 		elemI = elemIp1;
-		if ( elemI->IsATriangle() )
+		if ( Element::IsATriangle( elemI ) )
 		{
 			tI = static_cast<Triangle*>(elemI);
 			nI = tI->oppositeOfEdge( eI );
@@ -2974,7 +2975,7 @@ QMorph::recoverEdge( Node* nC, Node* nD )
 		}
 	}
 
-	Msg::debug( "recoverEdge: intersectedEdges.size()==" + intersectedEdges.size() );
+	Msg::debug( "recoverEdge: intersectedEdges.size()==" + std::to_string( intersectedEdges.size() ) );
 
 	// When this loop is done, the edge should be recovered
 	std::vector<Element*> removeList;

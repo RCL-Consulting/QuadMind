@@ -34,7 +34,7 @@ TopoCleanup::init()
 	// Ok... Remove fake quads and replace with triangles:
 	for ( int i = 0; i < elementList.size(); i++ )
 	{
-		if ( elementList.at( i )->IsAQuad() )
+		if ( Element::IsAQuad( elementList.at( i ) ) )
 		{
 			auto q = static_cast<Quad*>(elementList.at( i ));
 			if ( q->isFake )
@@ -200,7 +200,7 @@ TopoCleanup::elimChevsStep()
 	{
 		elem = elementList.at( count );
 
-		if ( elem == nullptr || !(elem->IsAQuad()) )
+		if ( elem == nullptr || !(Element::IsAQuad( elem )) )
 		{
 			count++;
 		}
@@ -1249,7 +1249,7 @@ TopoCleanup::boundaryCleanupStep()
 				Msg::debug( "...testing node " + n1->descr() );
 				e1 = n1->edgeList.at( 0 );
 				elem = e1->element1;
-				if ( !elem->IsAQuad() )
+				if ( !Element::IsAQuad( elem ) )
 				{ // Must be quad
 					continue;
 				}
@@ -1271,13 +1271,13 @@ TopoCleanup::boundaryCleanupStep()
 						e4 = q->neighborEdge( n3, e3 );
 
 						elem = q->neighbor( e3 );
-						if ( elem->IsAQuad() )
+						if ( elem && Element::IsAQuad( elem ) )
 						{
 							q3 = static_cast<Quad*>(elem);
 						}
 
 						elem = q->neighbor( e4 );
-						if ( elem->IsAQuad() )
+						if ( Element::IsAQuad( elem ) )
 						{
 							q4 = static_cast<Quad*>(elem);
 						}
@@ -1289,13 +1289,13 @@ TopoCleanup::boundaryCleanupStep()
 							e44 = q4->neighborEdge( n3, e4 );
 
 							elem = q3->neighbor( e33 );
-							if ( elem->IsAQuad() )
+							if ( Element::IsAQuad( elem ) )
 							{
 								q33 = static_cast<Quad*>(elem);
 							}
 
 							elem = q4->neighbor( e44 );
-							if ( elem->IsAQuad() )
+							if ( Element::IsAQuad( elem ) )
 							{
 								q44 = static_cast<Quad*>(elem);
 							}
@@ -1304,7 +1304,7 @@ TopoCleanup::boundaryCleanupStep()
 							{
 								e = q33->neighborEdge( n3, e33 );
 								elem = q33->neighbor( e );
-								if ( elem->IsAQuad() )
+								if ( Element::IsAQuad( elem ) )
 								{
 									qn = static_cast<Quad*>(elem);
 								}
@@ -1375,7 +1375,7 @@ TopoCleanup::boundaryCleanupStep()
 				// or if this does not exist, the find the first quad when looking
 				// from the boundary an inwards around node n1:
 				e1 = n1->anotherBoundaryEdge( nullptr );
-				if ( e1->element1->IsAQuad() )
+				if ( Element::IsAQuad( e1->element1 ) )
 				{
 					q = static_cast<Quad*>(e1->element1);
 					pq = q;
@@ -1489,7 +1489,7 @@ TopoCleanup::shapeCleanupStep()
 
 					e1 = n->anotherBoundaryEdge( nullptr );
 					elem = e1->element1;
-					if ( !elem->IsAQuad() )
+					if ( !Element::IsAQuad( elem ) )
 					{
 						continue;
 					}
@@ -1498,7 +1498,7 @@ TopoCleanup::shapeCleanupStep()
 
 					e2 = q->neighborEdge( n, e1 );
 					elem = q->neighbor( e2 );
-					if ( elem->IsAQuad() )
+					if ( Element::IsAQuad( elem ) )
 					{
 						q2 = static_cast<Quad*>(elem);
 
@@ -1535,7 +1535,7 @@ TopoCleanup::shapeCleanupStep()
 					eo = q->neighborEdge( n1, e1 );
 
 					elem = q->neighbor( eo );
-					if ( elem->IsAQuad() )
+					if ( Element::IsAQuad( elem ) )
 					{
 						qo = static_cast<Quad*>(elem);
 						ango = qo->ang[qo->angleIndex( n1 )];
@@ -1572,7 +1572,7 @@ TopoCleanup::shapeCleanupStep()
 				{
 					e1 = n->anotherBoundaryEdge( nullptr );
 					elem = e1->element1;
-					if ( elem->IsAQuad() )
+					if ( Element::IsAQuad( elem ) )
 					{
 						q2 = static_cast<Quad*>(elem);
 					}
@@ -1583,7 +1583,7 @@ TopoCleanup::shapeCleanupStep()
 
 					e2 = q2->neighborEdge( n, e1 );
 					elem = q2->neighbor( e2 );
-					if ( elem->IsAQuad() )
+					if ( Element::IsAQuad( elem ) )
 					{
 						q = static_cast<Quad*>(elem);
 					}
@@ -1599,7 +1599,7 @@ TopoCleanup::shapeCleanupStep()
 
 					e3 = q->neighborEdge( n, e2 );
 					elem = q->neighbor( e3 );
-					if ( elem->IsAQuad() )
+					if ( Element::IsAQuad( elem ) )
 					{
 						qo = static_cast<Quad*>(elem);
 					}
@@ -1638,7 +1638,7 @@ TopoCleanup::shapeCleanupStep()
 	{
 		elem = elementList.at( count );
 
-		if ( elem == nullptr || !(elem->IsAQuad()) )
+		if ( elem == nullptr || !(Element::IsAQuad( elem )) )
 		{
 			count++;
 		}

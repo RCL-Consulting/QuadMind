@@ -16,8 +16,9 @@ class Node;
 class Element : public Constants
 {
 public:
-	virtual bool IsAQuad() = 0;
-	virtual bool IsATriangle() = 0;
+	static bool IsAQuad( const Element* e );
+	static bool IsATriangle( const Element* e );
+
 	/** An array of interior angles */
 	std::vector<double> ang;
 	/** An array of edges */
@@ -127,6 +128,8 @@ public:
 	/** Set the color of the edges to green. */
 	virtual void markEdgesLegal() = 0;
 
+	virtual bool equals( const Element* t ) const = 0;
+
 protected:
 	/**
 	 * A method for fast computation of the cross product of two vectors.
@@ -138,4 +141,7 @@ protected:
 	 * @return the cross product of the two vectors
 	 */
 	double cross( Node* o1, Node* p1, Node* o2, Node* p2 );
+
+	virtual bool fIsAQuad() const  = 0;
+	virtual bool fIsATriangle() const = 0;
 };

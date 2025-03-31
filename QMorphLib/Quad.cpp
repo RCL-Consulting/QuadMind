@@ -424,11 +424,11 @@ Quad::anyInvertedElementsWhenCollapsed( Node* n, Node* n1, Node* n2,
 }
 
 bool 
-Quad::equals( Element* o )
+Quad::equals( const Element* o ) const
 {
-	if ( o->IsAQuad() )
+	if ( Element::IsAQuad( o ) )
 	{
-		auto q = static_cast<Quad*>(o);
+		const auto q = static_cast<const Quad*>(o);
 		Node* node1, *node2, *node3, *node4;
 		Node* qnode1, *qnode2, *qnode3, *qnode4;
 		node1 = edgeList[base]->leftNode;
@@ -526,7 +526,7 @@ Quad::closeQuad( Edge* e1, Edge* e2 )
 
 					eI->element1->replaceEdge( eI, eJ );
 					eJ->connectToElement( eI->element1 );
-					if ( eI->element1->IsAQuad() )
+					if ( Element::IsAQuad( eI->element1 ) )
 					{ // Then LR might need updating
 						quadList.push_back( static_cast<Quad*>(eI->element1) ); // but that must be done later
 					}
@@ -958,8 +958,10 @@ Quad::hasEdge( Edge* e )
 bool
 Quad::boundaryQuad()
 {
-	if ( neighbor( edgeList[base] )->IsAQuad() || neighbor( edgeList[left] )->IsAQuad() || neighbor( edgeList[right] )->IsAQuad()
-		 || neighbor( edgeList[top] )->IsAQuad() )
+	if ( Element::IsAQuad( neighbor( edgeList[base] ) ) ||
+		 Element::IsAQuad( neighbor( edgeList[left] ) ) || 
+		 Element::IsAQuad( neighbor( edgeList[right] ) ) ||
+		 Element::IsAQuad( neighbor( edgeList[top] ) ) )
 	{
 		return true;
 	}
@@ -1481,7 +1483,7 @@ Quad::inverted()
 		okays = 4 - okays;
 	}
 
-	Msg::debug( "Leaving Quad.inverted(), okays: " + okays );
+	Msg::debug( "Leaving Quad.inverted(), okays: " + std::to_string( okays ) );
 	if ( okays >= 3 )
 	{
 		return false;
@@ -1548,7 +1550,7 @@ Quad::invertedOrZeroArea()
 		okays = 4 - okays;
 	}
 
-	Msg::debug( "Leaving Quad.invertedOrZeroArea(), okays: " + okays );
+	Msg::debug( "Leaving Quad.invertedOrZeroArea(), okays: " + std::to_string( okays ) );
 	if ( okays >= 3 )
 	{
 		return false;
@@ -1811,7 +1813,7 @@ Quad::getAdjTriangles()
 
 		while ( curElem != nullptr && curEdge != edgeList[top] )
 		{
-			if ( curElem->IsATriangle() )
+			if ( Element::IsATriangle( curElem ) )
 			{
 				triangleList.push_back( static_cast<Triangle*>(curElem) );
 			}
@@ -1826,7 +1828,7 @@ Quad::getAdjTriangles()
 	while ( curElem != nullptr && curEdge != edgeList[right] )
 	{
 		auto Iter = std::find( triangleList.begin(), triangleList.end(), curElem );
-		if ( curElem->IsATriangle() && Iter == triangleList.end() )
+		if ( Element::IsATriangle( curElem ) && Iter == triangleList.end() )
 		{
 			triangleList.push_back( static_cast<Triangle*>(curElem) );
 		}
@@ -2040,18 +2042,18 @@ Quad::nrOfQuadsSharingAnEdgeAt( Node* n )
 
 	if ( edgeList[left]->hasNode( n ) )
 	{
-		if ( neighbor( edgeList[left] )->IsAQuad() )
+		if ( Element::IsAQuad( neighbor( edgeList[left] ) ) )
 		{
 			count++;
 		}
 		if ( edgeList[base]->hasNode( n ) )
 		{
-			if ( neighbor( edgeList[base] )->IsAQuad() )
+			if ( Element::IsAQuad( neighbor( edgeList[base] ) ) )
 			{
 				count++;
 			}
 		}
-		else if ( neighbor( edgeList[top] )->IsAQuad() )
+		else if ( Element::IsAQuad( neighbor( edgeList[top] ) ) )
 		{
 			count++;
 		}
@@ -2059,18 +2061,18 @@ Quad::nrOfQuadsSharingAnEdgeAt( Node* n )
 	}
 	else if ( edgeList[right]->hasNode( n ) )
 	{
-		if ( neighbor( edgeList[right] )->IsAQuad() )
+		if ( Element::IsAQuad( neighbor( edgeList[right] ) ) )
 		{
 			count++;
 		}
 		if ( edgeList[base]->hasNode( n ) )
 		{
-			if ( neighbor( edgeList[base] )->IsAQuad() )
+			if ( Element::IsAQuad( neighbor( edgeList[base] ) ) )
 			{
 				count++;
 			}
 		}
-		else if ( neighbor( edgeList[top] )->IsAQuad() )
+		else if ( Element::IsAQuad( neighbor( edgeList[top] ) ) )
 		{
 			count++;
 		}
@@ -2298,7 +2300,7 @@ Quad::trianglesContained( Triangle* first )
 			{
 				neighbor = cur->neighbor( e );
 				auto Iter = std::find( tris.begin(), tris.end(), neighbor );
-				if ( neighbor != nullptr && Iter == tris.end() && neighbor->IsATriangle() )
+				if ( neighbor != nullptr && Iter == tris.end() && Element::IsATriangle( neighbor ) )
 				{
 					tris.push_back( static_cast<Triangle*>( neighbor ) );
 				}

@@ -38,6 +38,7 @@ Edge::Edge( Edge* e )
 bool 
 Edge::equals( const Edge* o ) const
 {
+	if ( !o ) return false;
 	if ( leftNode->equals( o->leftNode ) && rightNode->equals( o->rightNode ) )
 	{
 		return true;
@@ -191,7 +192,7 @@ Edge::classifyStateOfFrontEdge()
 	if ( l != nullptr )
 	{
 		leftSide = true;
-		if ( leftNode == lfn->leftNode )
+		if ( leftNode->equals( lfn->leftNode ) )
 		{
 			lfn->alterLeftState( true );
 		}
@@ -203,7 +204,7 @@ Edge::classifyStateOfFrontEdge()
 	else
 	{
 		leftSide = false;
-		if ( leftNode == lfn->leftNode )
+		if ( leftNode->equals( lfn->leftNode ) )
 		{
 			lfn->alterLeftState( false );
 		}
@@ -218,7 +219,7 @@ Edge::classifyStateOfFrontEdge()
 	if ( r != nullptr )
 	{
 		rightSide = true;
-		if ( rightNode == rfn->leftNode )
+		if ( rightNode->equals( rfn->leftNode ) )
 		{
 			rfn->alterLeftState( true );
 		}
@@ -230,7 +231,7 @@ Edge::classifyStateOfFrontEdge()
 	else
 	{
 		rightSide = false;
-		if ( rightNode == rfn->leftNode )
+		if ( rightNode->equals( rfn->leftNode ) )
 		{
 			rfn->alterLeftState( false );
 		}
@@ -349,20 +350,20 @@ Edge::printStateLists()
 {
 	if ( Msg::debugMode )
 	{
-		std::cout << "frontsInState 1-1:";
+		std::cout << "frontsInState 1-1:\n";
 		for ( auto edge : stateList[2] )
 		{
-			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")";
+			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")\n";
 		}
-		std::cout << "frontsInState 0-1 and 1-0:";
+		std::cout << "frontsInState 0-1 and 1-0:\n";
 		for ( auto edge : stateList[1] )
 		{
-			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")";
+			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")\n";
 		}
-		std::cout << "frontsInState 0-0:";
+		std::cout << "frontsInState 0-0:\n";
 		for ( auto edge : stateList[0] )
 		{
-			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")";
+			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")\n";
 		}
 	}
 }
@@ -383,10 +384,9 @@ Edge::leftTo( Edge* e )
 bool 
 Edge::isFrontEdge()
 {
-	if ( (element1 == nullptr) != (element2 == nullptr) )
+	if ( Element::IsATriangle( element1 ) && !Element::IsATriangle( element2 ) )
 	{
-		auto nonNullPtr = element1 ? element1 : element2;
-		return nonNullPtr->IsATriangle();
+		return true;
 	}
 
 	return false;
@@ -448,7 +448,7 @@ Edge::seamWith( Edge* e )
 			{
 				eJ = nKp1->edgeList[j];
 
-				if ( other == eJ->otherNode( nKp1 ) )
+				if ( other->equals( eJ->otherNode( nKp1 ) ) )
 				{
 					found = true;
 
@@ -458,7 +458,7 @@ Edge::seamWith( Edge* e )
 						other->edgeList.erase( Iter );
 					}
 
-					if ( eI->element1->firstNode == nKm1 )
+					if ( eI->element1->firstNode->equals( nKm1 ) )
 					{ // Don't forget firstNode!!
 						eI->element1->firstNode = nKp1;
 					}
@@ -469,11 +469,11 @@ Edge::seamWith( Edge* e )
 			}
 			if ( !found )
 			{
-				if ( eI->element1->firstNode == nKm1 )
+				if ( eI->element1->firstNode->equals( nKm1 ) )
 				{ // Don't forget firstNode!!
 					eI->element1->firstNode = nKp1;
 				}
-				if ( eI->element2->firstNode == nKm1 )
+				if ( eI->element2->firstNode->equals( nKm1 ) )
 				{ // Don't forget firstNode!!
 					eI->element2->firstNode = nKp1;
 				}
@@ -914,7 +914,7 @@ Edge::oppositeNode( Node* wrongNode )
 	}
 
 	// Damn, it's the wrong node! Then we must go look in element2.
-	if ( candidate == wrongNode )
+	if ( candidate->equals( wrongNode ) )
 	{
 
 		// Pick one of the other edges in element2
@@ -971,7 +971,7 @@ Edge::getSwappedEdge()
 		Msg::warning( "getSwappedEdge: Cannot swap a boundary edge." );
 		return nullptr;
 	}
-	if ( element1->IsAQuad() || element2->IsAQuad() )
+	if ( Element::IsAQuad( element1 ) || Element::IsAQuad( element2 ) )
 	{
 		Msg::warning( "getSwappedEdge: Edge must lie between two triangles." );
 		return nullptr;
@@ -1047,11 +1047,11 @@ Edge::getVector( Node* origin )
 bool
 Edge::bordersToTriangle()
 {
-	if ( element1->IsATriangle() )
+	if ( Element::IsATriangle( element1 ) )
 	{
 		return true;
 	}
-	else if ( element2 != nullptr && element2->IsATriangle() )
+	else if ( Element::IsATriangle( element2 ) )
 	{
 		return true;
 	}
@@ -1077,7 +1077,7 @@ Edge::boundaryEdge()
 bool
 Edge::boundaryOrTriangleEdge()
 {
-	if ( element1 == nullptr || element2 == nullptr || element1->IsATriangle() || element2->IsATriangle() )
+	if ( element1 == nullptr || element2 == nullptr || Element::IsATriangle( element1 ) || Element::IsATriangle( element2 ) )
 	{
 		return true;
 	}
@@ -1090,7 +1090,7 @@ Edge::boundaryOrTriangleEdge()
 bool
 Edge::hasNode( Node* n )
 {
-	if ( leftNode == n || rightNode == n )
+	if ( leftNode->equals( n ) || rightNode->equals( n ) )
 	{
 		return true;
 	}
@@ -1216,7 +1216,7 @@ Edge::noTrianglesInOrbit( Edge* e, Quad* startQ )
 	}
 	do
 	{
-		if ( curElem->IsATriangle() )
+		if ( Element::IsATriangle( curElem ) )
 		{
 			Msg::debug( "Leaving Edge.noTrianglesInOrbit(..), returns false" );
 			return false;
@@ -1505,7 +1505,7 @@ Edge::nextQuadEdgeAt( Node* n, Element* startElem )
 	e = startElem->neighborEdge( n, this );
 	elem = startElem->neighbor( e );
 
-	while ( elem != nullptr && !(elem->IsAQuad()) && elem != startElem )
+	while ( elem && !Element::IsAQuad( elem ) && elem != startElem )
 	{
 		e = elem->neighborEdge( n, e );
 		Msg::debug( "..." + std::to_string( i ) );
@@ -1513,7 +1513,7 @@ Edge::nextQuadEdgeAt( Node* n, Element* startElem )
 		elem = elem->neighbor( e );
 	}
 	Msg::debug( "Leaving Edge.nextQuadEdgeAt(..)" );
-	if ( elem != nullptr && elem->IsAQuad() && elem != startElem )
+	if ( Element::IsAQuad( elem ) && elem != startElem )
 	{
 		return e;
 	}
@@ -1526,11 +1526,11 @@ Edge::nextQuadEdgeAt( Node* n, Element* startElem )
 Quad* 
 Edge::getQuadElement()
 {
-	if ( element1 && element1->IsAQuad() )
+	if ( Element::IsAQuad( element1 ) )
 	{
 		return static_cast<Quad*>(element1);
 	}
-	else if ( element2 && element2->IsAQuad() )
+	else if ( Element::IsAQuad( element2 ) )
 	{
 		return static_cast<Quad*>(element2);
 	}
@@ -1543,11 +1543,11 @@ Edge::getQuadElement()
 Triangle* 
 Edge::getTriangleElement()
 {
-	if ( element1 && element1->IsATriangle() )
+	if ( Element::IsATriangle( element1 ) )
 	{
 		return static_cast<Triangle*>(element1);
 	}
-	else if ( element2 && element2->IsATriangle() )
+	else if ( Element::IsATriangle( element2 ) )
 	{
 		return static_cast<Triangle*>(element2);
 	}
@@ -1560,11 +1560,11 @@ Edge::getTriangleElement()
 Quad* 
 Edge::getQuadWithEdge( Edge* e )
 {
-	if ( element1->IsAQuad() && element1->hasEdge( e ) )
+	if ( Element::IsAQuad( element1 ) && element1->hasEdge( e ) )
 	{
 		return static_cast<Quad*>(element1);
 	}
-	else if ( element2->IsAQuad() && element2->hasEdge( e ) )
+	else if ( Element::IsAQuad( element2 ) && element2->hasEdge( e ) )
 	{
 		return static_cast<Quad*>(element2);
 	}

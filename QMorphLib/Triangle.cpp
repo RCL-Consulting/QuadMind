@@ -218,7 +218,7 @@ Triangle::invertedWhenNodeRelocated( Node* n1, Node* n2 )
 }
 
 bool 
-Triangle::equals( const Triangle& t )
+Triangle::equals( const Element* t ) const
 {
 	Node* node1, *node2, *node3;
 	Node *tnode1, *tnode2, *tnode3;
@@ -230,12 +230,12 @@ Triangle::equals( const Triangle& t )
 		node3 = edgeList[1]->leftNode;
 	}
 
-	tnode1 = t.edgeList[0]->leftNode;
-	tnode2 = t.edgeList[0]->rightNode;
-	tnode3 = t.edgeList[1]->rightNode;
+	tnode1 = t->edgeList[0]->leftNode;
+	tnode2 = t->edgeList[0]->rightNode;
+	tnode3 = t->edgeList[1]->rightNode;
 	if ( tnode3 == tnode1 || tnode3 == tnode2 )
 	{
-		tnode3 = t.edgeList[1]->leftNode;
+		tnode3 = t->edgeList[1]->leftNode;
 	}
 
 	if ( node1 == tnode1 && node2 == tnode2 && node3 == tnode3 )

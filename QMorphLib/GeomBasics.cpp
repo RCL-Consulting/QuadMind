@@ -172,11 +172,11 @@ GeomBasics::meshMetricsReport()
 			if ( elem != nullptr )
 			{
 				size++;
-				if ( elem->IsATriangle() )
+				if ( Element::IsATriangle( elem ) )
 				{
 					nTris++;
 				}
-				else if ( elem->IsAQuad() )
+				else if ( Element::IsAQuad( elem ) )
 				{
 					auto q = static_cast<Quad*>(elem);
 					if ( q->isFake )
@@ -313,11 +313,11 @@ GeomBasics::countTriangles()
 	int fakes = 0, tris = 0;
 	for ( auto elem : elementList )
 	{
-		if ( elem->IsAQuad() && static_cast<Quad*>(elem)->isFake )
+		if ( Element::IsAQuad( elem ) && static_cast<Quad*>(elem)->isFake )
 		{
 			fakes++;
 		}
-		else if ( elem->IsATriangle() )
+		else if ( Element::IsATriangle( elem ) )
 		{
 			tris++;
 		}
@@ -442,7 +442,7 @@ GeomBasics::consistencyCheck()
 
 		cross1 = cross( *na, *nc, *nb, *nc ); // The cross product nanc x nbnc
 
-		if ( cross1 == 0 )
+		if ( abs( cross1 ) < 1e-9 )
 		{
 			Msg::warning( "Degenerate triangle in triangleList, t= " + t->descr() );
 		}
@@ -454,7 +454,7 @@ GeomBasics::consistencyCheck()
 		{
 			Msg::debug( "elementList has a null-entry." );
 		}
-		else if ( element->IsAQuad() )
+		else if ( Element::IsAQuad( element ) )
 		{
 			auto q = static_cast<Quad*>(element);
 
@@ -1139,7 +1139,7 @@ GeomBasics::writeQuadMesh( const std::string& filename,
 		{
 			for ( auto element : list )
 			{
-				if ( element->IsAQuad() )
+				if ( Element::IsAQuad( element ) )
 				{
 					auto q = static_cast<Quad*>(element);
 					x1 = q->edgeList[base]->leftNode->x;
@@ -1237,7 +1237,7 @@ GeomBasics::writeMesh( const std::string& filename )
 	for ( auto element : elementList )
 	{
 
-		if ( element->IsAQuad() )
+		if ( Element::IsAQuad( element ) )
 		{
 			auto q = static_cast<Quad*>(element);
 
@@ -1275,7 +1275,7 @@ GeomBasics::writeMesh( const std::string& filename )
 				}
 			}
 		}
-		else if ( element->IsATriangle() )
+		else if ( Element::IsATriangle( element ) )
 		{
 			auto t = static_cast<Triangle*>(element);
 			x1 = t->edgeList[0]->leftNode->x;
@@ -1654,7 +1654,7 @@ GeomBasics::repairZeroAreaTriangles()
 
 	for ( int i = 0; i < triangleList.size(); i++ )
 	{
-		if ( !triangleList.at( i )->IsATriangle() )
+		if ( !Element::IsATriangle( triangleList.at( i ) ) )
 		{
 			continue;
 		}

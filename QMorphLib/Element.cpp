@@ -11,3 +11,15 @@ Element::cross( Node* o1, Node* p1, Node* o2, Node* p2 )
 	double y2 = p2->y - o2->y;
 	return x1 * y2 - x2 * y1;
 }
+
+bool
+Element::IsAQuad( const Element* e )
+{
+	return e && e->fIsAQuad();
+}
+
+bool
+Element::IsATriangle( const Element* e )
+{
+	return e && e->fIsATriangle();
+}

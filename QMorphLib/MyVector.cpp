@@ -456,7 +456,7 @@ MyVector::isCWto( const MyVector& v )
 Node* 
 MyVector::pointIntersectsAt( const MyVector& d1 )
 {
-	/*Node p0 = *origin, p1 = *d1.origin;
+	Node p0 = *origin, p1 = *d1.origin;
 	MyVector delta ( p0, p1.x - p0.x, p1.y - p0.y );
 	MyVector d0 = *this;
 	double d0crossd1 = d0.cross( d1 );
@@ -479,7 +479,7 @@ MyVector::pointIntersectsAt( const MyVector& d1 )
 			double y = d1.origin->y + t * d1.y;
 			return new Node( x, y );
 		}
-	}*/
+	}
 
 	return nullptr;
 }
@@ -487,7 +487,7 @@ MyVector::pointIntersectsAt( const MyVector& d1 )
 bool 
 MyVector::intersects( const MyVector& d1 )
 {
-	/*Node p0 = *origin, p1 = *d1.origin;
+	Node p0 = *origin, p1 = *d1.origin;
 	MyVector delta( p0, p1.x - p0.x, p1.y - p0.y );
 	MyVector d0 = *this;
 	double d0crossd1 = d0.cross( d1 );
@@ -554,14 +554,14 @@ MyVector::intersects( const MyVector& d1 )
 			Msg::debug( descr() + " intersects " + d1.descr() + " (2)" );
 			return true; // Intersects at an Edge point
 		}
-	}*/
+	}
 	return false;
 }
 
 bool
 MyVector::pointIntersects( const MyVector& d1 )
 {
-	/*Node p0 = *origin, p1 = *d1.origin;
+	Node p0 = *origin, p1 = *d1.origin;
 	MyVector delta( p0, p1.x - p0.x, p1.y - p0.y );
 	MyVector d0 = *this;
 	double d0crossd1 = d0.cross( d1 );
@@ -585,14 +585,14 @@ MyVector::pointIntersects( const MyVector& d1 )
 		{ // Intersects not at an Edge point
 			return true; // Intersects at an Edge point
 		}
-	}*/
+	}
 	return false;
 }
 
 bool
 MyVector::innerpointIntersects( const MyVector& d1 )
 {
-	/*Node p0 = *origin, p1 = *d1.origin;
+	Node p0 = *origin, p1 = *d1.origin;
 	MyVector delta( p0, p1.x - p0.x, p1.y - p0.y );
 	MyVector d0 = *this;
 
@@ -600,7 +600,7 @@ MyVector::innerpointIntersects( const MyVector& d1 )
 
 	//TODO: floating point comparisons are not reliable
 
-	if ( d0.origin->equals( *d1.origin ) || (abs( d0.origin->x - d1.origin->x + d1.x ) < kZero && abs( d0.origin.y - d1.origin.y + d1.y ) < kZero)
+	if ( d0.origin->equals( d1.origin.get() ) || (abs( d0.origin->x - d1.origin->x + d1.x ) < kZero && abs( d0.origin->y - d1.origin->y + d1.y ) < kZero)
 		 || (d0.origin->x + d0.x == d1.origin->x && d0.origin->y + d0.y == d1.origin->y)
 		 || (d0.origin->x + d0.x == d1.origin->x + d1.x && d0.origin->y + d0.y == d1.origin->y + d1.y) )
 	{
@@ -620,8 +620,8 @@ MyVector::innerpointIntersects( const MyVector& d1 )
 		double s = delta.cross( d1 ) / d0crossd1;
 		double t = delta.cross( d0 ) / d0crossd1;
 
-		Msg::debug( "innerpointIntersects(..): s: " + s );
-		Msg::debug( "innerpointIntersects(..): t: " + t );
+		Msg::debug( "innerpointIntersects(..): s: " + std::to_string( s ) );
+		Msg::debug( "innerpointIntersects(..): t: " + std::to_string( t ) );
 
 		if ( t <= 0 || t >= 1 || s <= 0 || s >= 1 )
 		{
@@ -632,19 +632,18 @@ MyVector::innerpointIntersects( const MyVector& d1 )
 		{
 			return true; // Intersects at an Edge point
 		}
-	}*/
+	}
 	return false;
 }
 
 std::string
 MyVector::descr() const
 {
-	//return origin->descr() + ", (" + std::to_string(x + origin->x) + ", " + std::to_string(y + origin->y) + ")";
-	return "";
+	return origin->descr() + ", (" + std::to_string(x + origin->x) + ", " + std::to_string(y + origin->y) + ")";
 }
 
 void
 MyVector::printMe() const
 {
-	std::cout << descr();
+	std::cout << descr() << "\n";
 }
