@@ -1,11 +1,10 @@
 #pragma once
-
 #include "Constants.h"
-#include "Node.h"
 
-#include <memory>
-
+class Edge;
+class Node;
 class Ray;
+
 /**
  * This class holds information for vectors, and has methods for dealing with
  * vector-related issues.
@@ -14,21 +13,18 @@ class Ray;
 class MyVector : public Constants
 {
 public:
-	std::unique_ptr<Node> origin = nullptr;
-	double x =0.0, y = 0.0;
-	Edge* edge = nullptr;
-
-	MyVector operator=( const MyVector& v );
-
-	MyVector(const MyVector& v);
-	MyVector();
+	std::shared_ptr<Node> origin = nullptr;
+	double x = 0.0, y = 0.0;
+	std::shared_ptr<Edge> edge = nullptr;
 
 	/**
 	 * @param origin the origin of the vector
 	 * @param x      the x component
 	 * @param y      the y component
 	 */
-	MyVector( const Node& origin, double x, double y );
+	MyVector( const std::shared_ptr<Node>& origin,
+			  double x,
+			  double y );
 
 	/**
 	 * "Convert" a ray into a vector.
@@ -36,28 +32,34 @@ public:
 	 * @param r      a ray (we use the origin and direction found in this ray)
 	 * @param length the length of the vector
 	 */
-	MyVector( const Ray& r, double length );
+	MyVector( const Ray& r,
+			  double length );
 
 	/**
 	 * @param angle  the angle of the vector
 	 * @param length the length of the vector
 	 * @param origin the origin of the vector
 	 */
-	MyVector( double angle, double length, const Node& origin );
+	MyVector( double angle,
+			  double length,
+			  const std::shared_ptr<Node>& origin );
 
 	/**
 	 * @param a the origin of the vector
 	 * @param b the endpoint of the vector
 	 */
-	MyVector( const Node& a, const Node& b );
+	MyVector( const std::shared_ptr<Node>& a, 
+			  const std::shared_ptr<Node>& b );
 
-	inline static double zero = 0.0; //BigDecimal - arbitrary precision decimal numbers
-	inline static double one = 1.0; //BigDecimal - arbitrary precision decimal numbers
+	//TODO: C++ equivalent of Java's BigDecimal
+//	private final static BigDecimal zero = new BigDecimal( 0.0 );
+//	private final static BigDecimal one = new BigDecimal( 1.0 );
 
-	bool equals( const MyVector& o );
+	bool operator==( const MyVector& v ) const;
+	bool equals( const std::shared_ptr<Constants>& elem ) const override;
 
 	/** @return length of vector */
-	double length();
+	double length() const;
 
 	/**
 	 * @return angle relative to the x-axis (which is directed from the origin (0,0)
@@ -71,7 +73,8 @@ public:
 	 */
 	double posAngle();
 
-	void setLengthAndAngle( double length, double angle );
+	void setLengthAndAngle( double length,
+							double angle );
 
 	/** The origin is really overlooked here... I just use this.origin ... */
 	MyVector plus( const MyVector& v );
@@ -101,6 +104,7 @@ public:
 	 * @param v another vector
 	 * @return the dot product defined as |this|*|v|*cos(theta)
 	 */
+	
 	double dot( const MyVector& v );
 
 	/**
@@ -112,9 +116,6 @@ public:
 	 * @return the dot product defined as |this|*|v|*cos(theta)
 	 */
 	double dot( double vx, double vy );
-
-	/** Return true if the cross product is greater than zero */
-	bool newcross( const MyVector& v );
 
 	/** Compute the cross product */
 	double cross( const MyVector& v );
@@ -141,7 +142,7 @@ public:
 	 * @return if vectors intersects at one point exactly, return a node for this
 	 *         point Else return null.
 	 */
-	Node* pointIntersectsAt( const MyVector& d1 );
+	std::shared_ptr<Node> pointIntersectsAt( const MyVector& d1 );
 
 	/** @return true if this and d1 intersect, else false. */
 	bool intersects( const MyVector& d1 );
@@ -159,6 +160,6 @@ public:
 	std::string descr() const;
 
 	/** Print a string representation of this vector. */
-	void printMe() const;
-
+	void printMe();
+	
 };

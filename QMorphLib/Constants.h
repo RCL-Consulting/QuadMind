@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <memory>
 
 /*
  * This class holds the program "constants". That is, they are given as
@@ -15,6 +16,20 @@
 class Constants
 {
 public:
+	enum class Color
+	{
+		None,
+		Cyan,
+		Red,
+		Green,
+		Blue,
+		Yellow,
+		Magenta,
+		Gray
+	};
+
+	virtual bool equals( const std::shared_ptr<Constants>& elem ) const = 0;
+
 	inline static constexpr double toRadians = std::numbers::pi / 180.0;
 	inline static constexpr double toDegrees = 180.0 / std::numbers::pi;
 

@@ -10,6 +10,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuadMindConsole", "..\QuadM
 		{6F0A849A-8EF8-4211-A642-394776B300C8} = {6F0A849A-8EF8-4211-A642-394776B300C8}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "..\UnitTest\UnitTest.vcxproj", "{AC956B1A-5F44-4845-8EF5-AF21F0EEC247}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6F0A849A-8EF8-4211-A642-394776B300C8} = {6F0A849A-8EF8-4211-A642-394776B300C8}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -34,6 +39,14 @@ Global
 		{D347B352-B568-47DC-A529-A359ECE4790D}.Release|x64.Build.0 = Release|x64
 		{D347B352-B568-47DC-A529-A359ECE4790D}.Release|x86.ActiveCfg = Release|Win32
 		{D347B352-B568-47DC-A529-A359ECE4790D}.Release|x86.Build.0 = Release|Win32
+		{AC956B1A-5F44-4845-8EF5-AF21F0EEC247}.Debug|x64.ActiveCfg = Debug|x64
+		{AC956B1A-5F44-4845-8EF5-AF21F0EEC247}.Debug|x64.Build.0 = Debug|x64
+		{AC956B1A-5F44-4845-8EF5-AF21F0EEC247}.Debug|x86.ActiveCfg = Debug|Win32
+		{AC956B1A-5F44-4845-8EF5-AF21F0EEC247}.Debug|x86.Build.0 = Debug|Win32
+		{AC956B1A-5F44-4845-8EF5-AF21F0EEC247}.Release|x64.ActiveCfg = Release|x64
+		{AC956B1A-5F44-4845-8EF5-AF21F0EEC247}.Release|x64.Build.0 = Release|x64
+		{AC956B1A-5F44-4845-8EF5-AF21F0EEC247}.Release|x86.ActiveCfg = Release|Win32
+		{AC956B1A-5F44-4845-8EF5-AF21F0EEC247}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
