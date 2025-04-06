@@ -17,6 +17,8 @@ public:
 	double x = 0.0, y = 0.0;
 	std::shared_ptr<Edge> edge = nullptr;
 
+	MyVector() = default;
+
 	/**
 	 * @param origin the origin of the vector
 	 * @param x      the x component

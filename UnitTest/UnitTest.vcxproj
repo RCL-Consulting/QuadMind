@@ -104,6 +104,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestArrayList.cpp" />
+    <ClCompile Include="TestEdge.cpp" />
+    <ClCompile Include="TestElement.cpp" />
     <ClCompile Include="TestMyVector.cpp" />
     <ClCompile Include="TestNode.cpp" />
     <ClCompile Include="pch.cpp">
@@ -112,6 +114,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TestRay.cpp" />
+    <ClCompile Include="TestTriangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

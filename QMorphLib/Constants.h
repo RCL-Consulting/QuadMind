@@ -54,6 +54,10 @@ public:
 	inline static constexpr double PIdiv6 = std::numbers::pi / 6.0;
 	// PI/2 or 90 degrees
 	inline static constexpr double PIdiv2 = std::numbers::pi / 2.0;
+	// PI/3 or 60 degrees
+	inline static constexpr double PIdiv3 = std::numbers::pi / 3.0;
+	// PI/4 or 45 degrees
+	inline static constexpr double PIdiv4 = std::numbers::pi / 4.0;
 	// 3*PI/4 or 135 degrees
 	inline static constexpr double PIx3div4 = 3 * std::numbers::pi / 4.0;
 	// 5*PI/4 or 225 degrees
@@ -62,6 +66,7 @@ public:
 	inline static constexpr double PIx3div2 = 3 * std::numbers::pi / 2.0;
 	// 2*PI or 360 degrees
 	inline static constexpr double PIx2 = std::numbers::pi * 2.0;
+	inline static constexpr double PI = std::numbers::pi;
 
 	// Some useful constants holding the radian values of common angles in degrees
 	// 6 degrees in radians

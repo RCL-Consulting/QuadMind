@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "MyVector.h"
 #include "Node.h"
+#include "Ray.h"
 
 class MyVectorTest : public ::testing::Test
 {
@@ -706,4 +707,22 @@ TEST( MyVectorTests, InnerPointIntersects_NonIntersecting )
     MyVector v1( origin1, 1.0, 1.0 );
     MyVector v2( origin2, 1.0, 1.0 );
     EXPECT_FALSE( v1.innerpointIntersects( v2 ) );
+}
+
+TEST( MyVectorTests, CrossProductWithVector )
+{
+    auto origin = std::make_shared<Node>( 0.0, 0.0 );
+    MyVector v1( origin, 3.0, 4.0 );
+    MyVector v2( origin, 1.0, 2.0 );
+    double result = v1.cross( v2 );
+    EXPECT_DOUBLE_EQ( result, 2.0 );
+}
+
+TEST( MyVectorTests, CrossProductWithRay )
+{
+    auto origin = std::make_shared<Node>( 0.0, 0.0 );
+    MyVector v1( origin, 3.0, 4.0 );
+    Ray r( origin, 0.0 );
+    double result = v1.cross( r );
+    EXPECT_DOUBLE_EQ( result, -4.0 );
 }

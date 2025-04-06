@@ -6,6 +6,24 @@ template< typename T >
 class ArrayList 
 {
 public:
+
+	void remove( size_t Index )
+	{
+		if ( Index >= mArray.size() )
+			throw std::out_of_range( "Index out of range in remove" );
+		mArray.erase( mArray.begin() + Index );
+	}
+
+	bool isEmpty() const
+	{
+		return mArray.empty();
+	}
+
+	void clear()
+	{
+		mArray.clear();
+	}
+
 	void add( const T& item )
 	{
 		mArray.push_back( item );

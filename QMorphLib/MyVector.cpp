@@ -4,6 +4,7 @@
 #include "Node.h"
 #include "Numbers.h"
 #include "Msg.h"
+#include "Ray.h"
 
 #include <numbers>
 #include <iostream>
@@ -450,13 +451,10 @@ MyVector::dot( double vx, double vy )
 	return x * vx + y * vy;
 }
 
-//TODO: Implement this method
-//TODO: Tests
 double 
 MyVector::cross( const Ray& r )
 {
-	return 0.0;
-	//return x * r.y - r.x * y;
+	return x * r.y - r.x * y;
 }
 
 std::string 

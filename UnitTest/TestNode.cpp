@@ -48,11 +48,12 @@ TEST( NodeTest, Equals_SameObject_ReturnsTrue )
 TEST( NodeTest, CopyNode )
 {
     // Create a node
-    auto node = std::make_shared<Node>( 1.0, 2.0 );
-    node->edgeList.add( std::make_shared<Edge>() );
+    auto node1 = std::make_shared<Node>( 1.0, 2.0 );
+    auto node2 = std::make_shared<Node>( 2.0, 3.0 );
+	node1->edgeList.add( std::make_shared<Edge>( node1, node2 ) );
 
     // Copy the node
-    auto copiedNode = node->copy();
+    auto copiedNode = node1->copy();
 
     // Check if the copied node has the same coordinates
     EXPECT_EQ( copiedNode->x, 1.0 );
@@ -60,7 +61,7 @@ TEST( NodeTest, CopyNode )
 
     // Check if the edgeList is copied
     EXPECT_EQ( copiedNode->edgeList.size(), 1 );
-    EXPECT_EQ( copiedNode->edgeList.get(0), node->edgeList.get(0) );
+    EXPECT_EQ( copiedNode->edgeList.get(0), node1->edgeList.get(0) );
 }
 
 TEST( NodeTest, CopyXY )
@@ -88,16 +89,16 @@ TEST( NodeTests, SetXY_UpdatesCoordinates )
 TEST( NodeTests, SetXY_DoesNotAffectOtherProperties )
 {
     // Arrange
-    Node node1( 1.0, 2.0 );
-    Node node2( 3.0, 4.0 );
-    node1.edgeList.add( std::make_shared<Edge>() );
+    auto node1 = std::make_shared<Node>( 1.0, 2.0 );
+    auto node2 = std::make_shared<Node>( 3.0, 4.0 );
+    node1->edgeList.add( std::make_shared<Edge>(node1, node2) );
 
     // Act
-    node1.setXY( node2 );
+    node1->setXY( *node2 );
 
     // Assert
-    EXPECT_EQ( node1.edgeList.size(), 1 );
-    EXPECT_EQ( node1.edgeList.get(0), node1.edgeList.get(0) );
+    EXPECT_EQ( node1->edgeList.size(), 1 );
+    EXPECT_EQ( node1->edgeList.get(0), node1->edgeList.get(0) );
 }
 
 TEST( NodeTest, CrossProduct )
@@ -123,23 +124,25 @@ TEST( NodeTest, CrossProduct )
 
 TEST( NodeTests, ConnectToEdge_AddsEdgeToList )
 {
-    auto node = std::make_shared<Node>( 0.0, 0.0 );
-    auto edge = std::make_shared<Edge>();
+    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
+    auto node2 = std::make_shared<Node>( 1.0, 0.0 );
+    auto edge = std::make_shared<Edge>(node1 , node2);
 
-    node->connectToEdge( edge );
+    node1->connectToEdge( edge );
 
-    ASSERT_TRUE( node->edgeList.contains( edge ) );
+    ASSERT_TRUE( node1->edgeList.contains( edge ) );
 }
 
 TEST( NodeTests, ConnectToEdge_DoesNotAddDuplicateEdge )
 {
-    auto node = std::make_shared<Node>( 0.0, 0.0 );
-    auto edge = std::make_shared<Edge>();
+    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
+    auto node2 = std::make_shared<Node>( 1.0, 0.0 );
+    auto edge = std::make_shared<Edge>(node1, node2);
 
-    node->connectToEdge( edge );
-    node->connectToEdge( edge );
+    node1->connectToEdge( edge );
+    node1->connectToEdge( edge );
 
-    auto count = std::count( node->edgeList.begin(), node->edgeList.end(), edge );
+    auto count = std::count( node1->edgeList.begin(), node1->edgeList.end(), edge );
     ASSERT_EQ( count, 1 );
 }
 
