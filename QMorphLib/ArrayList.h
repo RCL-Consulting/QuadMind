@@ -7,6 +7,11 @@ class ArrayList
 {
 public:
 
+	void set( size_t Index, const T& Item )
+	{
+		mArray[Index] = Item;
+	}
+
 	void remove( size_t Index )
 	{
 		if ( Index >= mArray.size() )

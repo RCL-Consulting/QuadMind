@@ -3,8 +3,11 @@
 
 #include "Edge.h"
 #include "MyVector.h"
+#include "Node.h"
 
 #include "Msg.h"
+
+#include <iostream>
 
 //TODO: Implement this method
 //TODO: Tests
@@ -646,4 +649,299 @@ Triangle::nextCCWEdge( const std::shared_ptr<Edge>& e1 )
 	{
 		return e2;
 	}
+}
+
+//TODO: Tests
+bool 
+Triangle::areaLargerThan0() 
+{
+	auto na = edgeList[0]->leftNode;
+	auto nb = edgeList[0]->rightNode;
+	auto nc = oppositeOfEdge( edgeList[0] );
+
+	if ( cross( na, nc, nb, nc ) != 0 )
+	{ // The cross product nanc x nbnc
+		return true;
+	}
+	else
+	{ // The cross product nanc x nbnc
+		return false;
+	}
+
+}
+
+//TOD:Tests
+bool 
+Triangle::inverted( const std::shared_ptr<Node>& oldN,
+					const std::shared_ptr<Node>& newN )
+{
+	auto e = oppositeOfNode( newN );
+	// Check with edge e:
+	double oldN_e_det = (e->leftNode->x - oldN->x) * (e->rightNode->y - oldN->y) - (e->leftNode->y - oldN->y) * (e->rightNode->x - oldN->x);
+	double newN_e_det = (e->leftNode->x - newN->x) * (e->rightNode->y - newN->y) - (e->leftNode->y - newN->y) * (e->rightNode->x - newN->x);
+
+	// If different sign, or 0, they are inverted:
+	if ( oldN_e_det >= 0 )
+	{
+		if ( newN_e_det <= 0 || oldN_e_det == 0 )
+		{
+			Msg::debug( "Triangle.inverted(..): Triangle " + descr() + " is inverted" );
+			return true;
+		}
+	}
+	else if ( newN_e_det >= 0 )
+	{
+		Msg::debug( "Triangle.inverted(..): Triangle " + descr() + " is inverted" );
+		return true;
+	}
+	return false;
+}
+
+//TODO: Tests
+bool
+Triangle::inverted() 
+{
+	auto a = firstNode;
+	auto b = edgeList[0]->otherNode( a );
+	auto c = edgeList[1]->rightNode;
+	if ( c == a || c == b )
+	{
+		c = edgeList[1]->leftNode;
+	}
+
+	if ( cross( a, c, b, c ) < 0 )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//TODO: Tests
+bool 
+Triangle::invertedOrZeroArea()
+{
+	auto a = firstNode;
+	auto b = edgeList[0]->otherNode( a );
+	auto c = edgeList[1]->rightNode;
+	if ( c == a || c == b )
+	{
+		c = edgeList[1]->leftNode;
+	}
+
+	if ( cross( a, c, b, c ) <= 0 )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//TODO: Tests
+bool
+Triangle::zeroArea()
+{
+	auto a = firstNode;
+	auto b = edgeList[0]->otherNode( a );
+	auto c = edgeList[1]->rightNode;
+	if ( c == a || c == b )
+	{
+		c = edgeList[1]->leftNode;
+	}
+
+	if ( cross( a, c, b, c ) == 0 )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//TODO: Tests
+void 
+Triangle::replaceEdge( const std::shared_ptr<Edge>& e,
+					   const std::shared_ptr<Edge>& replacement )
+{
+	edgeList[indexOf( e )] = replacement;
+}
+
+//TODO: Tests
+std::shared_ptr<Edge>
+Triangle::getBoundaryEdge()
+{
+	if ( edgeList[0]->element2 == nullptr )
+	{
+		return edgeList[0];
+	}
+	else if ( edgeList[1]->element2 == nullptr )
+	{
+		return edgeList[1];
+	}
+	else if ( edgeList[2]->element2 == nullptr )
+	{
+		return edgeList[2];
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+//TODO: Tests
+void 
+Triangle::updateDistortionMetric() 
+{
+	updateDistortionMetric( sqrt3x2 );
+}
+
+//TODO: Tests
+void
+Triangle::updateDistortionMetric( double factor )
+{
+	Msg::debug( "Entering Triangle.updateDistortionMetric(..)" );
+	double AB = edgeList[0]->len, CB = edgeList[1]->len, CA = edgeList[2]->len;
+	auto a = edgeList[2]->commonNode( edgeList[0] ), b = edgeList[0]->commonNode( edgeList[1] ), c = edgeList[2]->commonNode( edgeList[1] );
+	MyVector vCA( c, a ), vCB( c, b );
+
+	double temp = factor * std::abs( vCA.cross( vCB ) ) / (CA * CA + AB * AB + CB * CB);
+	if ( inverted() )
+	{
+		distortionMetric = -temp;
+	}
+	else
+	{
+		distortionMetric = temp;
+	}
+	Msg::debug( "Leaving Triangle.updateDistortionMetric(..): " + std::to_string(distortionMetric) );
+}
+
+//TODO: Tests
+double 
+Triangle::largestAngle() 
+{
+	double cand = ang[0];
+	if ( ang[1] > cand )
+	{
+		cand = ang[1];
+	}
+	if ( ang[2] > cand )
+	{
+		cand = ang[2];
+	}
+	return cand;
+}
+
+//TODO: Tests
+std::shared_ptr<Node>
+Triangle::nodeAtLargestAngle()
+{
+	auto candNode = edgeList[0]->leftNode;
+	double cand = ang[angleIndex( candNode )], temp;
+
+	temp = ang[angleIndex( edgeList[0]->rightNode )];
+	if ( temp > cand )
+	{
+		candNode = edgeList[0]->rightNode;
+		cand = temp;
+	}
+	temp = ang[angleIndex( oppositeOfEdge( edgeList[0] ) )];
+	if ( temp > cand )
+	{
+		candNode = oppositeOfEdge( edgeList[0] );
+	}
+	return candNode;
+}
+
+//TODO: Tests
+double 
+Triangle::longestEdgeLength()
+{
+	double temp = std::max( edgeList[0]->len, edgeList[1]->len );
+	return std::max( temp, edgeList[2]->len );
+}
+
+//TODO: Tests
+std::shared_ptr<Edge>
+Triangle::longestEdge() 
+{
+	std::shared_ptr<Edge> temp;
+	if ( edgeList[0]->len > edgeList[1]->len )
+	{
+		temp = edgeList[0];
+	}
+	else
+	{
+		temp = edgeList[1];
+	}
+
+	if ( edgeList[2]->len > temp->len )
+	{
+		return edgeList[2];
+	}
+	else
+	{
+		return temp;
+	}
+}
+
+//TODO: Tests
+void 
+Triangle::markEdgesLegal() 
+
+{
+	edgeList[0]->color = Color::Green;
+	edgeList[1]->color = Color::Green;
+	edgeList[2]->color = Color::Green;
+}
+
+//TODO: Tests
+void
+Triangle::markEdgesIllegal() 
+{
+	edgeList[0]->color = Color::Red;
+	edgeList[1]->color = Color::Red;
+	edgeList[2]->color = Color::Red;
+}
+
+//TODO: Tests
+std::string 
+Triangle::descr()
+{
+	auto node1 = edgeList[0]->leftNode;
+	auto node2 = edgeList[0]->rightNode;
+	auto node3 = edgeList[1]->rightNode;
+	if ( node3 == node1 || node3 == node2 )
+	{
+		node3 = edgeList[1]->leftNode;
+	}
+
+	return node1->descr() + ", " + node2->descr() + ", " + node3->descr();
+}
+
+//TODO: Tests
+void 
+Triangle::printMe()
+{
+	if ( inverted() )
+	{
+		std::cout << descr() + ", inverted";
+	}
+	else
+	{
+		std::cout << descr() + ", not inverted";
+	}
+
+}
+
+//TODO: Tests
+std::string 
+Triangle::toString()
+{
+	return descr();
 }

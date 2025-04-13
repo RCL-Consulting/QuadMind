@@ -16,9 +16,9 @@ class Element : public Constants
 {
 public:
 	template<typename T>
-	static bool instanceOf( const std::shared_ptr<T>& obj )
+	static bool instanceOf( const std::shared_ptr<Element>& obj )
 	{
-		return dynamic_cast<T*>(obj.get()) != nullptr;
+		return dynamic_pointer_cast<T>(obj) != nullptr;
 	}
 
 	/** An array of interior angles */
