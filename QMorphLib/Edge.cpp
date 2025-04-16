@@ -6,6 +6,9 @@
 
 #include "Numbers.h"
 #include "Msg.h"
+#include "Element.h"
+
+#include <iostream>
 
 std::array<ArrayList<std::shared_ptr<Edge>>, 3> Edge::stateList;
 
@@ -1600,8 +1603,97 @@ Edge::trueFrontNeighborAt( const std::shared_ptr<Node>& n )
 	return curEdge;*/
 }
 
+//TODO: Test
 std::string
 Edge::toString()
 {
 	return descr();
+}
+
+//TODO: Test
+void 
+Edge::markAllSelectable()
+{
+	std::for_each( stateList.begin(), stateList.end(), []( std::vector<std::shared_ptr<Edge>>& l )
+				   {
+					   std::for_each( l.begin(), l.end(), []( std::shared_ptr<Edge>& e )
+									  {
+										  e->selectable = true;
+									  } );
+				   } );
+}
+
+//TODO: Test
+void 
+Edge::printStateLists()
+{
+	if ( Msg::debugMode )
+	{
+		std::cout << "frontsInState 1-1:\n";
+		for ( auto edge : stateList[2] )
+		{
+			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")\n";
+		}
+
+		std::cout << "frontsInState 0-1 and 1-0:\n";
+		for ( auto edge : stateList[1] )
+		{
+			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")\n";
+		}
+
+		std::cout << "frontsInState 0-0:\n";
+		for ( auto edge : stateList[0] )
+		{
+			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")\n";
+		}
+	}
+}
+
+//TODO: Test
+bool 
+Edge::leftTo( const std::shared_ptr<Edge>& e )
+{
+	if ( (leftNode->x < e->leftNode->x) || (leftNode->x == e->leftNode->x && leftNode->y < e->leftNode->y) )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//TODO: Test
+bool 
+Edge::isFrontEdge()
+{
+	if ( (Element::instanceOf<Triangle>( element1 ) && !(Element::instanceOf<Triangle>( element2 ))) || (Element::instanceOf<Triangle>( element2 ) && !(Element::instanceOf<Triangle>( element1 ))) )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+	/*
+	 * if ((element1 instanceof Quad && element2 instanceof Quad) || (element1
+	 * instanceof Triangle && element2 instanceof Triangle)) return false; else
+	 * return true;
+	 */
+}
+
+//TODO: Test
+std::string
+Edge::descr()
+{
+	return "(" + std::to_string( leftNode->x ) + ", " + std::to_string( leftNode->y ) + "), (" + 
+		std::to_string( rightNode->x ) + ", " + std::to_string( rightNode->y ) + ")";
+}
+
+//TODO: Test
+void 
+Edge::printMe()
+{
+	std::cout << descr() << "\n";
 }

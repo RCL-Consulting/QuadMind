@@ -6,6 +6,10 @@ template< typename T >
 class ArrayList 
 {
 public:
+	void addAll( const ArrayList<T>& other )
+	{
+		mArray.insert( mArray.end(), other.mArray.begin(), other.mArray.end() );
+	}
 
 	void set( size_t Index, const T& Item )
 	{

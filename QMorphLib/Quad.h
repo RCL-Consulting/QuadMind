@@ -268,438 +268,68 @@ class Quad :
 	 */
 	std::shared_ptr<Node> centroid();
 
-	///**
-	// * @param n a node in this quad
-	// * @return the node on the opposite side of node n in the quad
-	// */
-	//public Node oppositeNode( Node n )
-	//{
-	//	// 2 out of 4 edges has Node n, so at least 1 out of 3 edge must have it, too:
-	//	Edge startEdge;
-	//	if ( edgeList[0].hasNode( n ) )
-	//	{
-	//		startEdge = edgeList[0];
-	//	}
-	//	else if ( edgeList[1].hasNode( n ) )
-	//	{
-	//		startEdge = edgeList[1];
-	//	}
-	//	else if ( edgeList[2].hasNode( n ) )
-	//	{
-	//		startEdge = edgeList[2];
-	//	}
-	//	else
-	//	{
-	//		return null; // Most likely, Node n is not part of this Quad.
-	//	}
+	/**
+	 * @param n a node in this quad
+	 * @return the node on the opposite side of node n in the quad
+	 */
+	std::shared_ptr<Node> oppositeNode( const std::shared_ptr<Node>& n );
 
-	//	Node n2 = startEdge.otherNode( n );
-	//	Edge e = neighborEdge( n2, startEdge );
-	//	return e.otherNode( n2 );
-	//}
+	/** @return the opposite Edge of Node n that is cw to the other opposite Edge */
+	std::shared_ptr<Edge> cwOppositeEdge( const std::shared_ptr<Node>& n );
 
-	///** @return the opposite Edge of Node n that is cw to the other opposite Edge */
-	//public Edge cwOppositeEdge( Node n )
-	//{
-	//	if ( n == edgeList[base].leftNode )
-	//	{
-	//		return edgeList[right];
-	//	}
-	//	else if ( n == edgeList[base].rightNode )
-	//	{
-	//		return edgeList[top];
-	//	}
-	//	else if ( n == edgeList[left].otherNode( edgeList[base].leftNode ) )
-	//	{
-	//		return edgeList[base];
-	//	}
-	//	else if ( n == edgeList[right].otherNode( edgeList[base].rightNode ) )
-	//	{
-	//		return edgeList[left];
-	//	}
-	//	else
-	//	{
-	//		return null;
-	//	}
-	//}
+	/**
+	 * @return the opposite Edge of Node n that is ccw to the other opposite Edge
+	 */
+	std::shared_ptr<Edge> ccwOppositeEdge( const std::shared_ptr<Node>& n );
 
-	///**
-	// * @return the opposite Edge of Node n that is ccw to the other opposite Edge
-	// */
-	//public Edge ccwOppositeEdge( Node n )
-	//{
-	//	if ( n == edgeList[base].leftNode )
-	//	{
-	//		return edgeList[top];
-	//	}
-	//	else if ( n == edgeList[base].rightNode )
-	//	{
-	//		return edgeList[left];
-	//	}
-	//	else if ( n == edgeList[left].otherNode( edgeList[base].leftNode ) )
-	//	{
-	//		return edgeList[right];
-	//	}
-	//	else if ( n == edgeList[right].otherNode( edgeList[base].rightNode ) )
-	//	{
-	//		return edgeList[base];
-	//	}
-	//	else
-	//	{
-	//		return null;
-	//	}
-	//}
+	std::shared_ptr<Edge> oppositeEdge( const std::shared_ptr<Edge>& e );
 
-	//public Edge oppositeEdge( Edge e )
-	//{
-	//	if ( e == edgeList[base] )
-	//	{
-	//		return edgeList[top];
-	//	}
-	//	else if ( e == edgeList[left] )
-	//	{
-	//		return edgeList[right];
-	//	}
-	//	else if ( e == edgeList[right] )
-	//	{
-	//		return edgeList[left];
-	//	}
-	//	else if ( e == edgeList[top] )
-	//	{
-	//		return edgeList[base];
-	//	}
-	//	else
-	//	{
-	//		return null;
-	//	}
-	//}
+	/**
+	 * Check to see if any of the neighboring quad elements have become inverted
+	 * NOTE 1: I might not need to check those elements that lies behind the front.
+	 */
+	bool invertedNeighbors();
 
-	///**
-	// * Check to see if any of the neighboring quad elements have become inverted
-	// * NOTE 1: I might not need to check those elements that lies behind the front.
-	// */
-	//public boolean invertedNeighbors()
-	//{
-	//	Node uLNode = edgeList[left].otherNode( edgeList[base].leftNode );
-	//	Node uRNode = edgeList[right].otherNode( edgeList[base].rightNode );
-	//	Element curElem;
-	//	Edge curEdge;
+	/** @return a list of all triangles adjacent to this quad. */
+	ArrayList<std::shared_ptr<Triangle>> getAdjTriangles();
 
-	//	// Parse all adjacent elements at upper left node from neigbor of left edge to,
-	//	// but not including, neighbor of top edge.
-	//	curElem = neighbor( edgeList[left] );
-	//	curEdge = edgeList[left];
-	//	while ( curElem != null && curEdge != edgeList[top] )
-	//	{
-	//		if ( curElem.inverted() )
-	//		{
-	//			return true;
-	//		}
-	//		curEdge = curElem.neighborEdge( uLNode, curEdge );
-	//		curElem = curElem.neighbor( curEdge );
-	//	}
+	/** @return a list of all nodes adjacent to this quad. */
+	ArrayList<std::shared_ptr<Node>> getAdjNodes();
 
-	//	// Parse all adjacent elements at upper right node from neigbor of top edge to,
-	//	// but not including, neighbor of right edge.
-	//	curElem = neighbor( edgeList[top] );
-	//	curEdge = edgeList[top];
-	//	while ( curElem != null && curEdge != edgeList[right] )
-	//	{
-	//		if ( curElem.inverted() )
-	//		{
-	//			return true;
-	//		}
-	//		curEdge = curElem.neighborEdge( uRNode, curEdge );
-	//		curElem = curElem.neighbor( curEdge );
-	//	}
+	void replaceEdge( const std::shared_ptr<Edge>& e, 
+					  const std::shared_ptr<Edge>& replacement ) override;
 
-	//	// Parse all adjacent elements at lower right node from neigbor of right edge
-	//	// to,
-	//	// but not including, neighbor of base edge.
-	//	curElem = neighbor( edgeList[right] );
-	//	curEdge = edgeList[right];
-	//	while ( curElem != null && curEdge != edgeList[base] )
-	//	{
-	//		if ( curElem.inverted() )
-	//		{
-	//			return true;
-	//		}
-	//		curEdge = curElem.neighborEdge( edgeList[base].rightNode, curEdge );
-	//		curElem = curElem.neighbor( curEdge );
-	//	}
+	/**
+	 * Make the Element pointers in each of the Edges in this Quad point to this
+	 * Quad.
+	 */
+	void connectEdges() override;
 
-	//	// Parse all adjacent elements at lower left node from neigbor of base edge to,
-	//	// but not including, neighbor of left edge.
-	//	curElem = neighbor( edgeList[base] );
-	//	curEdge = edgeList[base];
-	//	while ( curElem != null && curEdge != edgeList[left] )
-	//	{
-	//		if ( curElem.inverted() )
-	//		{
-	//			return true;
-	//		}
-	//		curEdge = curElem.neighborEdge( edgeList[base].leftNode, curEdge );
-	//		curElem = curElem.neighbor( curEdge );
-	//	}
-	//	return false;
-	//}
+	/**
+	 * Release the element pointer of the edges in edgeList that pointed to this
+	 * Quad.
+	 */
+	void disconnectEdges() override;
 
-	///** @return a list of all triangles adjacent to this quad. */
-	//public List<Triangle> getAdjTriangles()
-	//{
-	//	List<Triangle> triangleList;
-	//	Node uLNode = edgeList[left].otherNode( edgeList[base].leftNode );
-	//	Node uRNode = edgeList[right].otherNode( edgeList[base].rightNode );
-	//	Node bLNode = edgeList[base].leftNode;
-	//	Node bRNode = edgeList[base].rightNode;
+	/**
+	 * @return an Edge that is common to both this Quad and Quad q at Node n. Return
+	 *         null if none exists.
+	 */
+	std::shared_ptr<Edge> commonEdgeAt( const std::shared_ptr<Node>& n,
+										const std::shared_ptr<Quad>& q );
 
-	//	triangleList = bLNode.adjTriangles();
+	/**
+	 * @param q a neighbor quad sharing an edge with this quad.
+	 * @return an edge that is common to both this quad and quad q. Return null if
+	 *         none exists.
+	 */
+	std::shared_ptr<Edge> commonEdge( const std::shared_ptr<Quad>& q );
 
-	//	// Parse all adjacent elements at upper left node from, but not not including,
-	//	// neigbor of left edge to, but not including, neighbor of top edge.
-	//	Element curElem = neighbor( edgeList[left] );
-	//	Edge curEdge = edgeList[left];
-	//	if ( curElem != null )
-	//	{
-	//		curEdge = curElem.neighborEdge( uLNode, curEdge );
-	//		curElem = curElem.neighbor( curEdge );
-
-	//		while ( curElem != null && curEdge != edgeList[top] )
-	//		{
-	//			if ( curElem instanceof Triangle )
-	//			{
-	//				triangleList.add( (Triangle)curElem );
-	//			}
-	//			curEdge = curElem.neighborEdge( uLNode, curEdge );
-	//			curElem = curElem.neighbor( curEdge );
-	//		}
-	//	}
-	//	// Parse all adjacent elements at upper right node from neigbor of top edge to,
-	//	// but not including, neighbor of right edge.
-	//	curElem = neighbor( edgeList[top] );
-	//	curEdge = edgeList[top];
-	//	while ( curElem != null && curEdge != edgeList[right] )
-	//	{
-	//		if ( curElem instanceof Triangle && !triangleList.contains( curElem ) )
-	//		{
-	//			triangleList.add( (Triangle)curElem );
-	//		}
-	//		curEdge = curElem.neighborEdge( uRNode, curEdge );
-	//		curElem = curElem.neighbor( curEdge );
-	//	}
-
-	//	triangleList.addAll( bRNode.adjTriangles() );
-
-	//	return triangleList;
-	//}
-
-	///** @return a list of all nodes adjacent to this quad. */
-	//public List<Node> getAdjNodes()
-	//{
-	//	List<Node> nodeList = new ArrayList<>();
-	//	Edge e;
-	//	Node n;
-	//	Node bLNode = edgeList[base].leftNode;
-	//	Node bRNode = edgeList[base].rightNode;
-	//	Node uLNode = edgeList[left].otherNode( bLNode );
-
-	//	int i;
-
-	//	for ( i = 0; i < bLNode.edgeList.size(); i++ )
-	//	{
-	//		e = bLNode.edgeList.get( i );
-	//		if ( e != edgeList[base] && e != edgeList[left] && e != edgeList[right] && e != edgeList[top] )
-	//		{
-	//			nodeList.add( e.otherNode( bLNode ) );
-	//		}
-	//	}
-
-	//	for ( i = 0; i < bRNode.edgeList.size(); i++ )
-	//	{
-	//		e = bRNode.edgeList.get( i );
-	//		if ( e != edgeList[base] && e != edgeList[left] && e != edgeList[right] && e != edgeList[top] )
-	//		{
-	//			n = e.otherNode( bRNode );
-	//			if ( !nodeList.contains( n ) )
-	//			{
-	//				nodeList.add( n );
-	//			}
-	//		}
-	//	}
-
-	//	for ( i = 0; i < uLNode.edgeList.size(); i++ )
-	//	{
-	//		e = uLNode.edgeList.get( i );
-	//		if ( e != edgeList[base] && e != edgeList[left] && e != edgeList[right] && e != edgeList[top] )
-	//		{
-	//			n = e.otherNode( uLNode );
-	//			if ( !nodeList.contains( n ) )
-	//			{
-	//				nodeList.add( n );
-	//			}
-	//		}
-	//	}
-
-	//	if ( !isFake )
-	//	{
-	//		Node uRNode = edgeList[right].otherNode( bRNode );
-	//		for ( i = 0; i < uRNode.edgeList.size(); i++ )
-	//		{
-	//			e = uRNode.edgeList.get( i );
-	//			if ( e != edgeList[base] && e != edgeList[left] && e != edgeList[right] && e != edgeList[top] )
-	//			{
-	//				n = e.otherNode( uRNode );
-	//				if ( !nodeList.contains( n ) )
-	//				{
-	//					nodeList.add( n );
-	//				}
-	//			}
-	//		}
-	//	}
-	//	return nodeList;
-	//}
-
-	//@Override
-	//	public void replaceEdge( Edge e, Edge replacement )
-	//{
-	//	edgeList[indexOf( e )] = replacement;
-	//}
-
-	///**
-	// * Make the Element pointers in each of the Edges in this Quad point to this
-	// * Quad.
-	// */
-	//@Override
-	//	public void connectEdges()
-	//{
-	//	edgeList[base].connectToQuad( this );
-	//	edgeList[left].connectToQuad( this );
-	//	edgeList[right].connectToQuad( this );
-	//	if ( !isFake )
-	//	{
-	//		edgeList[top].connectToQuad( this );
-	//	}
-	//}
-
-	///**
-	// * Release the element pointer of the edges in edgeList that pointed to this
-	// * Quad.
-	// */
-	//@Override
-	//	public void disconnectEdges()
-	//{
-	//	edgeList[base].disconnectFromElement( this );
-	//	edgeList[left].disconnectFromElement( this );
-	//	edgeList[right].disconnectFromElement( this );
-	//	if ( !isFake )
-	//	{
-	//		edgeList[top].disconnectFromElement( this );
-	//	}
-	//}
-
-	///**
-	// * @return an Edge that is common to both this Quad and Quad q at Node n. Return
-	// *         null if none exists.
-	// */
-	//public Edge commonEdgeAt( Node n, Quad q )
-	//{
-	//	for ( Edge e : n.edgeList )
-	//	{
-	//		if ( hasEdge( e ) && q.hasEdge( e ) )
-	//		{
-	//			return e;
-	//		}
-	//	}
-	//	return null;
-	//}
-
-	///**
-	// * @param q a neighbor quad sharing an edge with this quad.
-	// * @return an edge that is common to both this quad and quad q. Return null if
-	// *         none exists.
-	// */
-	//public Edge commonEdge( Quad q )
-	//{
-	//	if ( q == neighbor( edgeList[base] ) )
-	//	{
-	//		return edgeList[base];
-	//	}
-	//	else if ( q == neighbor( edgeList[left] ) )
-	//	{
-	//		return edgeList[left];
-	//	}
-	//	else if ( q == neighbor( edgeList[right] ) )
-	//	{
-	//		return edgeList[right];
-	//	}
-	//	else if ( q == neighbor( edgeList[top] ) )
-	//	{
-	//		return edgeList[top];
-	//	}
-	//	else
-	//	{
-	//		return null;
-	//	}
-	//}
-
-	///**
-	// * @return true if at least one of the edges connected to node n is a front
-	// *         edge.
-	// */
-	//public boolean hasFrontEdgeAt( Node n )
-	//{
-	//	if ( edgeList[left].hasNode( n ) )
-	//	{
-	//		if ( edgeList[base].hasNode( n ) )
-	//		{
-	//			if ( edgeList[left].isFrontEdge() || edgeList[base].isFrontEdge() )
-	//			{
-	//				return true;
-	//			}
-	//			else
-	//			{
-	//				return false;
-	//			}
-	//		}
-	//		else if ( edgeList[top].hasNode( n ) )
-	//		{
-	//			if ( edgeList[left].isFrontEdge() || edgeList[top].isFrontEdge() )
-	//			{
-	//				return true;
-	//			}
-	//			else
-	//			{
-	//				return false;
-	//			}
-	//		}
-	//	}
-	//	else if ( edgeList[right].hasNode( n ) )
-	//	{
-	//		if ( edgeList[base].hasNode( n ) )
-	//		{
-	//			if ( edgeList[right].isFrontEdge() || edgeList[base].isFrontEdge() )
-	//			{
-	//				return true;
-	//			}
-	//			else
-	//			{
-	//				return false;
-	//			}
-	//		}
-	//		else if ( edgeList[top].hasNode( n ) )
-	//		{
-	//			if ( edgeList[right].isFrontEdge() || edgeList[top].isFrontEdge() )
-	//			{
-	//				return true;
-	//			}
-	//			else
-	//			{
-	//				return false;
-	//			}
-	//		}
-	//	}
-	//	return false;
-	//}
+	/**
+	 * @return true if at least one of the edges connected to node n is a front
+	 *         edge.
+	 */
+	bool hasFrontEdgeAt( const std::shared_ptr<Node>& n );
 
 	///**
 	// * @return the number of quad neighbors sharing an edge with this quad at node

@@ -606,7 +606,7 @@ Node::nrOfAdjTriangles()
 
 //TODO: Implement this method
 //TODO: Tests
-ArrayList<Triangle> 
+ArrayList<std::shared_ptr<Triangle>>
 Node::adjTriangles()
 {
 	return ArrayList<Triangle>();

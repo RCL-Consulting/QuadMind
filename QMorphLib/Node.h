@@ -118,7 +118,7 @@ public:
 	int nrOfAdjTriangles();
 
 	// Hmm. Should I include fake quads as well?
-	ArrayList<Triangle> adjTriangles();
+	ArrayList<std::shared_ptr<Triangle>> adjTriangles();
 
 	/**
 	 * Classic Laplacian smooth. Of course, to be run on internal nodes only.

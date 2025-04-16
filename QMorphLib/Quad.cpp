@@ -1623,6 +1623,7 @@ Quad::concavityAt( const std::shared_ptr<Node>& n )
 	}
 }
 
+//TODO: Test
 std::shared_ptr<Node>
 Quad::centroid()
 {
@@ -1666,4 +1667,430 @@ Quad::centroid()
 		}
 		return std::make_shared<Node>( x, y );
 	}
+}
+
+//TODO: Test
+std::shared_ptr<Node> 
+Quad::oppositeNode( const std::shared_ptr<Node>& n )
+{
+	// 2 out of 4 edges has Node n, so at least 1 out of 3 edge must have it, too:
+	std::shared_ptr<Edge> startEdge;
+	if ( edgeList[0]->hasNode( n ) )
+	{
+		startEdge = edgeList[0];
+	}
+	else if ( edgeList[1]->hasNode( n ) )
+	{
+		startEdge = edgeList[1];
+	}
+	else if ( edgeList[2]->hasNode( n ) )
+	{
+		startEdge = edgeList[2];
+	}
+	else
+	{
+		return nullptr; // Most likely, Node n is not part of this Quad.
+	}
+
+	auto n2 = startEdge->otherNode( n );
+	auto e = neighborEdge( n2, startEdge );
+	return e->otherNode( n2 );
+}
+
+//TODO: Test
+std::shared_ptr<Edge> 
+Quad::cwOppositeEdge( const std::shared_ptr<Node>& n )
+{
+	if ( n == edgeList[base]->leftNode )
+	{
+		return edgeList[right];
+	}
+	else if ( n == edgeList[base]->rightNode )
+	{
+		return edgeList[top];
+	}
+	else if ( n == edgeList[left]->otherNode( edgeList[base]->leftNode ) )
+	{
+		return edgeList[base];
+	}
+	else if ( n == edgeList[right]->otherNode( edgeList[base]->rightNode ) )
+	{
+		return edgeList[left];
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+//TODO: Test
+std::shared_ptr<Edge> 
+Quad::ccwOppositeEdge( const std::shared_ptr<Node>& n )
+{
+	if ( n == edgeList[base]->leftNode )
+	{
+		return edgeList[top];
+	}
+	else if ( n == edgeList[base]->rightNode )
+	{
+		return edgeList[left];
+	}
+	else if ( n == edgeList[left]->otherNode( edgeList[base]->leftNode ) )
+	{
+		return edgeList[right];
+	}
+	else if ( n == edgeList[right]->otherNode( edgeList[base]->rightNode ) )
+	{
+		return edgeList[base];
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+//TODO: Test
+std::shared_ptr<Edge>
+Quad::oppositeEdge( const std::shared_ptr<Edge>& e )
+{
+	if ( e == edgeList[base] )
+	{
+		return edgeList[top];
+	}
+	else if ( e == edgeList[left] )
+	{
+		return edgeList[right];
+	}
+	else if ( e == edgeList[right] )
+	{
+		return edgeList[left];
+	}
+	else if ( e == edgeList[top] )
+	{
+		return edgeList[base];
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+//TODO: Test
+bool 
+Quad::invertedNeighbors()
+{
+	auto uLNode = edgeList[left]->otherNode( edgeList[base]->leftNode );
+	auto uRNode = edgeList[right]->otherNode( edgeList[base]->rightNode );
+
+	// Parse all adjacent elements at upper left node from neigbor of left edge to,
+	// but not including, neighbor of top edge.
+	auto curElem = neighbor( edgeList[left] );
+	auto curEdge = edgeList[left];
+	while ( curElem != nullptr && curEdge != edgeList[top] )
+	{
+		if ( curElem->inverted() )
+		{
+			return true;
+		}
+		curEdge = curElem->neighborEdge( uLNode, curEdge );
+		curElem = curElem->neighbor( curEdge );
+	}
+
+	// Parse all adjacent elements at upper right node from neigbor of top edge to,
+	// but not including, neighbor of right edge.
+	curElem = neighbor( edgeList[top] );
+	curEdge = edgeList[top];
+	while ( curElem != nullptr && curEdge != edgeList[right] )
+	{
+		if ( curElem->inverted() )
+		{
+			return true;
+		}
+		curEdge = curElem->neighborEdge( uRNode, curEdge );
+		curElem = curElem->neighbor( curEdge );
+	}
+
+	// Parse all adjacent elements at lower right node from neigbor of right edge
+	// to,
+	// but not including, neighbor of base edge.
+	curElem = neighbor( edgeList[right] );
+	curEdge = edgeList[right];
+	while ( curElem != nullptr && curEdge != edgeList[base] )
+	{
+		if ( curElem->inverted() )
+		{
+			return true;
+		}
+		curEdge = curElem->neighborEdge( edgeList[base]->rightNode, curEdge );
+		curElem = curElem->neighbor( curEdge );
+	}
+
+	// Parse all adjacent elements at lower left node from neigbor of base edge to,
+	// but not including, neighbor of left edge.
+	curElem = neighbor( edgeList[base] );
+	curEdge = edgeList[base];
+	while ( curElem != nullptr && curEdge != edgeList[left] )
+	{
+		if ( curElem->inverted() )
+		{
+			return true;
+		}
+		curEdge = curElem->neighborEdge( edgeList[base]->leftNode, curEdge );
+		curElem = curElem->neighbor( curEdge );
+	}
+	return false;
+}
+
+//TODO: Test
+ArrayList<std::shared_ptr<Triangle>> 
+Quad::getAdjTriangles()
+{
+	ArrayList<std::shared_ptr<Triangle>> triangleList;
+	auto uLNode = edgeList[left]->otherNode( edgeList[base]->leftNode );
+	auto uRNode = edgeList[right]->otherNode( edgeList[base]->rightNode );
+	auto bLNode = edgeList[base]->leftNode;
+	auto bRNode = edgeList[base]->rightNode;
+
+	triangleList = bLNode->adjTriangles();
+
+	// Parse all adjacent elements at upper left node from, but not not including,
+	// neigbor of left edge to, but not including, neighbor of top edge.
+	auto curElem = neighbor( edgeList[left] );
+	auto curEdge = edgeList[left];
+	if ( curElem != nullptr )
+	{
+		curEdge = curElem->neighborEdge( uLNode, curEdge );
+		curElem = curElem->neighbor( curEdge );
+
+		while ( curElem != nullptr && curEdge != edgeList[top] )
+		{
+			if ( Element::instanceOf<Triangle>( curElem ) )
+			{
+				triangleList.add( std::dynamic_pointer_cast<Triangle>(curElem) );
+			}
+			curEdge = curElem->neighborEdge( uLNode, curEdge );
+			curElem = curElem->neighbor( curEdge );
+		}
+	}
+	// Parse all adjacent elements at upper right node from neigbor of top edge to,
+	// but not including, neighbor of right edge.
+	curElem = neighbor( edgeList[top] );
+	curEdge = edgeList[top];
+	while ( curElem != nullptr && curEdge != edgeList[right] )
+	{
+		auto Tri = std::dynamic_pointer_cast<Triangle>(curElem);
+		if ( Tri && !triangleList.contains( Tri ) )
+		{
+			triangleList.add( Tri );
+		}
+		curEdge = curElem->neighborEdge( uRNode, curEdge );
+		curElem = curElem->neighbor( curEdge );
+	}
+
+	triangleList.addAll( bRNode->adjTriangles() );
+
+	return triangleList;
+}
+
+//TODO: Test
+ArrayList<std::shared_ptr<Node>>
+Quad::getAdjNodes()
+{
+	ArrayList<std::shared_ptr<Node>> nodeList;
+	std::shared_ptr<Edge> e = nullptr;
+	std::shared_ptr<Node> n = nullptr;
+	auto bLNode = edgeList[base]->leftNode;
+	auto bRNode = edgeList[base]->rightNode;
+	auto uLNode = edgeList[left]->otherNode( bLNode );
+
+	int i;
+
+	for ( i = 0; i < bLNode->edgeList.size(); i++ )
+	{
+		e = bLNode->edgeList.get( i );
+		if ( e != edgeList[base] && e != edgeList[left] && e != edgeList[right] && e != edgeList[top] )
+		{
+			nodeList.add( e->otherNode( bLNode ) );
+		}
+	}
+
+	for ( i = 0; i < bRNode->edgeList.size(); i++ )
+	{
+		e = bRNode->edgeList.get( i );
+		if ( e != edgeList[base] && e != edgeList[left] && e != edgeList[right] && e != edgeList[top] )
+		{
+			n = e->otherNode( bRNode );
+			if ( !nodeList.contains( n ) )
+			{
+				nodeList.add( n );
+			}
+		}
+	}
+
+	for ( i = 0; i < uLNode->edgeList.size(); i++ )
+	{
+		e = uLNode->edgeList.get( i );
+		if ( e != edgeList[base] && e != edgeList[left] && e != edgeList[right] && e != edgeList[top] )
+		{
+			n = e->otherNode( uLNode );
+			if ( !nodeList.contains( n ) )
+			{
+				nodeList.add( n );
+			}
+		}
+	}
+
+	if ( !isFake )
+	{
+		auto uRNode = edgeList[right]->otherNode( bRNode );
+		for ( i = 0; i < uRNode->edgeList.size(); i++ )
+		{
+			e = uRNode->edgeList.get( i );
+			if ( e != edgeList[base] && e != edgeList[left] && e != edgeList[right] && e != edgeList[top] )
+			{
+				n = e->otherNode( uRNode );
+				if ( !nodeList.contains( n ) )
+				{
+					nodeList.add( n );
+				}
+			}
+		}
+	}
+	return nodeList;
+}
+
+//TODO: Test
+void 
+Quad::replaceEdge( const std::shared_ptr<Edge>& e,
+				   const std::shared_ptr<Edge>& replacement )
+{
+	edgeList[indexOf( e )] = replacement;
+}
+
+//TODO: Test
+void
+Quad::connectEdges()
+{
+	auto pThis = shared_from_this();
+	edgeList[base]->connectToQuad( pThis );
+	edgeList[left]->connectToQuad( pThis );
+	edgeList[right]->connectToQuad( pThis );
+	if ( !isFake )
+	{
+		edgeList[top]->connectToQuad( pThis );
+	}
+}
+
+//TODO: Test
+void 
+Quad::disconnectEdges()
+{
+	auto pThis = shared_from_this();
+	edgeList[base]->disconnectFromElement( pThis );
+	edgeList[left]->disconnectFromElement( pThis );
+	edgeList[right]->disconnectFromElement( pThis );
+	if ( !isFake )
+	{
+		edgeList[top]->disconnectFromElement( pThis );
+	}
+}
+
+//TODO: Test
+std::shared_ptr<Edge> 
+Quad::commonEdgeAt( const std::shared_ptr<Node>& n,
+					const std::shared_ptr<Quad>& q )
+{
+	for ( auto e : n->edgeList )
+	{
+		if ( hasEdge( e ) && q->hasEdge( e ) )
+		{
+			return e;
+		}
+	}
+	return nullptr;
+}
+
+//TODO: Test
+std::shared_ptr<Edge> 
+Quad::commonEdge( const std::shared_ptr<Quad>& q )
+{
+	if ( q == neighbor( edgeList[base] ) )
+	{
+		return edgeList[base];
+	}
+	else if ( q == neighbor( edgeList[left] ) )
+	{
+		return edgeList[left];
+	}
+	else if ( q == neighbor( edgeList[right] ) )
+	{
+		return edgeList[right];
+	}
+	else if ( q == neighbor( edgeList[top] ) )
+	{
+		return edgeList[top];
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+//TODO: Implement
+//TODO: Test
+bool
+Quad::hasFrontEdgeAt( const std::shared_ptr<Node>& n )
+{
+	return false;
+	/*if ( edgeList[left]->hasNode(n) )
+	{
+		if ( edgeList[base]->hasNode( n ) )
+		{
+			if ( edgeList[left]->isFrontEdge() || edgeList[base]->isFrontEdge() )
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if ( edgeList[top].hasNode( n ) )
+		{
+			if ( edgeList[left].isFrontEdge() || edgeList[top].isFrontEdge() )
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	else if ( edgeList[right].hasNode( n ) )
+	{
+		if ( edgeList[base].hasNode( n ) )
+		{
+			if ( edgeList[right].isFrontEdge() || edgeList[base].isFrontEdge() )
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if ( edgeList[top].hasNode( n ) )
+		{
+			if ( edgeList[right].isFrontEdge() || edgeList[top].isFrontEdge() )
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	return false*/
 }

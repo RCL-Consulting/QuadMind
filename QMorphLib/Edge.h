@@ -89,135 +89,19 @@ public:
 	// longest - shortest length ratio > 2.5, and the candidate edge is not in
 	// state 1-1, then the shorter edge is selected.
 	static std::shared_ptr<Edge> getNextFront();
-	//{
-	//	Edge current, selected = null;
-	//	int selState, curState = 2, i;
+	
+	static void markAllSelectable();
 
-	//	// Select a front preferrably in stateList[2]
+	static void printStateLists();
 
-	//	while ( curState >= 0 && selected == null )
-	//	{
-	//		for ( i = 0; i < stateList.get( curState ).size(); i++ )
-	//		{
-	//			current = stateList.get( curState ).get( i );
-	//			if ( current.selectable )
-	//			{
-	//				selected = current;
-	//				break;
-	//			}
-	//		}
-	//		curState--;
-	//	}
-	//	if ( selected == null )
-	//	{
-	//		Msg.warning( "getNextFront(): no selectable fronts found in stateLists." );
-	//		return null;
-	//	}
+	// If e.leftNode is leftmore than this.leftNode, return true, else false
+	bool leftTo( const std::shared_ptr<Edge>& e );
 
-	//	selState = selected.getState();
+	bool isFrontEdge();
 
-	//	for ( i = 0; i < stateList.get( selState ).size(); i++ )
-	//	{
-	//		current = stateList.get( selState ).get( i );
+	std::string descr();
 
-	//		if ( current.selectable && (current.level < selected.level || (current.level == selected.level && current.length() < selected.length())) )
-	//		{
-	//			selected = current;
-	//		}
-	//	}
-
-	//	if ( selState != 2 )
-	//	{
-	//		if ( selected.isLargeTransition( selected.leftFrontNeighbor ) )
-	//		{
-	//			if ( selected.length() > selected.leftFrontNeighbor.length() && selected.leftFrontNeighbor.selectable )
-	//			{
-	//				return selected.leftFrontNeighbor;
-	//			}
-	//		}
-
-	//		if ( selected.isLargeTransition( selected.rightFrontNeighbor ) )
-	//		{
-	//			if ( selected.length() > selected.rightFrontNeighbor.length() && selected.rightFrontNeighbor.selectable )
-	//			{
-	//				return selected.rightFrontNeighbor;
-	//			}
-	//		}
-	//	}
-	//	return selected;
-	//}
-
-	//public static void markAllSelectable()
-	//{
-	//	stateList.forEach( l -> {
-	//		l.forEach( e -> {
-	//			e.selectable = true;
-	//		} );
-	//	} );
-	//}
-
-	//public static void printStateLists()
-	//{
-	//	if ( Msg.debugMode )
-	//	{
-	//		System.out.println( "frontsInState 1-1:" );
-	//		for ( Edge edge : stateList.get( 2 ) )
-	//		{
-	//			System.out.println( "" + edge.descr() + ", (" + edge.getState() + ")" );
-	//		}
-	//		System.out.println( "frontsInState 0-1 and 1-0:" );
-	//		for ( Edge edge : stateList.get( 1 ) )
-	//		{
-	//			System.out.println( "" + edge.descr() + ", (" + edge.getState() + ")" );
-	//		}
-	//		System.out.println( "frontsInState 0-0:" );
-	//		for ( Edge edge : stateList.get( 0 ) )
-	//		{
-	//			System.out.println( "" + edge.descr() + ", (" + edge.getState() + ")" );
-	//		}
-	//	}
-	//}
-
-	//// If e.leftNode is leftmore than this.leftNode, return true, else false
-	//public boolean leftTo( Edge e )
-	//{
-	//	if ( (leftNode.x < e.leftNode.x) || (leftNode.x == e.leftNode.x && leftNode.y < e.leftNode.y) )
-	//	{
-	//		return true;
-	//	}
-	//	else
-	//	{
-	//		return false;
-	//	}
-	//}
-
-	//public boolean isFrontEdge()
-	//{
-	//	if ( (element1 instanceof Triangle && !(element2 instanceof Triangle)) || (element2 instanceof Triangle && !(element1 instanceof Triangle)) )
-	//	{
-	//		return true;
-	//	}
-	//	else
-	//	{
-	//		return false;
-	//	}
-
-	//	/*
-	//	 * if ((element1 instanceof Quad && element2 instanceof Quad) || (element1
-	//	 * instanceof Triangle && element2 instanceof Triangle)) return false; else
-	//	 * return true;
-	//	 */
-	//}
-
-std::string descr();
-	//{
-	//	return "(" + leftNode.x + ", " + leftNode.y + "), (" + rightNode.x + ", " + rightNode.y + ")";
-	//}
-
-	//public void printMe()
-	//{
-	//	System.out.println( descr() );
-	//}
+	void printMe();
 
 	double length()	{ return len; }
 
@@ -243,12 +127,6 @@ std::string descr();
 
 	// Return the midpoint (represented by a new Node) of this edge:
 	std::shared_ptr<Node> midPoint();
-	//{
-	//	double xDiff = rightNode.x - leftNode.x;
-	//	double yDiff = rightNode.y - leftNode.y;
-
-	//	return new Node( leftNode.x + xDiff * 0.5, leftNode.y + yDiff * 0.5 );
-	//}
 
 	double computeLength();
 
