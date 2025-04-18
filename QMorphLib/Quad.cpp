@@ -8,6 +8,8 @@
 
 #include "Msg.h"
 
+#include <iostream>
+
 //TODO: Test
 Quad::Quad( const std::shared_ptr<Edge>& baseEdge,
 			const std::shared_ptr<Edge>& leftEdge,
@@ -2036,13 +2038,11 @@ Quad::commonEdge( const std::shared_ptr<Quad>& q )
 	}
 }
 
-//TODO: Implement
 //TODO: Test
 bool
 Quad::hasFrontEdgeAt( const std::shared_ptr<Node>& n )
 {
-	return false;
-	/*if ( edgeList[left]->hasNode(n) )
+	if ( edgeList[left]->hasNode(n) )
 	{
 		if ( edgeList[base]->hasNode( n ) )
 		{
@@ -2055,9 +2055,9 @@ Quad::hasFrontEdgeAt( const std::shared_ptr<Node>& n )
 				return false;
 			}
 		}
-		else if ( edgeList[top].hasNode( n ) )
+		else if ( edgeList[top]->hasNode( n ) )
 		{
-			if ( edgeList[left].isFrontEdge() || edgeList[top].isFrontEdge() )
+			if ( edgeList[left]->isFrontEdge() || edgeList[top]->isFrontEdge() )
 			{
 				return true;
 			}
@@ -2067,11 +2067,11 @@ Quad::hasFrontEdgeAt( const std::shared_ptr<Node>& n )
 			}
 		}
 	}
-	else if ( edgeList[right].hasNode( n ) )
+	else if ( edgeList[right]->hasNode( n ) )
 	{
-		if ( edgeList[base].hasNode( n ) )
+		if ( edgeList[base]->hasNode( n ) )
 		{
-			if ( edgeList[right].isFrontEdge() || edgeList[base].isFrontEdge() )
+			if ( edgeList[right]->isFrontEdge() || edgeList[base]->isFrontEdge() )
 			{
 				return true;
 			}
@@ -2080,9 +2080,9 @@ Quad::hasFrontEdgeAt( const std::shared_ptr<Node>& n )
 				return false;
 			}
 		}
-		else if ( edgeList[top].hasNode( n ) )
+		else if ( edgeList[top]->hasNode( n ) )
 		{
-			if ( edgeList[right].isFrontEdge() || edgeList[top].isFrontEdge() )
+			if ( edgeList[right]->isFrontEdge() || edgeList[top]->isFrontEdge() )
 			{
 				return true;
 			}
@@ -2092,5 +2092,350 @@ Quad::hasFrontEdgeAt( const std::shared_ptr<Node>& n )
 			}
 		}
 	}
-	return false*/
+	return false;
+}
+
+//TODO: Test
+int 
+Quad::nrOfQuadsSharingAnEdgeAt( const std::shared_ptr<Node>& n )
+{
+	int count = 0;
+
+	if ( edgeList[left]->hasNode( n ) )
+	{
+		if ( Element::instanceOf<Quad>( neighbor( edgeList[left] ) ) )
+		{
+			count++;
+		}
+		if ( edgeList[base]->hasNode( n ) )
+		{
+			if ( Element::instanceOf<Quad>( neighbor( edgeList[base] ) ) )
+			{
+				count++;
+			}
+		}
+		else if ( Element::instanceOf<Quad>( neighbor( edgeList[top] ) ) )
+		{
+			count++;
+		}
+		return count;
+	}
+	else if ( edgeList[right]->hasNode( n ) )
+	{
+		if ( Element::instanceOf<Quad>( neighbor( edgeList[right] ) ) )
+		{
+			count++;
+		}
+		if ( edgeList[base]->hasNode( n ) )
+		{
+			if ( Element::instanceOf<Quad>( neighbor( edgeList[base] ) ) )
+			{
+				count++;
+			}
+		}
+		else if ( Element::instanceOf<Quad>( neighbor( edgeList[top] ) ) )
+		{
+			count++;
+		}
+
+		return count;
+	}
+	return count;
+}
+
+//TODO: Test
+void 
+Quad::updateDistortionMetric()
+{
+	Msg::debug("Entering Quad.updateDistortionMetric()");
+
+	if ( isFake )
+	{
+		double AB = edgeList[base]->len, CB = edgeList[left]->len, CA = edgeList[right]->len;
+
+		auto a = edgeList[base]->commonNode( edgeList[right] ), b = edgeList[base]->commonNode( edgeList[left] ), c = edgeList[left]->commonNode( edgeList[right] );
+		MyVector vCA( c, a ), vCB( c, b );
+
+		double temp = sqrt3x2 * std::abs( vCA.cross( vCB ) ) / (CA * CA + AB * AB + CB * CB);
+		if ( inverted() )
+		{
+			distortionMetric = -temp;
+		}
+		else
+		{
+			distortionMetric = temp;
+		}
+
+		Msg::debug( "Leaving Quad.updateDistortionMetric(): " + std::to_string(distortionMetric) );
+		return;
+	}
+
+	auto n1 = edgeList[base]->leftNode;
+	auto n2 = edgeList[base]->rightNode;
+	auto n3 = edgeList[left]->otherNode( n1 );
+	auto n4 = edgeList[right]->otherNode( n2 );
+
+	// The two diagonals
+	auto e1 = std::make_shared<Edge>( n1, n4 );
+	auto e2 = std::make_shared<Edge>( n2, n3 );
+
+	// The four triangles
+	auto t1 = std::make_shared<Triangle>( edgeList[base], edgeList[left], e2 );
+	auto t2 = std::make_shared<Triangle>( edgeList[base], e1, edgeList[right] );
+	auto t3 = std::make_shared<Triangle>( edgeList[top], edgeList[right], e2 );
+	auto t4 = std::make_shared<Triangle>( edgeList[top], e1, edgeList[left] );
+
+	// Place the firstNodes correctly
+	t1->firstNode = firstNode;
+	if ( firstNode == n1 )
+	{
+		t2->firstNode = n1;
+		t3->firstNode = n4;
+		t4->firstNode = n4;
+	}
+	else
+	{
+		t2->firstNode = n2;
+		t3->firstNode = n3;
+		t4->firstNode = n3;
+	}
+
+	// Compute and get alpha values for each triangle
+	t1->updateDistortionMetric( 4.0 );
+	t2->updateDistortionMetric( 4.0 );
+	t3->updateDistortionMetric( 4.0 );
+	t4->updateDistortionMetric( 4.0 );
+
+	double alpha1 = t1->distortionMetric, alpha2 = t2->distortionMetric, alpha3 = t3->distortionMetric, alpha4 = t4->distortionMetric;
+
+	int invCount = 0;
+	if ( alpha1 < 0 )
+	{
+		invCount++;
+	}
+	if ( alpha2 < 0 )
+	{
+		invCount++;
+	}
+	if ( alpha3 < 0 )
+	{
+		invCount++;
+	}
+	if ( alpha4 < 0 )
+	{
+		invCount++;
+	}
+
+	double temp12 = std::min( alpha1, alpha2 );
+	double temp34 = std::min( alpha3, alpha4 );
+	double alphaMin = std::min( temp12, temp34 );
+	double negval = 0;
+
+	if ( invCount >= 3 )
+	{
+		if ( invCount == 3 )
+		{
+			negval = 2.0;
+		}
+		else
+		{
+			negval = 3.0;
+		}
+	}
+	else if ( ang[0] < DEG_6 || ang[1] < DEG_6 || ang[2] < DEG_6 || ang[3] < DEG_6 || coincidentNodes( n1, n2, n3, n4 ) || invCount == 2 )
+	{
+		negval = 1.0;
+	}
+
+	distortionMetric = alphaMin - negval;
+	Msg::debug( "Leaving Quad.updateDistortionMetric(): " + std::to_string( distortionMetric ) );
+}
+
+//TODO: Test
+bool
+Quad::coincidentNodes( const std::shared_ptr<Node>& n1,
+					   const std::shared_ptr<Node>& n2,
+					   const std::shared_ptr<Node>& n3,
+					   const std::shared_ptr<Node>& n4 )
+{
+	Msg::debug( "Entering Quad.coincidentNodes(..)" );
+	double x12diff = n2->x - n1->x;
+	double y12diff = n2->y - n1->y;
+	double x13diff = n3->x - n1->x;
+	double y13diff = n3->y - n1->y;
+	double x14diff = n4->x - n1->x;
+	double y14diff = n4->y - n1->y;
+
+	double x23diff = n3->x - n2->x;
+	double y23diff = n3->y - n2->y;
+	double x24diff = n4->x - n2->x;
+	double y24diff = n4->y - n2->y;
+
+	double x34diff = n4->x - n3->x;
+	double y34diff = n4->y - n3->y;
+
+	// Using Pythagoras: hyp^2= kat1^2 + kat2^2
+	double l12 = std::sqrt( x12diff * x12diff + y12diff * y12diff );
+	double l13 = std::sqrt( x13diff * x13diff + y13diff * y13diff );
+	double l14 = std::sqrt( x14diff * x14diff + y14diff * y14diff );
+	double l23 = std::sqrt( x23diff * x23diff + y23diff * y23diff );
+	double l24 = std::sqrt( x24diff * x24diff + y24diff * y24diff );
+	double l34 = std::sqrt( x34diff * x34diff + y34diff * y34diff );
+
+	if ( l12 < COINCTOL || l13 < COINCTOL || l14 < COINCTOL || l23 < COINCTOL || l24 < COINCTOL || l34 < COINCTOL )
+	{
+		Msg::debug( "Leaving Quad.coincidentNodes(..), returning true" );
+		return true;
+	}
+	else
+	{
+		Msg::debug( "Leaving Quad.coincidentNodes(..), returning false" );
+		return false;
+	}
+}
+
+//TODO: Test
+double 
+Quad::largestAngle()
+{
+	double cand = ang[0];
+	if ( ang[1] > cand )
+	{
+		cand = ang[1];
+	}
+	if ( ang[2] > cand )
+	{
+		cand = ang[2];
+	}
+	if ( ang[3] > cand )
+	{
+		cand = ang[3];
+	}
+	return cand;
+}
+
+//TODO: Test
+std::shared_ptr<Node> 
+Quad::nodeAtLargestAngle()
+{
+	auto candNode = edgeList[base]->leftNode;
+	double cand = ang[0];
+
+	if ( ang[1] > cand )
+	{
+		candNode = edgeList[base]->rightNode;
+		cand = ang[1];
+	}
+	if ( ang[2] > cand )
+	{
+		candNode = edgeList[left]->otherNode( edgeList[base]->leftNode );
+		cand = ang[2];
+	}
+	if ( ang[3] > cand )
+	{
+		candNode = edgeList[right]->otherNode( edgeList[base]->rightNode );
+	}
+	return candNode;
+}
+
+//TODO: Test
+double 
+Quad::longestEdgeLength()
+{
+	double t1 = std::max( edgeList[base]->len, edgeList[left]->len );
+	double t2 = std::max( t1, edgeList[right]->len );
+	return std::max( t2, edgeList[top]->len );
+}
+
+//TODO: Test
+ArrayList<std::shared_ptr<Triangle>>
+Quad::trianglesContained( const std::shared_ptr<Triangle>& first )
+{
+	Msg::debug( "Entering trianglesContained(..)" );
+	ArrayList<std::shared_ptr<Triangle>> tris;
+
+	tris.add( first );
+	for ( int j = 0; j < tris.size(); j++ )
+	{
+		auto cur = std::dynamic_pointer_cast<Triangle>( tris.get( j ) );
+		Msg::debug( "...parsing triangle " + cur->descr() );
+
+		for ( int i = 0; i < 3; i++ )
+		{
+			auto e = cur->edgeList[i];
+			if ( !hasEdge( e ) )
+			{
+				auto neighbor = std::dynamic_pointer_cast<Triangle>( cur->neighbor( e ) );
+				if ( neighbor != nullptr && !tris.contains( neighbor ) )
+				{
+					tris.add( neighbor );
+				}
+			}
+		}
+	}
+	Msg::debug( "Leaving trianglesContained(..)" );
+	return tris;
+}
+
+//TODO: Test
+bool
+Quad::containsHole( const ArrayList<std::shared_ptr<Element>>& tris )
+{
+	if ( tris.size() == 0 )
+	{
+		return true; // Corresponds to a quad defined on a quad-shaped hole
+	}
+
+	for ( const auto& element : tris )
+	{
+		if ( auto t = std::dynamic_pointer_cast<Triangle>(element) )
+		{
+			if ( t->edgeList[0]->boundaryEdge() && !hasEdge( t->edgeList[0] ) || t->edgeList[1]->boundaryEdge() && !hasEdge( t->edgeList[1] )
+				 || t->edgeList[2]->boundaryEdge() && !hasEdge( t->edgeList[2] ) )
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+//TODO: Test
+void
+Quad::markEdgesLegal() 
+{
+	edgeList[base]->color = Color::Green;
+	edgeList[left]->color = Color::Green;
+	edgeList[right]->color = Color::Green;
+	edgeList[top]->color = Color::Green;
+}
+
+//TODO: Test
+void
+Quad::markEdgesIllegal()
+{
+	edgeList[base]->color = Color::Red;
+	edgeList[left]->color = Color::Red;
+	edgeList[right]->color = Color::Red;
+	edgeList[top]->color = Color::Red;
+}
+
+std::string 
+Quad::descr()
+{
+	auto node1 = edgeList[base]->leftNode;
+	auto node2 = edgeList[base]->rightNode;
+	auto node3 = edgeList[left]->otherNode( node1 );
+	auto node4 = edgeList[right]->otherNode( node2 );
+
+	return node1->descr() + ", " + node2->descr() + ", " + node3->descr() + ", " + node4->descr();
+}
+
+void
+Quad::printMe()
+{
+	std::cout << 
+		descr() << ", inverted(): " << inverted() << ", ang[0]: " << std::to_string( toDegrees * ang[0] ) <<
+		", ang[1]: " << std::to_string( toDegrees * ang[1] ) << ", ang[2]: " << std::to_string( toDegrees * ang[2] ) <<
+		", ang[3]: " << std::to_string( toDegrees * ang[3] ) << ", firstNode is " << firstNode->descr() << "/n";
 }
