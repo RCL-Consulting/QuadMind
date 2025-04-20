@@ -4,6 +4,11 @@
 #include "Edge.h"
 #include "Triangle.h"
 #include "MyVector.h"
+#include "Types.h"
+#include "Msg.h"
+#include "Ray.h"
+
+#include "Numbers.h"
 
 #include <iostream>
 
@@ -54,143 +59,134 @@ Node::update()
 	updateAngles();
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void
 Node::updateEdgeLengths()
 {
-	/*for ( Edge e : edgeList )
+	for ( auto e : edgeList )
 	{
-		e.len = e.computeLength();
-	}*/
+		e->len = e->computeLength();
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void 
 Node::updateAngles()
 {
-	/*Msg.debug("Entering Node.updateAngles()");
-	Edge e, ne;
-	Node other1, other2;
-	Quad q;
-	ArrayList<Element> list = new ArrayList<>();
+	Msg::debug("Entering Node.updateAngles()");
+	ArrayList<std::shared_ptr<Element>> list;
 
-	for ( Edge element : edgeList )
+	for ( auto element : edgeList )
 	{
-		e = element;
-		Msg.debug( "...e: " + e.descr() );
-		if ( !list.contains( e.element1 ) )
+		auto e = element;
+		Msg::debug( "...e: " + e->descr() );
+		if ( !list.contains( e->element1 ) )
 		{
-			Msg.debug( "...e.element1: " + e.element1.descr() );
-			list.add( e.element1 );
-			ne = e.element1.neighborEdge( this, e );
-			Msg.debug( "...getting other1:  (elem1)" );
-			other1 = e.otherNode( this );
-			Msg.debug( "...getting other2:  (elem1)" );
+			Msg::debug( "...e.element1: " + e->element1->descr() );
+			list.add( e->element1 );
+			auto ne = e->element1->neighborEdge( shared_from_this(), e);
+			Msg::debug( "...getting other1:  (elem1)" );
+			auto other1 = e->otherNode( shared_from_this() );
+			Msg::debug( "...getting other2:  (elem1)" );
 
-			other2 = ne.otherNode( this );
+			auto other2 = ne->otherNode( shared_from_this() );
 
-			if ( e.element1 instanceof Triangle )
+			if ( rcl::instanceOf<Triangle>( e->element1 ) )
 			{
-				e.element1.updateAngles();
+				e->element1->updateAngles();
 			}
 			else
 			{
-				q = (Quad)e.element1;
-				q.updateAnglesExcept( q.oppositeNode( this ) );
+				auto q = std::dynamic_pointer_cast<Quad>(e->element1);
+				q->updateAnglesExcept( q->oppositeNode( shared_from_this() ) );
 			}
 		}
-		if ( e.element2 != null && !list.contains( e.element2 ) )
+		if ( e->element2 != nullptr && !list.contains( e->element2 ) )
 		{
-			list.add( e.element2 );
-			ne = e.element2.neighborEdge( this, e );
-			Msg.debug( "...getting other1:  (elem2)" );
-			other1 = e.otherNode( this );
-			Msg.debug( "...getting other2:  (elem2)" );
+			list.add( e->element2 );
+			auto ne = e->element2->neighborEdge( shared_from_this(), e);
+			Msg::debug( "...getting other1:  (elem2)" );
+			auto other1 = e->otherNode( shared_from_this() );
+			Msg::debug( "...getting other2:  (elem2)" );
 
-			other2 = ne.otherNode( this );
+			auto other2 = ne->otherNode( shared_from_this() );
 
-			if ( e.element2 instanceof Triangle )
+			if ( rcl::instanceOf<Triangle>( e->element2 ) )
 			{
-				e.element2.updateAngles();
+				e->element2->updateAngles();
 			}
 			else
 			{
-				q = (Quad)e.element2;
-				q.updateAnglesExcept( q.oppositeNode( this ) );
+				auto q = std::dynamic_pointer_cast<Quad>(e->element2);
+				q->updateAnglesExcept( q->oppositeNode( shared_from_this() ) );
 			}
 		}
 	}
-	Msg.debug( "Leaving Node.updateAngles()" );*/
+	Msg::debug( "Leaving Node.updateAngles()" );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void 
 Node::updateLRinEdgeList()
 {
-	/*boolean btemp;
-	Edge temp;
-	Node node;
-	Quad q;
-	for ( Edge e : edgeList )
+	bool btemp;
+	for ( auto e : edgeList )
 	{
-		if ( (e.leftNode.x > e.rightNode.x) || (e.leftNode.x == e.rightNode.x && e.leftNode.y < e.rightNode.y) )
+		if ( (e->leftNode->x > e->rightNode->x) || (e->leftNode->x == e->rightNode->x && e->leftNode->y < e->rightNode->y) )
 		{
-			node = e.leftNode;
-			e.leftNode = e.rightNode;
-			e.rightNode = node;
+			auto node = e->leftNode;
+			e->leftNode = e->rightNode;
+			e->rightNode = node;
 
-			if ( e.frontEdge )
+			if ( e->frontEdge )
 			{
-				temp = e.leftFrontNeighbor;
-				e.leftFrontNeighbor = e.rightFrontNeighbor;
-				e.rightFrontNeighbor = temp;
-				btemp = e.leftSide;
-				e.leftSide = e.rightSide;
-				e.rightSide = btemp;
+				auto temp = e->leftFrontNeighbor;
+				e->leftFrontNeighbor = e->rightFrontNeighbor;
+				e->rightFrontNeighbor = temp;
+				btemp = e->leftSide;
+				e->leftSide = e->rightSide;
+				e->rightSide = btemp;
 			}
 
-			if ( e.element1 instanceof Quad )
+			if ( rcl::instanceOf<Quad>( e->element1 ) )
 			{
-				q = (Quad)e.element1;
-				if ( e == q.edgeList[base] )
+				auto q = std::dynamic_pointer_cast<Quad>(e->element1);
+				if ( e == q->edgeList[base] )
 				{
-					q.updateLR();
+					q->updateLR();
 				}
 			}
 
-			if ( e.element2 instanceof Quad )
+			if ( rcl::instanceOf<Quad>( e->element2 ) )
 			{
-				q = (Quad)e.element2;
-				if ( e == q.edgeList[base] )
+				auto q = std::dynamic_pointer_cast<Quad>(e->element2);
+				if ( e == q->edgeList[base] )
 				{
-					q.updateLR();
+					q->updateLR();
 				}
 			}
 		}
-	}*/
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
-void moveToPos( double x, double y )
+void 
+Node::moveToPos( double x, double y )
 {
-	/*this.x = x;
-	this.y = y;
+	this->x = x;
+	this->y = y;
 
-	updateLRinEdgeList();*/
+	updateLRinEdgeList();
 }
 
-//TODO: Implement this method
 //TODO: Tests
-void moveTo( const Node& n )
+void
+Node::moveTo( const Node& n )
 {
-	/*x = n.x;
+	x = n.x;
 	y = n.y;
 
-	updateLRinEdgeList();*/
+	updateLRinEdgeList();
 }
 
 double 
@@ -208,24 +204,22 @@ Node::connectToEdge( const std::shared_ptr<Edge>& edge )
 	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
-ArrayList<std::shared_ptr<MyVector>> ccwSortedVectorList()
+ArrayList<std::shared_ptr<MyVector>>
+Node::ccwSortedVectorList()
 {
-	return ArrayList<std::shared_ptr<MyVector>>();
-	/*Element elem, start;
-	MyVector v, v0, v1;
-	Edge e;
-	ArrayList<MyVector> boundaryVectors = new ArrayList<>();
-	ArrayList<MyVector> vectors = new ArrayList<>();
-	double ang;
-	for ( Edge element : edgeList )
+	std::shared_ptr<MyVector> v, v0, v1;
+	std::shared_ptr<Element> elem;
+	ArrayList<std::shared_ptr<MyVector>> boundaryVectors;
+	ArrayList<std::shared_ptr<MyVector>> vectors;
+	
+	for ( auto element : edgeList )
 	{
-		e = element;
-		v = e.getVector( this );
-		v.edge = e;
+		auto e = element;
+		v = std::make_shared<MyVector>(e->getVector( shared_from_this() ));
+		v->edge = e;
 
-		if ( e.boundaryEdge() )
+		if ( e->boundaryEdge() )
 		{
 			boundaryVectors.add( v );
 		}
@@ -243,99 +237,97 @@ ArrayList<std::shared_ptr<MyVector>> ccwSortedVectorList()
 
 	if ( boundaryVectors.size() > 0 )
 	{ // this size is always 0 or 2
-		Msg.debug( "...boundaryVectors yeah!" );
+		Msg::debug( "...boundaryVectors yeah!" );
 		v0 = boundaryVectors.get( 0 );
 		v1 = boundaryVectors.get( 1 );
 
-		elem = v0.edge.element1;
-		e = elem.neighborEdge( this, v0.edge );
-		v = e.getVector( this );
-		v.edge = e;
+		elem = v0->edge->element1;
+		auto e = elem->neighborEdge( shared_from_this(), v0->edge);
+		v = std::make_shared<MyVector>( e->getVector( shared_from_this() ) );
+		v->edge = e;
 
-		if ( v0.isCWto( v ) )
+		if ( v0->isCWto( *v ) )
 		{
-			if ( elem.concavityAt( this ) )
+			if ( elem->concavityAt( shared_from_this() ) )
 			{
 				v0 = v1;
-				elem = v1.edge.element1;
+				elem = v1->edge->element1;
 			}
 		}
-		else if ( !elem.concavityAt( this ) )
+		else if ( !elem->concavityAt( shared_from_this() ) )
 		{
 			v0 = v1;
-			elem = v1.edge.element1;
+			elem = v1->edge->element1;
 		}
 	}
 	else
 	{
-		Msg.debug( "...boundaryVectors noooo!" );
+		Msg::debug( "...boundaryVectors noooo!" );
 		v0 = vectors.get( 0 );
-		elem = v0.edge.element1;
-		e = elem.neighborEdge( this, v0.edge );
-		v1 = e.getVector( this );
-		v1.edge = e;
+		elem = v0->edge->element1;
+		auto e = elem->neighborEdge( shared_from_this(), v0->edge);
+		v1 = std::make_shared<MyVector>( e->getVector( shared_from_this() ) );
+		v1->edge = e;
 
-		if ( v0.isCWto( v1 ) )
+		if ( v0->isCWto( *v1 ) )
 		{
-			if ( elem.concavityAt( this ) )
+			if ( elem->concavityAt( shared_from_this() ) )
 			{
 				v0 = v1;
 			}
 		}
-		else if ( !elem.concavityAt( this ) )
+		else if ( !elem->concavityAt( shared_from_this() ) )
 		{
 			v0 = v1;
 		}
 	}
 
-	Msg.debug( "Node.ccwSortedVectorList(..): 0: " + v0.edge.descr() );
+	Msg::debug( "Node.ccwSortedVectorList(..): 0: " + v0->edge->descr() );
 
 	// Sort vectors in ccw order starting with v0.
 	// Uses the fact that elem initially is the element ccw to v0 around this Node.
-	ArrayList<MyVector> VS = new ArrayList<>();
-	e = v0.edge;
+	ArrayList<std::shared_ptr<MyVector>> VS;
+	auto e = v0->edge;
 
-	start = elem;
+	auto start = elem;
 	do
 	{
-		v = e.getVector( this );
-		v.edge = e;
-		Msg.debug( "... VS.add(" + v.descr() + ")" );
+		v = std::make_shared<MyVector>( e->getVector( shared_from_this() ) );
+		v->edge = e;
+		Msg::debug( "... VS.add(" + v->descr() + ")" );
 		VS.add( v );
 
-		e = elem.neighborEdge( this, e );
-		elem = elem.neighbor( e );
-	} while ( elem != start && elem != null );
+		e = elem->neighborEdge( shared_from_this(), e);
+		elem = elem->neighbor( e );
+	} while ( elem != start && elem != nullptr );
 
-	if ( elem == null )
+	if ( elem == nullptr )
 	{
-		v = e.getVector( this );
-		v.edge = e;
-		Msg.debug( "... VS.add(" + v.descr() + ")" );
+		v = std::make_shared<MyVector>( e->getVector( shared_from_this() ) );
+		v->edge = e;
+		Msg::debug( "... VS.add(" + v->descr() + ")" );
 		VS.add( v );
 	}
 
-	return VS;*/
+	return VS;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 ArrayList<std::shared_ptr<Edge>> 
 Node::calcCCWSortedEdgeList( const std::shared_ptr<Edge>& b0,
 							 const std::shared_ptr<Edge>& b1 )
 {
-	return ArrayList<std::shared_ptr<Edge>>(); 
-	/*MyVector v, v0, v1;
-	Edge e;
-	ArrayList<MyVector> vectors = new ArrayList<>();
+	std::shared_ptr<MyVector> v, v0, v1;
+	
+	ArrayList<std::shared_ptr<MyVector>> vectors;
 
-	for ( Edge element : edgeList )
+	for ( auto element : edgeList )
 	{
-		e = element;
+		auto e = element;
 		if ( e != b0 && e != b1 )
 		{
-			v = e.getVector( this );
-			v.edge = e;
+			v = std::make_shared<MyVector>( e->getVector( shared_from_this() ) );
+			v->edge = e;
 			vectors.add( v );
 		}
 	}
@@ -343,11 +335,11 @@ Node::calcCCWSortedEdgeList( const std::shared_ptr<Edge>& b0,
 	// Initially put the two vectors of b0 and b1 in list.
 	// Select the most CW boundary edge to be first in list.
 
-	List<MyVector> VS = new ArrayList<>();
-	v0 = b0.getVector( this );
-	v0.edge = b0;
-	v1 = b1.getVector( this );
-	v1.edge = b1;
+	ArrayList<std::shared_ptr<MyVector>> VS;
+	v0 = std::make_shared<MyVector>( b0->getVector( shared_from_this() ) );
+	v0->edge = b0;
+	v1 = std::make_shared<MyVector>( b1->getVector( shared_from_this() ) );
+	v1->edge = b1;
 
 	if ( vectors.size() > 0 )
 	{
@@ -358,7 +350,7 @@ Node::calcCCWSortedEdgeList( const std::shared_ptr<Edge>& b0,
 		v = v1;
 	}
 
-	if ( v0.isCWto( v ) )
+	if ( v0->isCWto( *v ) )
 	{
 		VS.add( v0 );
 		VS.add( v1 );
@@ -369,12 +361,12 @@ Node::calcCCWSortedEdgeList( const std::shared_ptr<Edge>& b0,
 		VS.add( v0 );
 	}
 
-	Msg.debug( "Node.calcCCWSortedEdgeList(..): 0: " + v0.edge.descr() );
-	Msg.debug( "Node.calcCCWSortedEdgeList(..): 1: " + v1.edge.descr() );
+	Msg::debug( "Node.calcCCWSortedEdgeList(..): 0: " + v0->edge->descr() );
+	Msg::debug( "Node.calcCCWSortedEdgeList(..): 1: " + v1->edge->descr() );
 
 	// Sort vectors in ccw order. I will not move the vector that lies first in VS.
-	Msg.debug( "...vectors.size()= " + vectors.size() );
-	for ( MyVector vector : vectors )
+	Msg::debug( "...vectors.size()= " + std::to_string( vectors.size() ) );
+	for ( auto vector : vectors )
 	{
 		v = vector;
 
@@ -390,41 +382,43 @@ Node::calcCCWSortedEdgeList( const std::shared_ptr<Edge>& b0,
 				v1 = VS.get( j + 1 );
 			}
 
-			if ( !v.isCWto( v0 ) && v.isCWto( v1 ) )
+			if ( !v->isCWto( *v0 ) && v->isCWto( *v1 ) )
 			{
 				VS.add( j + 1, v );
-				Msg.debug( "Node.calcCCWSortedEdgeList(..):" + (j + 1) + ": " + v.edge.descr() );
+				Msg::debug( "Node.calcCCWSortedEdgeList(..):" + std::to_string(j + 1) + ": " + v->edge->descr() );
 				break;
 			}
 		}
 	}
 
-	List<Edge> edges = new ArrayList<>( VS.size() );
+	ArrayList<std::shared_ptr<Edge>> edges;
 	for ( int i = 0; i < VS.size(); i++ )
 	{
 		v = VS.get( i );
-		edges.add( v.edge );
+		edges.add( v->edge );
 	}
-	return edges;*/
+	return edges;
 }
 
-//TODO: Implement this method
 //TODO: Tests
-std::vector<std::shared_ptr<Node>> ccwSortedNeighbors()
+std::vector<std::shared_ptr<Node>> 
+Node::ccwSortedNeighbors()
 {
-	return std::vector<std::shared_ptr<Node>>();
-	/*Msg.debug("Entering Node.ccwSortedNeighbors(..)");
-	Element elem;
+	std::vector<std::shared_ptr<Node>> ccwNodeList( edgeList.size() * 2, nullptr );
+
+	Msg::debug("Entering Node.ccwSortedNeighbors(..)");
+	std::shared_ptr<Element> elem = nullptr;
 	MyVector v, v0, v1;
 
 	// First try to find two boundary edges
 	int j = 0;
-	MyVector[] b = new MyVector[2];
-	for ( Edge e : edgeList )
+	std::array<MyVector, 2> b;
+
+	for ( auto e : edgeList )
 	{
-		if ( e.boundaryEdge() )
+		if ( e->boundaryEdge() )
 		{
-			b[j] = e.getVector( this );
+			b[j] = e->getVector( shared_from_this() );
 			b[j++].edge = e;
 			if ( j == 2 )
 			{
@@ -433,13 +427,13 @@ std::vector<std::shared_ptr<Node>> ccwSortedNeighbors()
 		}
 	}
 
-	Edge e;
+	std::shared_ptr<Edge> e = nullptr;
 	// If these are found, then v0 is the vector of the most cw edge.
 	if ( j == 2 )
 	{
-		elem = b[0].edge.element1;
-		e = elem.neighborEdge( this, b[0].edge );
-		v1 = e.getVector( this );
+		elem = b[0].edge->element1;
+		e = elem->neighborEdge( shared_from_this(), b[0].edge);
+		v1 = e->getVector( shared_from_this() );
 		v1.edge = e;
 
 		if ( b[0].isCWto( v1 ) )
@@ -449,7 +443,7 @@ std::vector<std::shared_ptr<Node>> ccwSortedNeighbors()
 		else
 		{
 			v0 = b[1]; // that is, the other boundary vector
-			elem = b[1].edge.element1;
+			elem = b[1].edge->element1;
 		}
 	}
 	else
@@ -458,11 +452,11 @@ std::vector<std::shared_ptr<Node>> ccwSortedNeighbors()
 		// select the vector of an arbitrary edge to be v0.
 		// Sets elem to the element that is ccw to v0 around this Node
 		e = edgeList.get( 0 );
-		v0 = e.getVector( this );
+		v0 = e->getVector( shared_from_this() );
 		v0.edge = e;
-		elem = e.element1;
-		e = elem.neighborEdge( this, e );
-		v1 = e.getVector( this );
+		elem = e->element1;
+		e = elem->neighborEdge( shared_from_this(), e );
+		v1 = e->getVector( shared_from_this() );
 		v1.edge = e;
 
 		if ( v0.isCWto( v1 ) )
@@ -477,276 +471,250 @@ std::vector<std::shared_ptr<Node>> ccwSortedNeighbors()
 
 	// Sort nodes in ccw order starting with otherNode of v0 edge.
 	// Uses the fact that elem initially is the element ccw to v0 around this Node.
-	Node[] ccwNodeList = new Node[edgeList.size() * 2];
-	Element start = elem;
-	Quad q;
+	
+	auto start = elem;
 	e = v0.edge;
-	Msg.debug( "... 1st node: " + e.otherNode( this ).descr() );
+	Msg::debug( "... 1st node: " + e->otherNode( shared_from_this() )->descr() );
 
 	int i = 0;
 	do
 	{
-		ccwNodeList[i++] = e.otherNode( this );
-		if ( !(elem instanceof Quad) )
+		ccwNodeList[i++] = e->otherNode( shared_from_this() );
+		if ( !(rcl::instanceOf<Quad>( elem )) )
 		{
-			return null;
+			ccwNodeList.clear();
+			return ccwNodeList;
 		}
-		q = (Quad)elem;
-		ccwNodeList[i++] = q.oppositeNode( this );
-		e = elem.neighborEdge( this, e );
-		elem = elem.neighbor( e );
-	} while ( elem != start && elem != null );
+		auto q = std::dynamic_pointer_cast<Quad>(elem);
+		ccwNodeList[i++] = q->oppositeNode( shared_from_this() );
+		e = elem->neighborEdge( shared_from_this(), e );
+		elem = elem->neighbor( e );
+	} while ( elem != start && elem != nullptr );
 
-	if ( elem == null )
+	if ( elem == nullptr )
 	{
-		ccwNodeList[i++] = e.otherNode( this );
+		ccwNodeList[i++] = e->otherNode( shared_from_this() );
 	}
 
-	Msg.debug( "Leaving Node.ccwSortedNeighbors(..): # nodes: " + i );
-	return ccwNodeList;*/
+	Msg::debug( "Leaving Node.ccwSortedNeighbors(..): # nodes: " + std::to_string( i ) );
+	return ccwNodeList;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 double
 Node::meanNeighborEdgeLength()
 {
-	return 0.0;
-	/*double sumLengths = 0.0, len, j = 0;
+	double sumLengths = 0.0, len, j = 0;
 
-	for ( Edge e : edgeList )
+	for ( auto e : edgeList )
 	{
 
-		len = e.length();
+		len = e->length();
 		if ( len != 0 )
 		{
 			j++;
 			sumLengths += len;
 		}
 	}
-	return sumLengths / j;*/
+	return sumLengths / j;
 }
 
-//TODO: Implement this method
 //TODO: Tests
-int nrOfAdjElements()
+int
+Node::nrOfAdjElements()
 {
-	return 0;
-	/*List<Element> list = adjElements();
-	return list.size();*/
+	auto list = adjElements();
+	return static_cast<int>(list.size());
 }
 
-//TODO: Implement this method
 //TODO: Tests
 ArrayList<std::shared_ptr<Element>> 
 Node::adjElements()
 {
-	return ArrayList<std::shared_ptr<Element>>();
-	/*Edge e;
-	ArrayList<Element> list = new ArrayList<>();
+	ArrayList<std::shared_ptr<Element>> list;
 
-	for ( Edge element : edgeList )
+	for ( auto element : edgeList )
 	{
-		e = element;
-		if ( !list.contains( e.element1 ) )
+		auto e = element;
+		if ( !list.contains( e->element1 ) )
 		{
-			list.add( e.element1 );
+			list.add( e->element1 );
 		}
-		if ( e.element2 != null && !list.contains( e.element2 ) )
+		if ( e->element2 != nullptr && !list.contains( e->element2 ) )
 		{
-			list.add( e.element2 );
+			list.add( e->element2 );
 		}
 	}
-	return list;*/
+	return list;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 int 
 Node::nrOfAdjQuads()
 {
-	return 0;
-	/*List<Element> list = adjQuads();
-	return list.size();*/
+	auto list = adjQuads();
+	return static_cast<int>(list.size());
 }
 
-//TODO: Implement this method
 //TODO: Tests
 ArrayList<std::shared_ptr<Element>> 
 Node::adjQuads()
 {
-	return ArrayList<std::shared_ptr<Element>>();
-	/*Edge e;
-	ArrayList<Element> list = new ArrayList<>();
+	ArrayList<std::shared_ptr<Element>> list;
 
-	for ( Edge element : edgeList )
+	for ( auto element : edgeList )
 	{
-		e = element;
-		if ( e.element1 instanceof Quad && !list.contains( e.element1 ) )
+		auto e = element;
+		if ( rcl::instanceOf<Quad>( e->element1 ) && !list.contains( e->element1 ) )
 		{
-			list.add( e.element1 );
+			list.add( e->element1 );
 		}
-		else if ( e.element2 != null && e.element2 instanceof Quad && !list.contains( e.element2 ) )
+		else if ( e->element2 != nullptr && rcl::instanceOf<Quad>( e->element2 ) && !list.contains( e->element2 ) )
 		{
-			list.add( e.element2 );
+			list.add( e->element2 );
 		}
 	}
-	return list;*/
+	return list;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 int 
 Node::nrOfAdjTriangles()
 {
-	return 0;
-	/*List<Triangle> list = adjTriangles();
-	return list.size();*/
+	auto list = adjTriangles();
+	return static_cast<int>( list.size() );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 ArrayList<std::shared_ptr<Triangle>>
 Node::adjTriangles()
 {
-	return ArrayList<Triangle>();
-	/*Edge e;
-	List<Triangle> list = new ArrayList<>();
+	ArrayList<std::shared_ptr<Triangle>> list;
 
 	for ( int i = 0; i < edgeList.size(); i++ )
 	{
-		e = edgeList.get( i );
-		if ( e.element1 instanceof Triangle && !list.contains( e.element1 ) )
+		auto e = edgeList.get( i );
+		auto Tri = std::dynamic_pointer_cast<Triangle>( e->element1 );
+		if ( Tri && !list.contains( Tri ) )
 		{
-			list.add( (Triangle)e.element1 );
+			list.add( Tri );
 		}
-		else if ( e.element2 != null && e.element2 instanceof Triangle && !list.contains( e.element2 ) )
+		else
 		{
-			list.add( (Triangle)e.element2 );
+			Tri = std::dynamic_pointer_cast<Triangle>( e->element2 );
+			if ( Tri && !list.contains( Tri ) )
+			{
+				list.add( Tri );
+			}
 		}
 	}
-	return list;*/
+	return list;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 MyVector 
 Node::laplacianMoveVector()
 {
-	return MyVector( nullptr, 0.0, 0.0 );
-	/*MyVector c, cJSum = new MyVector(origin, origin);
-	Edge e;
-	Node nJ;
-
-	int n = edgeList.size();
-	for ( int i = 0; i < n; i++ )
+	MyVector c, cJSum( rcl::origin, rcl::origin );
+	
+	auto n = edgeList.size();
+	for ( size_t i = 0; i < n; i++ )
 	{
-		e = edgeList.get( i );
-		nJ = e.otherNode( this );
-		c = new MyVector( this, nJ );
+		const auto& e = edgeList.get( i );
+		const auto& nJ = e->otherNode( shared_from_this() );
+		c = MyVector( shared_from_this(), nJ);
 		cJSum = cJSum.plus( c );
 	}
-	cJSum = cJSum.div( n );
-	return cJSum;*/
+	cJSum = cJSum.div( static_cast<double>(n) );
+	return cJSum;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Node>
 Node::laplacianSmooth()
 {
-	return nullptr;
-	/*MyVector c, cJSum = new MyVector(origin, origin);
-	Edge e;
-	Node nJ;
+	MyVector c, cJSum( rcl::origin, rcl::origin );
 
-	int n = edgeList.size();
-	for ( int i = 0; i < n; i++ )
+	auto n = edgeList.size();
+	for ( size_t i = 0; i < n; i++ )
 	{
-		e = edgeList.get( i );
-		nJ = e.otherNode( this );
-		c = new MyVector( this, nJ );
+		const auto& e = edgeList.get( i );
+		const auto& nJ = e->otherNode( shared_from_this() );
+		c = MyVector( shared_from_this(), nJ);
 		cJSum = cJSum.plus( c );
 	}
-	cJSum = cJSum.div( n );
-	return new Node( x + cJSum.x, y + cJSum.y );*/
+	cJSum = cJSum.div( static_cast<double>( n ) );
+	return std::make_shared<Node>( x + cJSum.x, y + cJSum.y );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Node>
-laplacianSmoothExclude( const std::shared_ptr<Node>& node )
+Node::laplacianSmoothExclude( const std::shared_ptr<Node>& node )
 {
-	return nullptr;
-	/*MyVector c, cJSum = new MyVector(origin, origin);
-	Edge e;
-	Node nJ;
+	MyVector c, cJSum( rcl::origin, rcl::origin );
 
-	int n = edgeList.size();
-	for ( int i = 0; i < n; i++ )
+	auto n = edgeList.size();
+	for ( size_t i = 0; i < n; i++ )
 	{
-		e = edgeList.get( i );
-		nJ = e.otherNode( this );
+		auto e = edgeList.get( i );
+		auto nJ = e->otherNode( shared_from_this() );
 		if ( nJ != node )
 		{
-			c = new MyVector( this, nJ );
+			c = MyVector( shared_from_this(), nJ );
 			cJSum = cJSum.plus( c );
 		}
 	}
-	cJSum = cJSum.div( n - 1 ); // -1 because node is excluded
-	return new Node( x + cJSum.x, y + cJSum.y );*/
+	cJSum = cJSum.div( static_cast<double>( n - 1 ) ); // -1 because node is excluded
+	return std::make_shared<Node>( x + cJSum.x, y + cJSum.y );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Node>
-modifiedLWLaplacianSmooth()
+Node::modifiedLWLaplacianSmooth()
 {
-	return nullptr;
-	/*Msg.debug("Entering Node.modifiedLWLaplacianSmooth()...");
-	Msg.debug( "this= " + this.descr() );
+	Msg::debug( "Entering Node.modifiedLWLaplacianSmooth()..." );
+	Msg::debug( "this= " + descr() );
 
-	Node nJ;
 	double cJLengthSum = 0, len;
-	Edge e, bEdge1, bEdge2;
-	MyVector c, cJLengthMulcJSum = new MyVector( origin, origin ), deltaCj, deltaI;
-	int n = edgeList.size();
+
+	MyVector c, cJLengthMulcJSum( rcl::origin, rcl::origin ), deltaCj, deltaI;
+	auto n = edgeList.size();
 	if ( n == 0 )
 	{
-		Msg.error( "...edgeList.size()== 0" );
+		Msg::error( "...edgeList.size()== 0" );
 	}
-	for ( int i = 0; i < n; i++ )
+	for ( size_t i = 0; i < n; i++ )
 	{
-		e = edgeList.get( i );
-		Msg.debug( "e= " + e.descr() );
-		nJ = e.otherNode( this );
-		c = new MyVector( this, nJ );
-		if ( nJ.boundaryNode() )
+		const auto& e = edgeList.get( i );
+		Msg::debug( "e= " + e->descr() );
+		const auto& nJ = e->otherNode( shared_from_this() );
+		c = MyVector( shared_from_this(), nJ);
+		if ( nJ->boundaryNode() )
 		{
-			bEdge1 = nJ.anotherBoundaryEdge( null );
-			bEdge2 = nJ.anotherBoundaryEdge( bEdge1 );
-			if ( bEdge1 == null )
+			const auto& bEdge1 = nJ->anotherBoundaryEdge( nullptr );
+			const auto &bEdge2 = nJ->anotherBoundaryEdge( bEdge1 );
+			if ( bEdge1 == nullptr )
 			{
-				Msg.debug( "bEdge1==null" );
+				Msg::debug( "bEdge1==null" );
 			}
 			else
 			{
-				Msg.debug( "bEdge1: " + bEdge1.descr() );
+				Msg::debug( "bEdge1: " + bEdge1->descr() );
 			}
-			if ( bEdge2 == null )
+			if ( bEdge2 == nullptr )
 			{
-				Msg.debug( "bEdge2==null" );
+				Msg::debug( "bEdge2==null" );
 			}
 			else
 			{
-				Msg.debug( "bEdge2: " + bEdge2.descr() );
+				Msg::debug( "bEdge2: " + bEdge2->descr() );
 			}
 
 			// This should be correct:
-			deltaCj = nJ.angularSmoothnessAdjustment( this, bEdge1, bEdge2, e.length() );
-			Msg.debug( "c= " + c.descr() );
+			deltaCj = nJ->angularSmoothnessAdjustment( shared_from_this(), bEdge1, bEdge2, e->length() );
+			Msg::debug( "c= " + c.descr() );
 			c = c.plus( deltaCj );
-			Msg.debug( "c+deltaCj= " + c.descr() );
+			Msg::debug( "c+deltaCj= " + c.descr() );
 		}
 
 		len = c.length();
@@ -754,34 +722,31 @@ modifiedLWLaplacianSmooth()
 		cJLengthMulcJSum = cJLengthMulcJSum.plus( c );
 		cJLengthSum += len;
 	}
-	Msg.debug( "...cJLengthSum: " + cJLengthSum );
-	Msg.debug( "...cJLengthMulcJSum: x: " + cJLengthMulcJSum.x + ", y: " + cJLengthMulcJSum.y );
+	Msg::debug( "...cJLengthSum: " + std::to_string( cJLengthSum ) );
+	Msg::debug( "...cJLengthMulcJSum: x: " + std::to_string( cJLengthMulcJSum.x ) + ", y: " + std::to_string( cJLengthMulcJSum.y ) );
 
 	deltaI = cJLengthMulcJSum.div( cJLengthSum );
 
-	Node node = new Node( x + deltaI.x, y + deltaI.y );
-	Msg.debug( "Leaving Node.modifiedLWLaplacianSmooth()... returns node= " + node.descr() );
-	return node;*/
+	auto node = std::make_shared<Node>( x + deltaI.x, y + deltaI.y );
+	Msg::debug( "Leaving Node.modifiedLWLaplacianSmooth()... returns node= " + node->descr() );
+	return node;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 int 
 Node::nrOfFrontEdges()
 {
-	return 0;
-	/*int fronts = 0;
-	for ( Edge e : edgeList )
+	int fronts = 0;
+	for ( auto e : edgeList )
 	{
-		if ( e.frontEdge )
+		if ( e->frontEdge )
 		{
 			fronts++;
 		}
 	}
-	return fronts;*/
+	return fronts;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Node> 
 Node::blackerSmooth( const std::shared_ptr<Node>& nJ,
@@ -789,56 +754,54 @@ Node::blackerSmooth( const std::shared_ptr<Node>& nJ,
 					 const std::shared_ptr<Edge>& front2,
 					 double ld )
 {
-	return nullptr;
-	/*Msg.debug("Entering blackerSmooth(..)...");
+	Msg::debug( "Entering blackerSmooth(..)..." );
 
-	Node nI = this;
-	Node origin = new Node( 0, 0 );
-	Node n1, n2, n3, n4;
-	Quad q;
-	List<Element> adjQuads = adjQuads();
+	auto nI = shared_from_this();
+	auto origin = std::make_shared<Node>( 0.0, 0.0 );
+	
+	auto adjQuads = this->adjQuads();
 
 	// Step 1, the isoparametric smooth:
-	Msg.debug( "...step 1..." );
-	MyVector vI = new MyVector( origin, nI );
-	MyVector vMXsum = new MyVector( origin, origin );
+	Msg::debug( "...step 1..." );
+	MyVector vI( origin, nI );
+	MyVector vMXsum( origin, origin );
 	MyVector vMJ;
 	MyVector vMK;
 	MyVector vML;
 
-	for ( Element adjQuad : adjQuads )
+	for ( auto adjQuad : adjQuads )
 	{
-		q = (Quad)adjQuad;
+		auto q = std::dynamic_pointer_cast<Quad>(adjQuad);
 
-		n1 = q.edgeList[base].leftNode;
-		n2 = q.edgeList[base].rightNode;
-		n3 = q.edgeList[left].otherNode( q.edgeList[base].leftNode );
-		n4 = q.edgeList[right].otherNode( q.edgeList[base].rightNode );
+		auto n1 = q->edgeList[base]->leftNode;
+		auto n2 = q->edgeList[base]->rightNode;
+		auto n3 = q->edgeList[left]->otherNode( q->edgeList[base]->leftNode );
+		auto n4 = q->edgeList[right]->otherNode( q->edgeList[base]->rightNode );
 
 		// Sorting vMJ, vMK, and vML in ccw order:
 		if ( nI == n1 )
 		{
-			vMJ = new MyVector( origin, n2 );
-			vMK = new MyVector( origin, n4 );
-			vML = new MyVector( origin, n3 );
+			vMJ = MyVector( origin, n2 );
+			vMK = MyVector( origin, n4 );
+			vML = MyVector( origin, n3 );
 		}
 		else if ( nI == n2 )
 		{
-			vMJ = new MyVector( origin, n4 );
-			vMK = new MyVector( origin, n3 );
-			vML = new MyVector( origin, n1 );
+			vMJ = MyVector( origin, n4 );
+			vMK = MyVector( origin, n3 );
+			vML = MyVector( origin, n1 );
 		}
 		else if ( nI == n3 )
 		{
-			vMJ = new MyVector( origin, n1 );
-			vMK = new MyVector( origin, n2 );
-			vML = new MyVector( origin, n4 );
+			vMJ = MyVector( origin, n1 );
+			vMK = MyVector( origin, n2 );
+			vML = MyVector( origin, n4 );
 		}
 		else
-		{ // if (nI==n4) {
-			vMJ = new MyVector( origin, n3 );
-			vMK = new MyVector( origin, n1 );
-			vML = new MyVector( origin, n2 );
+		{ 
+			vMJ = MyVector( origin, n3 );
+			vMK = MyVector( origin, n1 );
+			vML = MyVector( origin, n2 );
 		}
 
 		vMXsum = vMXsum.plus( vMJ );
@@ -846,20 +809,20 @@ Node::blackerSmooth( const std::shared_ptr<Node>& nJ,
 		vMXsum = vMXsum.minus( vMK );
 	}
 
-	MyVector vImarked = vMXsum.div( adjQuads.size() );
+	MyVector vImarked = vMXsum.div( static_cast<double>(adjQuads.size()) );
 	MyVector deltaA = vImarked.minus( vI );
 
 	if ( adjQuads.size() != 2 || nrOfFrontEdges() > 2 )
 	{
-		Msg.debug( "Leaving blackerSmooth(..)..." );
-		return new Node( x + deltaA.x, y + deltaA.y );
+		Msg::debug( "Leaving blackerSmooth(..)..." );
+		return std::make_shared<Node>( x + deltaA.x, y + deltaA.y );
 	}
 	// Step 2, length adjustment:
 	else
 	{
-		Msg.debug( "...step 2..." );
-		MyVector vJ = new MyVector( origin, nJ );
-		MyVector vIJ = new MyVector( nJ, vImarked.x, vImarked.y );
+		Msg::debug( "...step 2..." );
+		MyVector vJ( origin, nJ );
+		MyVector vIJ( nJ, vImarked.x, vImarked.y );
 		double la = vIJ.length();
 
 		MyVector deltaB = deltaA.plus( vI );
@@ -869,16 +832,15 @@ Node::blackerSmooth( const std::shared_ptr<Node>& nJ,
 		deltaB = deltaB.minus( vI );
 
 		// Step 3, angular smoothness:
-		Msg.debug( "...step 3..." );
+		Msg::debug( "...step 3..." );
 		MyVector deltaC = angularSmoothnessAdjustment( nJ, front1, front2, ld );
 		MyVector deltaI = deltaB.plus( deltaC );
 		deltaI = deltaI.mul( 0.5 );
-		Msg.debug( "Leaving blackerSmooth(..)..." );
-		return new Node( x + deltaI.x, y + deltaI.y );
-	}*/
+		Msg::debug( "Leaving blackerSmooth(..)..." );
+		return std::make_shared<Node>( x + deltaI.x, y + deltaI.y );
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 MyVector 
 Node::angularSmoothnessAdjustment( const std::shared_ptr<Node>& nJ,
@@ -886,52 +848,47 @@ Node::angularSmoothnessAdjustment( const std::shared_ptr<Node>& nJ,
 								   const std::shared_ptr<Edge>& f2,
 								   double ld )
 {
-	return MyVector( nullptr, 0.0, 0.0 );
-	/*Msg.debug("Entering angularSmoothnessAdjustment(..) ...");
-	Node nI = this;
-	Msg.debug( "nI= " + nI.descr() );
-	Msg.debug( "nJ= " + nJ.descr() );
+	Msg::debug( "Entering angularSmoothnessAdjustment(..) ..." );
+	auto nI = shared_from_this();
+	Msg::debug( "nI= " + nI->descr() );
+	Msg::debug( "nJ= " + nJ->descr() );
 
-	if ( Double.isNaN( ld ) )
+	if ( std::isnan( ld ) )
 	{
-		Msg.error( "ld is NaN!!!" );
+		Msg::error( "ld is NaN!!!" );
 	}
 
-	if ( f2.length() == 0 )
+	if ( f2->length() == 0 )
 	{
-		Msg.error( "f2.length()== 0" );
+		Msg::error( "f2.length()== 0" );
 	}
 
-	Msg.debug( "f1= " + f1.descr() );
-	Msg.debug( "f2= " + f2.descr() );
+	Msg::debug( "f1= " + f1->descr() );
+	Msg::debug( "f2= " + f2->descr() );
 
-	Node nIm1 = f1.otherNode( nI );
-	Node nIp1 = f2.otherNode( nI );
+	auto nIm1 = f1->otherNode( nI );
+	auto nIp1 = f2->otherNode( nI );
 
-	Msg.debug( "nIp1= " + nIp1.descr() );
+	Msg::debug( "nIp1= " + nIp1->descr() );
 
-	if ( nIm1.equals( nI ) )
+	if ( nIm1->equals( nI ) )
 	{
-		Msg.error( "nIm1.equals(nI)" );
+		Msg::error( "nIm1.equals(nI)" );
 	}
 
-	if ( nIp1.equals( nI ) )
+	if ( nIp1->equals( nI ) )
 	{
-		Msg.error( "nIp1.equals(nI)" );
+		Msg::error( "nIp1.equals(nI)" );
 	}
 
-	// if (nIm1.equals(nIp1))
-	// this should be okay, in fact...
-	// Msg.error("nIm1.equals(nIp1)");
-
-	MyVector pI1 = new MyVector( nJ, nIm1 );
-	MyVector pI = new MyVector( nJ, nI );
-	MyVector pI2 = new MyVector( nJ, nIp1 );
+	MyVector pI1( nJ, nIm1 );
+	MyVector pI( nJ, nI );
+	MyVector pI2( nJ, nIp1 );
 
 	double pI1Angle = pI1.posAngle();
 	double pI2Angle = pI2.posAngle();
-	double pIp1Angle = Math.max( pI1Angle, pI2Angle );
-	double pIm1Angle = Math.min( pI1Angle, pI2Angle );
+	double pIp1Angle = std::max( pI1Angle, pI2Angle );
+	double pIm1Angle = std::min( pI1Angle, pI2Angle );
 	double pIAngle = pI.posAngle();
 	double pIm1p1Angle = 0;
 	if ( pIAngle < pIm1Angle || pIAngle > pIp1Angle )
@@ -943,144 +900,138 @@ Node::angularSmoothnessAdjustment( const std::shared_ptr<Node>& nJ,
 		pIm1p1Angle = pIp1Angle - pIm1Angle;
 	}
 
-	Msg.debug( "pIAngle= " + Math.toDegrees( pIAngle ) );
-	Msg.debug( "pIp1Angle= " + Math.toDegrees( pIp1Angle ) );
-	Msg.debug( "pIm1Angle= " + Math.toDegrees( pIm1Angle ) );
+	Msg::debug( "pIAngle= " + std::to_string( toDegrees * pIAngle ) );
+	Msg::debug( "pIp1Angle= " + std::to_string( toDegrees * pIp1Angle ) );
+	Msg::debug( "pIm1Angle= " + std::to_string( toDegrees * pIm1Angle ) );
 
 	// Check if the sum of angles between pIp1 and pI and the angle between pIm1 and
 	// PI is greater or equal to 180 degrees. If so, I choose ld as the length of
 	// pB2.
-	if ( pIm1p1Angle > Math.PI )
+	if ( pIm1p1Angle > PI )
 	{
-		Msg.debug( "okei, we're in there.." );
+		Msg::debug( "okei, we're in there.." );
 		double pB1Angle = pIm1p1Angle * 0.5 + pIp1Angle;
 		if ( pB1Angle >= PIx2 )
 		{
-			pB1Angle = Math.IEEEremainder( pB1Angle, PIx2 );
+			pB1Angle = std::remainder( pB1Angle, PIx2 );
 		}
-		Msg.debug( "pB1Angle= " + Math.toDegrees( pB1Angle ) );
-		double pB1pIMax = Math.max( pB1Angle, pIAngle );
-		double pB1pIMin = Math.min( pB1Angle, pIAngle );
-		Msg.debug( "pB1pIMax= " + Math.toDegrees( pB1pIMax ) );
-		Msg.debug( "pB1pIMin= " + Math.toDegrees( pB1pIMin ) );
+		Msg::debug( "pB1Angle= " + std::to_string( toDegrees * pB1Angle ) );
+		double pB1pIMax = std::max( pB1Angle, pIAngle );
+		double pB1pIMin = std::min( pB1Angle, pIAngle );
+		Msg::debug( "pB1pIMax= " + std::to_string( toDegrees * pB1pIMax ) );
+		Msg::debug( "pB1pIMin= " + std::to_string( toDegrees * pB1pIMin ) );
 		double pB2Angle = pB1pIMin + 0.5 * (pB1pIMax - pB1pIMin);
-		if ( pB1pIMax - pB1pIMin > Math.PI )
+		if ( pB1pIMax - pB1pIMin > PI )
 		{
-			pB2Angle += Math.PI;
+			pB2Angle += PI;
 		}
 
-		MyVector pB2 = new MyVector( pB2Angle, ld, nJ );
+		MyVector pB2( pB2Angle, ld, nJ );
 		MyVector deltaC = pB2.minus( pI );
-		Msg.debug( "Leaving angularSmoothnessAdjustment(..) returns " + deltaC.descr() );
+		Msg::debug( "Leaving angularSmoothnessAdjustment(..) returns " + deltaC.descr() );
 		return deltaC;
 	}
 
-	Msg.debug( "pI1= " + pI1.descr() );
-	Msg.debug( "pI2= " + pI2.descr() );
+	Msg::debug( "pI1= " + pI1.descr() );
+	Msg::debug( "pI2= " + pI2.descr() );
 
-	MyVector line = new MyVector( nIp1, nIm1 );
-	Msg.debug( "line= " + line.descr() );
+	MyVector line( nIp1, nIm1 );
+	Msg::debug( "line= " + line.descr() );
 
 	// pB1 should be the halved angle between pIp1 and pIm1, in the direction of pI:
 	double pB1Angle = pIm1Angle + 0.5 * (pIp1Angle - pIm1Angle);
-	if ( pIp1Angle - pIm1Angle > Math.PI )
+	if ( pIp1Angle - pIm1Angle > PI )
 	{
-		pB1Angle += Math.PI;
+		pB1Angle += PI;
 	}
 
-	if ( Double.isNaN( pB1Angle ) )
+	if ( std::isnan( pB1Angle ) )
 	{
-		Msg.error( "pB1Angle is NaN!!!" );
+		Msg::error( "pB1Angle is NaN!!!" );
 	}
-	Msg.debug( "pB1Angle= " + Math.toDegrees( pB1Angle ) );
+	Msg::debug( "pB1Angle= " + std::to_string( toDegrees * pB1Angle ) );
 
-	double pB1pIMax = Math.max( pB1Angle, pIAngle );
-	double pB1pIMin = Math.min( pB1Angle, pIAngle );
-	Msg.debug( "pB1pIMax= " + Math.toDegrees( pB1pIMax ) );
-	Msg.debug( "pB1pIMin= " + Math.toDegrees( pB1pIMin ) );
+	double pB1pIMax = std::max( pB1Angle, pIAngle );
+	double pB1pIMin = std::min( pB1Angle, pIAngle );
+	Msg::debug( "pB1pIMax= " + std::to_string( toDegrees * pB1pIMax ) );
+	Msg::debug( "pB1pIMin= " + std::to_string( toDegrees * pB1pIMin ) );
 
 	double pB2Angle = pB1pIMin + 0.5 * (pB1pIMax - pB1pIMin);
-	if ( pB1pIMax - pB1pIMin > Math.PI )
+	if ( pB1pIMax - pB1pIMin > PI )
 	{
-		pB2Angle += Math.PI;
+		pB2Angle += PI;
 	}
 
-	if ( Double.isNaN( pB2Angle ) )
+	if ( std::isnan( pB2Angle ) )
 	{
-		Msg.error( "pB2Angle is NaN!!!" );
+		Msg::error( "pB2Angle is NaN!!!" );
 	}
-	Msg.debug( "pB2Angle= " + Math.toDegrees( pB2Angle ) );
+	Msg::debug( "pB2Angle= " + std::to_string( toDegrees * pB2Angle ) );
 
-	Ray pB2Ray = new Ray( nJ, pB2Angle );
+	Ray pB2Ray( nJ, pB2Angle );
 	// MyVector pB2= new MyVector(pB2Angle, 100.0, nJ);
 
-	Msg.debug( "pB2Ray= " + pB2Ray.descr() );
-	Msg.debug( "pB2Ray= " + pB2Ray.values() );
-	Node q = pB2Ray.pointIntersectsAt( line );
-	double lq = q.length( nJ );
-	if ( Double.isNaN( lq ) )
+	Msg::debug( "pB2Ray= " + pB2Ray.descr() );
+	Msg::debug( "pB2Ray= " + pB2Ray.values() );
+	auto q = pB2Ray.pointIntersectsAt( line );
+	double lq = q->length( nJ );
+	if ( std::isnan( lq ) )
 	{
-		Msg.error( "lq is NaN!!!" );
+		Msg::error( "lq is NaN!!!" );
 	}
 
 	MyVector pB2;
 	if ( ld > lq )
 	{
-		pB2 = new MyVector( pB2Ray, (lq + ld) * 0.5 );
-		// pB2.setLengthAndAngle((lq+ld)*0.5, pB2Angle);
+		pB2 = MyVector( pB2Ray, (lq + ld) * 0.5 );
 	}
 	else
 	{
-		pB2 = new MyVector( pB2Ray, ld );
-		// pB2.setLengthAndAngle(ld, pB2Angle);
+		pB2 = MyVector( pB2Ray, ld );
 	}
 
 	MyVector deltaC = pB2.minus( pI );
-	Msg.debug( "Leaving angularSmoothnessAdjustment(..) returns " + deltaC.descr() );
-	return deltaC;*/
+	Msg::debug( "Leaving angularSmoothnessAdjustment(..) returns " + deltaC.descr() );
+	return deltaC;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool
 Node::invertedOrZeroAreaElements( const ArrayList<std::shared_ptr<Element>>& elements )
 {
-	return false;
-	/*for ( Element elem : elements )
+	for ( auto elem : elements )
 	{
-		if ( elem.invertedOrZeroArea() )
+		if ( elem->invertedOrZeroArea() )
 		{
-			Msg.debug( "Node.invertedOrZeroAreaElements(..): invertedOrZeroArea: " + elem.descr() );
+			Msg::debug( "Node.invertedOrZeroAreaElements(..): invertedOrZeroArea: " + elem->descr() );
 			return true;
 		}
 	}
-	return false;*/
+	return false;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool
 Node::incrAdjustUntilNotInvertedOrZeroArea( const std::shared_ptr<Node>& old,
 										   const ArrayList<std::shared_ptr<Element>>& elements )
 {
-	return false;
-	/*Msg.debug("Entering incrAdjustUntilNotInvertedOrZeroArea(..)");
-	Msg.debug( "..this: " + descr() );
-	Msg.debug( "..old: " + old.descr() );
+	Msg::debug( "Entering incrAdjustUntilNotInvertedOrZeroArea(..)" );
+	Msg::debug( "..this: " + descr() );
+	Msg::debug( "..old: " + old->descr() );
 
-	MyVector back = new MyVector( this, old );
+	MyVector back( shared_from_this(), old);
 	double startX = x, startY = y;
 	double xstep = back.x / 50.0, ystep = back.y / 50.0;
 	double xinc, yinc;
 	int steps, i;
 
-	if ( Math.abs( xstep ) < COINCTOL || Math.abs( ystep ) < COINCTOL )
+	if ( std::abs( xstep ) < COINCTOL || std::abs( ystep ) < COINCTOL )
 	{
 
-		if ( COINCTOL < Math.abs( back.x ) && COINCTOL < Math.abs( back.y ) )
+		if ( COINCTOL < std::abs( back.x ) && COINCTOL < std::abs( back.y ) )
 		{// && or || ?
-			Msg.debug( "...ok, resorting to use of minimum increment" );
-			if ( Math.abs( back.x ) < Math.abs( back.y ) )
+			Msg::debug( "...ok, resorting to use of minimum increment" );
+			if ( std::abs( back.x ) < std::abs( back.y ) )
 			{
 				if ( back.x < 0 )
 				{
@@ -1091,7 +1042,7 @@ Node::incrAdjustUntilNotInvertedOrZeroArea( const std::shared_ptr<Node>& old,
 					xinc = COINCTOL;
 				}
 
-				yinc = Math.abs( old.y ) * COINCTOL / Math.abs( old.x );
+				yinc = std::abs( old->y ) * COINCTOL / std::abs( old->x );
 				if ( back.y < 0 )
 				{
 					yinc = -yinc;
@@ -1110,7 +1061,7 @@ Node::incrAdjustUntilNotInvertedOrZeroArea( const std::shared_ptr<Node>& old,
 					yinc = COINCTOL;
 				}
 
-				xinc = Math.abs( old.x ) * COINCTOL / Math.abs( old.y );
+				xinc = std::abs( old->x ) * COINCTOL / std::abs( old->y );
 				if ( back.x < 0 )
 				{
 					xinc = -xinc;
@@ -1119,11 +1070,11 @@ Node::incrAdjustUntilNotInvertedOrZeroArea( const std::shared_ptr<Node>& old,
 				steps = (int)(back.y / yinc);
 			}
 
-			Msg.debug( "...back.x is: " + back.x );
-			Msg.debug( "...back.y is: " + back.y );
+			Msg::debug( "...back.x is: " + std::to_string( back.x ) );
+			Msg::debug( "...back.y is: " + std::to_string( back.y ) );
 
-			Msg.debug( "...xinc is: " + xinc );
-			Msg.debug( "...yinc is: " + yinc );
+			Msg::debug( "...xinc is: " + std::to_string( xinc ) );
+			Msg::debug( "...yinc is: " + std::to_string( yinc ) );
 
 			for ( i = 1; i <= steps; i++ )
 			{
@@ -1132,7 +1083,7 @@ Node::incrAdjustUntilNotInvertedOrZeroArea( const std::shared_ptr<Node>& old,
 
 				if ( !invertedOrZeroAreaElements( elements ) )
 				{
-					Msg.debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
+					Msg::debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
 					return true;
 				}
 			}
@@ -1147,102 +1098,92 @@ Node::incrAdjustUntilNotInvertedOrZeroArea( const std::shared_ptr<Node>& old,
 
 			if ( !invertedOrZeroAreaElements( elements ) )
 			{
-				Msg.debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
+				Msg::debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
 				return true;
 			}
 		}
 	}
 
-	x = old.x;
-	y = old.y;
+	x = old->x;
+	y = old->y;
 	if ( !invertedOrZeroAreaElements( elements ) )
 	{
-		Msg.debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
+		Msg::debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
 		return true;
 	}
 
-	Msg.debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
-	return false;*/
+	Msg::debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
+	return false;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool 
 Node::boundaryNode()
 {
-	return false;
-	/*for ( Edge e : edgeList )
+	for ( auto e : edgeList )
 	{
-		if ( e.boundaryEdge() )
+		if ( e->boundaryEdge() )
 		{
 			return true;
 		}
 	}
-	return false;*/
+	return false;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool
 Node::boundaryOrTriangleNode()
 {
-	return false;
-	/*for ( Edge e : edgeList )
+	for ( auto e : edgeList )
 	{
-		if ( e.boundaryOrTriangleEdge() )
+		if ( e->boundaryOrTriangleEdge() )
 		{
 			return true;
 		}
 	}
-	return false;*/
+	return false;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool
 Node::frontNode()
 {
-	return false;
-	/*for ( Edge e : edgeList )
+	for ( auto e : edgeList )
 	{
-		if ( e.isFrontEdge() )
+		if ( e->isFrontEdge() )
 		{
 			return true;
 		}
 	}
-	return false;*/
+	return false;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge>
 Node::anotherFrontEdge( const std::shared_ptr<Edge>& known )
 {
-	return nullptr;
-	/*for ( Edge e : edgeList )
+	for ( auto e : edgeList )
 	{
-		if ( e != known && e.isFrontEdge() )
+		if ( e != known && e->isFrontEdge() )
 		{
 			return e;
 		}
 	}
-	return null;*/
+	return nullptr;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge> 
 Node::anotherBoundaryEdge( const std::shared_ptr<Edge>& known )
 {
-	return nullptr;
-	/*for ( Edge e : edgeList )
+	for ( auto e : edgeList )
 	{
-		if ( e != known && e.boundaryEdge() )
+		if ( e != known && e->boundaryEdge() )
 		{
 			return e;
 		}
 	}
-	return null;*/
+	return nullptr;
 }
 
 double 
@@ -1259,12 +1200,27 @@ Node::length( double x, double y )
 	return std::sqrt( xDiff * xDiff + yDiff * yDiff );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool
 Node::onLine( const std::shared_ptr<Edge>& e )
 {
-	return false;
+	double x1 = e->leftNode->x;
+	double y1 = e->leftNode->y;
+	double x2 = e->rightNode->x;
+	double y2 = e->rightNode->y;
+	double x3 = x;
+	double y3 = y;
+
+	double zero = 0.0;
+	double l_cross_r = (x1 * y2) - (x2 * y1);
+	double xdiff = x1 - x2;
+	double ydiff = y1 - y2;
+	double det1 = l_cross_r - (xdiff * y3) + (ydiff * x3);
+
+	return rcl::equal( det1, zero );
+
+	//BigDecimal in c++?
+	// Above code just replaces the BigDecimal with double
 //	BigDecimal x1 = new BigDecimal( e.leftNode.x );
 //	BigDecimal y1 = new BigDecimal( e.leftNode.y );
 //	BigDecimal x2 = new BigDecimal( e.rightNode.x );
@@ -1289,36 +1245,69 @@ Node::onLine( const std::shared_ptr<Edge>& e )
 //	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 int 
 Node::inHalfplane( const std::shared_ptr<Triangle>& t,
 				   const std::shared_ptr<Edge>& e )
 {
-	return 0;
-	//return inHalfplane( e.leftNode, e.rightNode, t.oppositeOfEdge( e ) );
+	return inHalfplane( e->leftNode, e->rightNode, t->oppositeOfEdge( e ) );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 int
 Node::inHalfplane( const std::shared_ptr<Edge>& e,
 				   const std::shared_ptr<Node>& n )
 {
-	return 0;
-//	return inHalfplane( e.leftNode, e.rightNode, n );
+	return inHalfplane( e->leftNode, e->rightNode, n );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 int
 Node::inHalfplane( const std::shared_ptr<Node>& l1,
 				   const std::shared_ptr<Node>& l2,
 				   const std::shared_ptr<Node>& n )
 {
-	return 0;
-	/*Msg.debug("Entering Node.inHalfplane(..)");
-	Msg.debug( "l1: " + l1.descr() + ", l2: " + l2.descr() + ", n:" + n.descr() );
+	Msg::debug( "Entering Node.inHalfplane(..)" );
+	Msg::debug( "l1: " + l1->descr() + ", l2: " + l2->descr() + ", n:" + n->descr() );
+	double x1 = l1->x;
+	double y1 = l1->y;
+	double x2 = l2->x;
+	double y2 = l2->y;
+	double x3 = x;
+	double y3 = y;
+	double x4 = n->x;
+	double y4 = n->y;
+
+	double zero = 0.0;
+	double l_cross_r = (x1 * y2) - (x2 * y1);
+	double xdiff = x1 - x2;
+	double ydiff = y1 - y2;
+	double det1 = l_cross_r - (xdiff * y3) + (ydiff * x3);
+
+	int eval1 = rcl::compareTo( det1, zero );
+	if ( eval1 == 0 )
+	{
+		Msg::debug( "Leaving Node.inHalfplane(..)" );
+		return 0;
+	}
+
+	double det2 = l_cross_r - (xdiff * y4) + (ydiff * x4);
+	int eval2 = rcl::compareTo( det2, zero );
+	Msg::debug( "Leaving Node.inHalfplane(..)" );
+	if ( (eval1 < 0 && eval2 < 0) || (eval1 > 0 && eval2 > 0) )
+	{
+		return 1;
+	}
+	else
+	{
+		return -1;
+	}
+
+	//BigDecimal in c++?
+	// Above code just replaces the BigDecimal with double
+
+	/*Msg::debug("Entering Node.inHalfplane(..)");
+	Msg::debug( "l1: " + l1.descr() + ", l2: " + l2.descr() + ", n:" + n.descr() );
 	BigDecimal x1 = new BigDecimal( l1.x );
 	BigDecimal y1 = new BigDecimal( l1.y );
 	BigDecimal x2 = new BigDecimal( l2.x );
@@ -1337,13 +1326,13 @@ Node::inHalfplane( const std::shared_ptr<Node>& l1,
 	int eval1 = det1.compareTo( zero );
 	if ( eval1 == 0 )
 	{
-		Msg.debug( "Leaving Node.inHalfplane(..)" );
+		Msg::debug( "Leaving Node.inHalfplane(..)" );
 		return 0;
 	}
 
 	BigDecimal det2 = l_cross_r.subtract( xdiff.multiply( y4 ) ).add( ydiff.multiply( x4 ) );
 	int eval2 = det2.compareTo( zero );
-	Msg.debug( "Leaving Node.inHalfplane(..)" );
+	Msg::debug( "Leaving Node.inHalfplane(..)" );
 	if ( (eval1 < 0 && eval2 < 0) || (eval1 > 0 && eval2 > 0) )
 	{
 		return 1;
@@ -1354,41 +1343,37 @@ Node::inHalfplane( const std::shared_ptr<Node>& l1,
 	}*/
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool 
 Node::inBoundedPlane( const std::shared_ptr<Edge>& e )
 {
-	return false;
-	/*Edge normal1 = e.unitNormalAt(e.leftNode);
-	Edge normal2 = e.unitNormalAt( e.rightNode );
+	auto normal1 = e->unitNormalAt( e->leftNode );
+	auto normal2 = e->unitNormalAt( e->rightNode );
 
-	int a = inHalfplane( normal1, e.rightNode );
-	int b = inHalfplane( normal2, e.leftNode );
+	int a = inHalfplane( normal1, e->rightNode );
+	int b = inHalfplane( normal2, e->leftNode );
 
-	Msg.debug( "Node.inBoundedPlane(..): a: " + a + ", b: " + b );
+	Msg::debug( "Node.inBoundedPlane(..): a: " + std::to_string( a ) + ", b: " + std::to_string( b ) );
 
 	if ( (a == 1 || a == 0) && (b == 1 || b == 0) )
 	{
-		Msg.debug( "Node.inBoundedPlane(..): returns true" );
+		Msg::debug( "Node.inBoundedPlane(..): returns true" );
 		return true;
 	}
 	else
 	{
-		Msg.debug( "Node.inBoundedPlane(..): returns false" );
+		Msg::debug( "Node.inBoundedPlane(..): returns false" );
 		return false;
-	}*/
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool 
 Node::inCircle( const std::shared_ptr<Node>& p1,
 				const std::shared_ptr<Node>& p2,
 				const std::shared_ptr<Node>& p3 )
 {
-	return false;
-	/*Msg.debug("Entering inCircle(..)");
+	Msg::debug( "Entering inCircle(..)" );
 
 	//
 	// a * b = a_1*b_1 + a_2*b_2 Scalar product a x b = (a_1*b_2 - b_1*a_2) Vector
@@ -1405,182 +1390,170 @@ Node::inCircle( const std::shared_ptr<Node>& p1,
 	//
 	//
 
-	double cosAlpha = (p3.x - p2.x) * (p1.x - p2.x) + (p3.y - p2.y) * (p1.y - p2.y);
-	double cosBeta = (p1.x - x) * (p3.x - x) + (p1.y - y) * (p3.y - y);
+	double cosAlpha = (p3->x - p2->x) * (p1->x - p2->x) + (p3->y - p2->y) * (p1->y - p2->y);
+	double cosBeta = (p1->x - x) * (p3->x - x) + (p1->y - y) * (p3->y - y);
 
 	if ( cosAlpha < 0 && cosBeta < 0 )
 	{ // (if both angles > than 90 degrees)
-		Msg.debug( "Leaving inCircle(..), cosAlpha && cosBeta <0, return true" );
+		Msg::debug( "Leaving inCircle(..), cosAlpha && cosBeta <0, return true" );
 		return true;
 	}
 	else if ( cosAlpha > 0 && cosBeta > 0 )
 	{ // (if both angles < than 90 degrees)
-		Msg.debug( "Leaving inCircle(..), cosAlpha && cosBeta >0, return false" );
+		Msg::debug( "Leaving inCircle(..), cosAlpha && cosBeta >0, return false" );
 		return false;
 	}
 	else
 	{
-		double sinAlpha = p3.x * p1.y - p3.x * p2.y - p2.x * p1.y - p3.y * p1.x + p3.y * p2.x + p2.y * p1.x;
-		double sinBeta = p3.y * p1.x - p1.x * y - x * p3.y - p3.x * p1.y + p1.y * x + y * p3.x;
+		double sinAlpha = p3->x * p1->y - p3->x * p2->y - p2->x * p1->y - p3->y * p1->x + p3->y * p2->x + p2->y * p1->x;
+		double sinBeta = p3->y * p1->x - p1->x * y - x * p3->y - p3->x * p1->y + p1->y * x + y * p3->x;
 		if ( cosAlpha * sinBeta + sinAlpha * cosBeta < 0 )
 		{
-			Msg.debug( "Leaving inCircle(..), passed last check, returns true" );
+			Msg::debug( "Leaving inCircle(..), passed last check, returns true" );
 			return true;
 		}
 		else
 		{
-			Msg.debug( "Leaving inCircle(..), failed last check, returns false" );
+			Msg::debug( "Leaving inCircle(..), failed last check, returns false" );
 			return false;
 		}
-	}*/
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void 
 Node::merge( const std::shared_ptr<Node>& n )
 {
-	/*Node oldN = n.copyXY();
-	Edge e;
-	int ind;
-	n.setXY( this );
-	for ( int i = 0; i < n.edgeList.size(); i++ )
+	auto oldN = n->copyXY();
+	
+	n->setXY( *shared_from_this() );
+	for ( int i = 0; i < n->edgeList.size(); i++ )
 	{
-		e = n.edgeList.get( i );
-		ind = edgeList.indexOf( e );
+		const auto& e = n->edgeList.get( i );
+		auto ind = edgeList.indexOf( e );
 		if ( ind == -1 )
 		{
-			e.replaceNode( n, this );
+			e->replaceNode( n, shared_from_this() );
 			edgeList.add( e );
 		}
 		else
 		{ // collapsed edges must be removed
-			if ( e.leftNode == e.rightNode )
+			if ( e->leftNode == e->rightNode )
 			{
 				edgeList.remove( ind );
 			}
 		}
 	}
-	n.setXY( oldN );*/
+	n->setXY( *oldN );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 ArrayList<std::shared_ptr<Edge>> 
 Node::frontEdgeList()
 {
-	return ArrayList<std::shared_ptr<Edge>>();
-	/*List<Edge> list = new ArrayList<>();
-	Edge e;
+	ArrayList<std::shared_ptr<Edge>> list;
+
 	for ( int i = 0; i < edgeList.size(); i++ )
 	{
-		e = edgeList.get( i );
-		if ( e.frontEdge )
+		const auto& e = edgeList.get( i );
+		if ( e->frontEdge )
 		{
 			list.add( e );
 		}
 	}
-	return list;*/
+	return list;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool 
 Node::hasEdge( const std::shared_ptr<Edge>& e )
 {
-	return false;
-	/*for ( Edge curEdge : edgeList )
+	for ( auto curEdge : edgeList )
 	{
 		if ( e == curEdge )
 		{
 			return true;
 		}
 	}
-	return false;*/
+	return false;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 uint8_t 
 Node::valence()
 {
-	return 0;
-	/*byte temp = (byte)edgeList.size();
+	uint8_t temp = static_cast<uint8_t>(edgeList.size());
 	if ( !boundaryNode() )
 	{
 		return temp;
 	}
 	else
 	{
-		Edge b1 = anotherBoundaryEdge( null );
-		Edge b2 = anotherBoundaryEdge( b1 );
-		double ang = b1.sumAngle( b1.element1, this, b2 );
+		auto b1 = anotherBoundaryEdge( nullptr );
+		auto b2 = anotherBoundaryEdge( b1 );
+		double ang = b1->sumAngle( b1->element1, shared_from_this(), b2);
 
 		// Determine which kind of boundary node we're dealing with
 		if ( ang <= PIx3div4 )
 		{ // PIdiv2
-			return (byte)(temp + 2);
+			return (temp + 2);
 		}
 		else if ( ang < PIx5div4 )
 		{ // PIx3div2
-			return (byte)(temp + 1);
+			return (temp + 1);
 		}
 		else
 		{ // PIx3div2
 			return (temp);
 		}
-	}*/
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void 
 Node::createValencePattern( const std::vector<std::shared_ptr<Node>>& ccwNodes )
 {
-	/*Msg.debug("Entering Node.createValencePattern(..)");
-	int j = edgeList.size() * 2;
+	Msg::debug( "Entering Node.createValencePattern(..)" );
+	int j = static_cast<int>(edgeList.size() * 2);
 	if ( j >= 128 )
 	{
-		Msg.error( "Number of edges adjacent node " + descr() + " was greater than expected (" + edgeList.size() + "-2 >= 64)" );
+		Msg::error( "Number of edges adjacent node " + descr() + " was greater than expected (" + std::to_string( edgeList.size() ) + "-2 >= 64)" );
 	}
-	byte ccwNodesSize = (byte)j;
-	pattern = new byte[ccwNodesSize + 2]; // +2 for size and c.valence()
-	pattern[0] = (byte)(ccwNodesSize + 2);
+	uint8_t ccwNodesSize = static_cast<uint8_t>(j);
+	pattern.assign( ccwNodesSize + 2, 0 ); // +2 for size and c.valence()
+	pattern[0] = (ccwNodesSize + 2);
 	pattern[1] = valence();
 
 	for ( int i = 0; i < ccwNodesSize; i++ )
 	{
-		pattern[i + 2] = ccwNodes[i].valence();
+		pattern[i + 2] = ccwNodes[i]->valence();
 	}
-	Msg.debug( "Leaving Node.createValencePattern(..)" );*/
+	Msg::debug( "Leaving Node.createValencePattern(..)" );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void 
 Node::createValencePattern( uint8_t ccwNodesSize,
 						   const std::vector<std::shared_ptr<Node>>& ccwNodes )
 {
-	/*Msg.debug("Entering Node.createValencePattern(" + ccwNodesSize + ", Node [])");
-	pattern = new byte[ccwNodesSize + 2]; // +2 for size and c.valence()
-	pattern[0] = (byte)(ccwNodesSize + 2);
+	Msg::debug( "Entering Node.createValencePattern(" + std::to_string( ccwNodesSize ) + ", Node [])" );
+	pattern.assign( ccwNodesSize + 2, 0 ); // +2 for size and c.valence()
+	pattern[0] = (ccwNodesSize + 2);
 	pattern[1] = valence();
 
 	for ( int i = 0; i < ccwNodesSize; i++ )
 	{
-		Msg.debug( "...i== " + i );
-		pattern[i + 2] = ccwNodes[i].valence();
+		Msg::debug( "...i== " + std::to_string( i ) );
+		pattern[i + 2] = ccwNodes[i]->valence();
 	}
-	Msg.debug( "Leaving Node.createValencePattern(byte, Node [])" );*/
+	Msg::debug( "Leaving Node.createValencePattern(byte, Node [])" );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 int 
 Node::irregNeighborNodes()
 {
-	return 0;
-	/*int count = 0;
+	int count = 0;
 	for ( int i = 1; i < pattern[0]; i++ )
 	{
 		if ( pattern[i] != 4 )
@@ -1588,28 +1561,26 @@ Node::irregNeighborNodes()
 			count++;
 		}
 	}
-	return count;*/
+	return count;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 int 
 Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 {
-	return 0;
-	/*Msg.debug("Entering patternMatch(..)");
+	Msg::debug( "Entering patternMatch(..)" );
 	if ( pattern[0] != pattern2[0] || pattern[1] != pattern2[1] )
 	{
-		Msg.debug( "Leaving patternMatch(..): mismatch" );
+		Msg::debug( "Leaving patternMatch(..): mismatch" );
 		return -1; // Different length or different valence of central node
 	}
 
 	int i, j, jstart = 2, matches = 0;
 
-	Msg.debug( "pattern[0]==" + pattern[0] );
-	Msg.debug( "pattern2[0]==" + pattern2[0] );
-	Msg.debug( "pattern[1]==" + pattern[1] );
-	Msg.debug( "pattern2[1]==" + pattern2[1] );
+	Msg::debug( "pattern[0]==" + std::to_string( pattern[0] ) );
+	Msg::debug( "pattern2[0]==" + std::to_string( pattern2[0] ) );
+	Msg::debug( "pattern[1]==" + std::to_string( pattern[1] ) );
+	Msg::debug( "pattern2[1]==" + std::to_string( pattern2[1] ) );
 
 	while ( jstart < pattern[0] )
 	{
@@ -1620,8 +1591,8 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 			{
 				matches = 1;
 				jstart = j;
-				Msg.debug( "... rolling pattern..." );
-				Msg.debug( "...pattern2[2]: " + pattern2[2] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "... rolling pattern..." );
+				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 				break;
 			}
 			else if ( pattern[j] == 3 && (pattern2[2] == 3 || pattern2[2] == 14 || pattern2[2] == 0) )
@@ -1629,8 +1600,8 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 
 				matches = 1;
 				jstart = j;
-				Msg.debug( "... rolling pattern..." );
-				Msg.debug( "...pattern2[2]: " + pattern2[2] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "... rolling pattern..." );
+				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 				break;
 			}
 			else if ( pattern[j] == 4 && (pattern2[2] == 4 || pattern2[2] == 14 || pattern2[2] == 24 || pattern2[2] == 0) )
@@ -1638,8 +1609,8 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 
 				matches = 1;
 				jstart = j;
-				Msg.debug( "... rolling pattern..." );
-				Msg.debug( "...pattern2[2]: " + pattern2[2] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "... rolling pattern..." );
+				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 				break;
 			}
 			else if ( pattern[j] >= 5 && (pattern2[2] == 5 || pattern2[2] == 24 || pattern2[2] == 0) )
@@ -1647,15 +1618,15 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 
 				matches = 1;
 				jstart = j;
-				Msg.debug( "... rolling pattern..." );
-				Msg.debug( "...pattern2[2]: " + pattern2[2] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "... rolling pattern..." );
+				Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 				break;
 			}
 		}
 
 		if ( matches == 0 )
 		{
-			Msg.debug( "Leaving patternMatch(..): mismatch" );
+			Msg::debug( "Leaving patternMatch(..): mismatch" );
 			return -1; // Search completed, patterns don't match
 		}
 
@@ -1673,22 +1644,22 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 			if ( pattern[j] == 2 && (pattern2[i] == 2 || pattern2[i] == 14 || pattern2[i] == 0) )
 			{
 				matches++;
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else if ( pattern[j] == 3 && (pattern2[i] == 3 || pattern2[i] == 14 || pattern2[i] == 0) )
 			{
 				matches++;
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else if ( pattern[j] == 4 && (pattern2[i] == 4 || pattern2[i] == 14 || pattern2[i] == 24 || pattern2[i] == 0) )
 			{
 				matches++;
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else if ( pattern[j] >= 5 && (pattern2[i] == 5 || pattern2[i] == 24 || pattern2[i] == 0) )
 			{
 				matches++;
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else
 			{
@@ -1703,35 +1674,34 @@ Node::patternMatch( const std::vector<uint8_t>& pattern2 )
 		}
 		if ( matches == pattern2[0] - 2 )
 		{
-			Msg.debug( "Leaving patternMatch(..): match, returns: " + jstart );
+			Msg::debug( "Leaving patternMatch(..): match, returns: " + jstart );
 			return jstart; // Search completed, patterns match
 		}
 		jstart += 2;
 	}
-	Msg.debug( "Leaving patternMatch(..): mismatch" );
-	return -1;*/
+	Msg::debug( "Leaving patternMatch(..): mismatch" );
+	return -1;
 }
 
-//TODO: Implement this method
 //TODO: Tests
-int patternMatch( const std::vector<uint8_t>& pattern2,
-				  const std::vector<bool>& vertexPat,
-				  const std::vector<double>& angles )
+int 
+Node::patternMatch( const std::vector<uint8_t>& pattern2,
+					const std::vector<bool>& vertexPat,
+					const std::vector<double>& angles )
 {
-	return 0;
-	/*Msg.debug("Entering patternMatch(byte [], boolean [], double [])");
+	Msg::debug( "Entering patternMatch(byte [], boolean [], double [])" );
 	if ( pattern[0] != pattern2[0] || pattern[1] != pattern2[1] )
 	{
-		Msg.debug( "Leaving patternMatch(byte [], boolean [], double []): mismatch" );
+		Msg::debug( "Leaving patternMatch(byte [], boolean [], double []): mismatch" );
 		return -1; // Different length or different valence of central node
 	}
 
 	int i, j, jstart = 2, matches = 0;
 
-	Msg.debug( "pattern[0]==" + pattern[0] );
-	Msg.debug( "pattern2[0]==" + pattern2[0] );
-	Msg.debug( "pattern[1]==" + pattern[1] );
-	Msg.debug( "pattern2[1]==" + pattern2[1] );
+	Msg::debug( "pattern[0]==" + std::to_string( pattern[0] ) );
+	Msg::debug( "pattern2[0]==" + std::to_string( pattern2[0] ) );
+	Msg::debug( "pattern[1]==" + std::to_string( pattern[1] ) );
+	Msg::debug( "pattern2[1]==" + std::to_string( pattern2[1] ) );
 
 	while ( jstart < pattern[0] )
 	{
@@ -1740,45 +1710,45 @@ int patternMatch( const std::vector<uint8_t>& pattern2,
 		{
 			if ( pattern[j] == 2 && (pattern2[2] == 2 || pattern2[2] == 14 || pattern2[2] == 0) )
 			{
-				if ( fitsVertexPat( (byte)(j - 2), angles, vertexPat, pattern[0] - 2 ) )
+				if ( fitsVertexPat( static_cast<uint8_t>(j - 2), angles, vertexPat, pattern[0] - 2 ) )
 				{
 					matches = 1;
 					jstart = j;
-					Msg.debug( "... rolling pattern..." );
-					Msg.debug( "...pattern2[2]: " + pattern2[2] + ", pattern[" + j + "]: " + pattern[j] );
+					Msg::debug( "... rolling pattern..." );
+					Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 					break;
 				}
 			}
 			else if ( pattern[j] == 3 && (pattern2[2] == 3 || pattern2[2] == 14 || pattern2[2] == 0) )
 			{
-				if ( fitsVertexPat( (byte)(j - 2), angles, vertexPat, pattern[0] - 2 ) )
+				if ( fitsVertexPat( static_cast<uint8_t>(j - 2), angles, vertexPat, pattern[0] - 2 ) )
 				{
 					matches = 1;
 					jstart = j;
-					Msg.debug( "... rolling pattern..." );
-					Msg.debug( "...pattern2[2]: " + pattern2[2] + ", pattern[" + j + "]: " + pattern[j] );
+					Msg::debug( "... rolling pattern..." );
+					Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 					break;
 				}
 			}
 			else if ( pattern[j] == 4 && (pattern2[2] == 4 || pattern2[2] == 14 || pattern2[2] == 24 || pattern2[2] == 0) )
 			{
-				if ( fitsVertexPat( (byte)(j - 2), angles, vertexPat, pattern[0] - 2 ) )
+				if ( fitsVertexPat( static_cast<uint8_t>(j - 2), angles, vertexPat, pattern[0] - 2 ) )
 				{
 					matches = 1;
 					jstart = j;
-					Msg.debug( "... rolling pattern..." );
-					Msg.debug( "...pattern2[2]: " + pattern2[2] + ", pattern[" + j + "]: " + pattern[j] );
+					Msg::debug( "... rolling pattern..." );
+					Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 					break;
 				}
 			}
 			else if ( pattern[j] >= 5 && (pattern2[2] == 5 || pattern2[2] == 24 || pattern2[2] == 0) )
 			{
-				if ( fitsVertexPat( (byte)(j - 2), angles, vertexPat, pattern[0] - 2 ) )
+				if ( fitsVertexPat( static_cast<uint8_t>(j - 2), angles, vertexPat, pattern[0] - 2 ) )
 				{
 					matches = 1;
 					jstart = j;
-					Msg.debug( "... rolling pattern..." );
-					Msg.debug( "...pattern2[2]: " + pattern2[2] + ", pattern[" + j + "]: " + pattern[j] );
+					Msg::debug( "... rolling pattern..." );
+					Msg::debug( "...pattern2[2]: " + std::to_string( pattern2[2] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 					break;
 				}
 			}
@@ -1786,10 +1756,10 @@ int patternMatch( const std::vector<uint8_t>& pattern2,
 
 		if ( matches == 0 )
 		{
-			Msg.debug( "Leaving patternMatch(byte [], boolean [], double []): mismatch" );
+			Msg::debug( "Leaving patternMatch(byte [], boolean [], double []): mismatch" );
 			return -1; // Search completed, patterns don't match
 		}
-		Msg.debug( "...broken out of loop!!" );
+		Msg::debug( "...broken out of loop!!" );
 		if ( jstart == pattern[0] - 1 )
 		{
 			j = 1; // Shouldn't it be 2???
@@ -1801,26 +1771,26 @@ int patternMatch( const std::vector<uint8_t>& pattern2,
 		// Count nr of sequential matches starting at this index
 		for ( i = 3; matches < pattern2[0] - 2; i++, j++ )
 		{
-			Msg.debug( "i== " + i );
+			Msg::debug( "i== " + std::to_string( i ) );
 			if ( pattern[j] == 2 && (pattern2[i] == 2 || pattern2[i] == 14 || pattern2[i] == 0) )
 			{
 				matches++;
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else if ( pattern[j] == 3 && (pattern2[i] == 3 || pattern2[i] == 14 || pattern2[i] == 0) )
 			{
 				matches++;
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else if ( pattern[j] == 4 && (pattern2[i] == 4 || pattern2[i] == 14 || pattern2[i] == 24 || pattern2[i] == 0) )
 			{
 				matches++;
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else if ( pattern[j] >= 5 && (pattern2[i] == 5 || pattern2[i] == 24 || pattern2[i] == 0) )
 			{
 				matches++;
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else
 			{
@@ -1835,25 +1805,23 @@ int patternMatch( const std::vector<uint8_t>& pattern2,
 		}
 		if ( matches == pattern2[0] - 2 )
 		{
-			Msg.debug( "Leaving patternMatch(byte [], boolean [], double []): match, returns: " + jstart );
+			Msg::debug( "Leaving patternMatch(byte [], boolean [], double []): match, returns: " + std::to_string( jstart ) );
 			return jstart; // Search completed, patterns match
 		}
 		jstart += 2;
 	}
-	Msg.debug( "Leaving patternMatch(byte [], boolean [], double []): mismatch" );
-	return -1;*/
+	Msg::debug( "Leaving patternMatch(byte [], boolean [], double []): mismatch" );
+	return -1;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool 
 Node::fitsVertexPat( uint8_t start,
 					 const std::vector<double>& ang,
-					 std::vector<bool>& vertexPat,
+					 const std::vector<bool>& vertexPat,
 					 int len )
 {
-	return false;
-	/*Msg.debug("Entering Node.fitsVertexPat(..)");
+	Msg::debug( "Entering Node.fitsVertexPat(..)" );
 	int i, j = start, k = 0, l;
 	do
 	{
@@ -1876,10 +1844,10 @@ Node::fitsVertexPat( uint8_t start,
 			{
 				if ( !vertexPat[l] && ang[i] < ang[j] )
 				{
-					Msg.debug( "ang[" + i + "] < ang[" + j + "]" );
-					Msg.debug( "ang[" + i + "]== " + Math.toDegrees( ang[i] ) );
-					Msg.debug( "ang[" + j + "]== " + Math.toDegrees( ang[j] ) );
-					Msg.debug( "Leaving Node.fitsVertexPat(..): false" );
+					Msg::debug( "ang[" + std::to_string( i ) + "] < ang[" + std::to_string( j ) + "]" );
+					Msg::debug( "ang[" + std::to_string( i ) + "]== " + std::to_string( toDegrees * ang[i] ) );
+					Msg::debug( "ang[" + std::to_string( j ) + "]== " + std::to_string( toDegrees * ang[j] ) );
+					Msg::debug( "Leaving Node.fitsVertexPat(..): false" );
 					return false;
 				}
 				i++;
@@ -1903,27 +1871,23 @@ Node::fitsVertexPat( uint8_t start,
 		k++;
 	} while ( j != start );
 
-	Msg.debug( "Leaving Node.fitsVertexPat(..): true" );
-	return true;*/
+	Msg::debug( "Leaving Node.fitsVertexPat(..): true" );
+	return true;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::vector<double>
 Node::surroundingAngles( const std::vector<std::shared_ptr<Node>>& ccwNeighbors,
 						 int len )
 {
-	return std::vector<double>();
-	/*Msg.debug("Entering Node.surroundingAngles(..)");
-	Quad q, qa, qb;
-	Edge e, ep, en;
-	Node n, np, nn, no;
-	double[] angles = new double[len];
+	Msg::debug("Entering Node.surroundingAngles(..)");
+	std::shared_ptr<Node> np = nullptr, nn = nullptr;
+	std::vector<double> angles( len, 0.0 );
 	for ( int i = 0; i < len; i++ )
 	{
-		n = ccwNeighbors[i];
-		e = commonEdge( n );
-		if ( e == null )
+		const auto& n = ccwNeighbors[i];
+		const auto& e = commonEdge( n );
+		if ( e == nullptr )
 		{
 			if ( i - 1 >= 0 )
 			{
@@ -1943,39 +1907,37 @@ Node::surroundingAngles( const std::vector<std::shared_ptr<Node>>& ccwNeighbors,
 				nn = ccwNeighbors[0];
 			}
 
-			ep = commonEdge( np );
-			en = commonEdge( nn );
-			q = (Quad)ep.commonElement( en );
+			const auto& ep = commonEdge( np );
+			const auto& en = commonEdge( nn );
+			const auto& q = std::dynamic_pointer_cast<Quad>(ep->commonElement( en ));
 
-			no = q.oppositeNode( this );
-			angles[i] = q.ang[q.angleIndex( no )];
+			const auto& no = q->oppositeNode( shared_from_this() );
+			angles[i] = q->ang[q->angleIndex( no )];
 		}
 		else
 		{
-			no = e.otherNode( this );
-			qa = (Quad)e.element1;
-			qb = (Quad)e.element2;
+			const auto& no = e->otherNode( shared_from_this() );
+			const auto& qa = std::dynamic_pointer_cast<Quad>(e->element1);
+			const auto& qb = std::dynamic_pointer_cast<Quad>(e->element2);
 
-			angles[i] = qa.ang[qa.angleIndex( no )] + qb.ang[qb.angleIndex( no )];
+			angles[i] = qa->ang[qa->angleIndex( no )] + qb->ang[qb->angleIndex( no )];
 		}
 	}
-	Msg.debug( "Leaving Node.surroundingAngles(..)" );
-	return angles;*/
+	Msg::debug( "Leaving Node.surroundingAngles(..)" );
+	return angles;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool 
 Node::boundaryPatternMatch( const std::vector<uint8_t>& pattern2,
 							const std::vector<bool>& bpat,
 							const std::vector<std::shared_ptr<Node>>& ccwNeighbors )
 {
-	return false;
-	/*Msg.debug("Entering boundaryPatternMatch(..)");
+	Msg::debug( "Entering boundaryPatternMatch(..)" );
 
 	if ( pattern[0] != pattern2[0] || pattern[1] != pattern2[1] || bpat[0] != boundaryNode() )
 	{
-		Msg.debug( "Leaving boundaryPatternMatch(..): mismatch" );
+		Msg::debug( "Leaving boundaryPatternMatch(..): mismatch" );
 		return false;
 	}
 	int i;
@@ -1984,134 +1946,132 @@ Node::boundaryPatternMatch( const std::vector<uint8_t>& pattern2,
 	{
 		if ( pattern[i] == 2 && (pattern2[i] == 2 || pattern2[i] == 14 || pattern2[i] == 0) )
 		{
-			if ( bpat[i - 1] && !ccwNeighbors[i - 2].boundaryNode() )
+			if ( bpat[i - 1] && !ccwNeighbors[i - 2]->boundaryNode() )
 			{
 				return false;
 			}
 
-			Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + i + "]: " + pattern[i] );
+			Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( i ) + "]: " + std::to_string( pattern[i] ) );
 		}
 		else if ( pattern[i] == 3 && (pattern2[i] == 3 || pattern2[i] == 14 || pattern2[i] == 0) )
 		{
-			if ( bpat[i - 1] && !ccwNeighbors[i - 2].boundaryNode() )
+			if ( bpat[i - 1] && !ccwNeighbors[i - 2]->boundaryNode() )
 			{
 				return false;
 			}
-			Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + i + "]: " + pattern[i] );
+			Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( i ) + "]: " + std::to_string( pattern[i] ) );
 		}
 		else if ( pattern[i] == 4 && (pattern2[i] == 4 || pattern2[i] == 14 || pattern2[i] == 24 || pattern2[i] == 0) )
 		{
-			if ( bpat[i - 1] && !ccwNeighbors[i - 2].boundaryNode() )
+			if ( bpat[i - 1] && !ccwNeighbors[i - 2]->boundaryNode() )
 			{
 				return false;
 			}
-			Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + i + "]: " + pattern[i] );
+			Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( i ) + "]: " + std::to_string( pattern[i] ) );
 		}
 		else if ( pattern[i] >= 5 && (pattern2[i] == 5 || pattern2[i] == 24 || pattern2[i] == 0) )
 		{
-			if ( bpat[i - 1] && !ccwNeighbors[i - 2].boundaryNode() )
+			if ( bpat[i - 1] && !ccwNeighbors[i - 2]->boundaryNode() )
 			{
 				return false;
 			}
-			Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + i + "]: " + pattern[i] );
+			Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( i ) + "]: " + std::to_string( pattern[i] ) );
 		}
 		else
 		{
-			Msg.debug( "Leaving boundaryPatternMatch(..): mismatch" );
+			Msg::debug( "Leaving boundaryPatternMatch(..): mismatch" );
 			return false;
 		}
 	}
-	Msg.debug( "Leaving boundaryPatternMatch(..): match" );
-	return true;*/
+	Msg::debug( "Leaving boundaryPatternMatch(..): match" );
+	return true;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 int 
 Node::boundaryPatternMatchSpecial( const std::vector<uint8_t>& pattern2,
 								   const std::vector<bool>& bpat,
 								   const std::vector<std::shared_ptr<Node>>& ccwNeighbors )
 {
-	return 0;
-	/*Msg.debug("Entering boundaryPatternMatchSpecial(..)");
+	Msg::debug( "Entering boundaryPatternMatchSpecial(..)" );
 
 	if ( pattern[0] != pattern2[0] || pattern[1] != pattern2[1] || bpat[0] != boundaryNode() )
 	{
-		Msg.debug( "Leaving boundaryPatternMatchSpecial(..): mismatch" );
+		Msg::debug( "Leaving boundaryPatternMatchSpecial(..): mismatch" );
 		return -1;
 	}
 	int i, j, k;
-	boolean match;
+	bool match;
 
-	Msg.debug( "...entering the for loop" );
+	Msg::debug( "...entering the for loop" );
 
 	for ( k = 2; k < pattern[0]; k++ )
 	{
 
-		Msg.debug( "...k== " + k );
+		Msg::debug( "...k== " + k );
 		j = k;
 		match = true;
 
 		for ( i = 2; i < pattern[0]; i++ )
 		{
-			Msg.debug( "...i== " + i );
+			Msg::debug( "...i== " + i );
 
-			Msg.debug( "...pattern[" + j + "]== " + pattern[j] );
-			Msg.debug( "...pattern2[" + i + "]== " + pattern2[i] );
+			Msg::debug( "...pattern[" + std::to_string( j ) + "]== " + std::to_string( pattern[j] ) );
+			Msg::debug( "...pattern2[" + std::to_string( i ) + "]== " + std::to_string( pattern2[i] ) );
 
 			if ( pattern[j] == 2 && (pattern2[i] == 2 || pattern2[i] == 14 || pattern2[i] == 0) )
 			{
-				if ( bpat[i - 1] && !ccwNeighbors[j - 2].boundaryNode() )
+				if ( bpat[i - 1] && !ccwNeighbors[j - 2]->boundaryNode() )
 				{
 					match = false;
 					break;
 				}
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else if ( pattern[j] == 3 && (pattern2[i] == 3 || pattern2[i] == 14 || pattern2[i] == 0) )
 			{
-				if ( bpat[i - 1] && !ccwNeighbors[j - 2].boundaryNode() )
+				if ( bpat[i - 1] && !ccwNeighbors[j - 2]->boundaryNode() )
 				{
 					match = false;
 					break;
 				}
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else if ( pattern[j] == 4 && (pattern2[i] == 4 || pattern2[i] == 14 || pattern2[i] == 24 || pattern2[i] == 0) )
 			{
-				if ( bpat[i - 1] && !ccwNeighbors[j - 2].boundaryNode() )
+				if ( bpat[i - 1] && !ccwNeighbors[j - 2]->boundaryNode() )
 				{
 					match = false;
 					break;
 				}
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else if ( pattern[j] >= 5 && (pattern2[i] == 5 || pattern2[i] == 24 || pattern2[i] == 0) )
 			{
 				if ( bpat[i - 1] )
 				{
-					Msg.debug( "bpat[" + (i - 1) + "] is true" );
+					Msg::debug( "bpat[" + std::to_string( i - 1 ) + "] is true" );
 				}
 				else
 				{
-					Msg.debug( "bpat[" + (i - 1) + "] is false" );
+					Msg::debug( "bpat[" + std::to_string( i - 1 ) + "] is false" );
 				}
 
-				if ( ccwNeighbors[j - 2].boundaryNode() )
+				if ( ccwNeighbors[j - 2]->boundaryNode() )
 				{
-					Msg.debug( "ccwNeighbors[" + (j - 2) + "].boundaryNode()]) is true" );
+					Msg::debug( "ccwNeighbors[" + std::to_string( j - 2 ) + "].boundaryNode()]) is true" );
 				}
 				else
 				{
-					Msg.debug( "ccwNeighbors[" + (j - 2) + "].boundaryNode()]) is false" );
+					Msg::debug( "ccwNeighbors[" + std::to_string( j - 2 ) + "].boundaryNode()]) is false" );
 				}
 
-				if ( bpat[i - 1] && !ccwNeighbors[j - 2].boundaryNode() )
+				if ( bpat[i - 1] && !ccwNeighbors[j - 2]->boundaryNode() )
 				{
 					match = false;
 					break;
 				}
-				Msg.debug( "...pattern2[" + i + "]: " + pattern2[i] + ", pattern[" + j + "]: " + pattern[j] );
+				Msg::debug( "...pattern2[" + std::to_string( i ) + "]: " + std::to_string( pattern2[i] ) + ", pattern[" + std::to_string( j ) + "]: " + std::to_string( pattern[j] ) );
 			}
 			else
 			{
@@ -2127,39 +2087,35 @@ Node::boundaryPatternMatchSpecial( const std::vector<uint8_t>& pattern2,
 		}
 		if ( match )
 		{
-			Msg.debug( "Leaving boundaryPatternMatchSpecial(..): match" );
+			Msg::debug( "Leaving boundaryPatternMatchSpecial(..): match" );
 			return k;
 		}
 	}
-	Msg.debug( "Leaving boundaryPatternMatchSpecial(..): mismatch" );
-	return -1;*/
+	Msg::debug( "Leaving boundaryPatternMatchSpecial(..): mismatch" );
+	return -1;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge> 
 Node::commonEdge( const std::shared_ptr<Node>& n )
 {
-	return nullptr;
-	/*Node other;
-	for ( Edge e : edgeList )
+	for ( auto e : edgeList )
 	{
-		other = e.otherNode( this );
+		auto other = e->otherNode( shared_from_this() );
 		if ( other == n )
 		{
 			return e;
 		}
 	}
-	return null;*/
+	return nullptr;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool 
 Node::replaceWithStdMesh()
 {
-	/*Msg.debug( "Entering replaceWithStdMesh(..)" );
-	Msg.debug( "Leaving replaceWithStdMesh(..)" );*/
+	Msg::debug( "Entering replaceWithStdMesh(..)" );
+	Msg::debug( "Leaving replaceWithStdMesh(..)" );
 	return true;
 }
 

@@ -44,6 +44,12 @@ public:
 	std::shared_ptr<Element> elementWithExchangedNodes( const std::shared_ptr<Node>& original,
 														const std::shared_ptr<Node>& replacement );
 
+	// Return true if the quad becomes inverted when node n is relocated to pos.
+	// (x,y).
+	// Else return false.
+	bool invertedWhenNodeRelocated( const std::shared_ptr<Node>& n1,
+									const std::shared_ptr<Node>& n2 );
+
 	bool equals( const std::shared_ptr<Constants>& elem ) const override;
 
 	double angle( const std::shared_ptr<Edge>& e, 

@@ -6,6 +6,13 @@ template< typename T >
 class ArrayList 
 {
 public:
+	void add( size_t index, const T& item )
+	{
+		if ( index > mArray.size() )
+			throw std::out_of_range( "Index out of range in add" );
+		mArray.insert( mArray.begin() + index, item );
+	}
+
 	void addAll( const ArrayList<T>& other )
 	{
 		mArray.insert( mArray.end(), other.mArray.begin(), other.mArray.end() );

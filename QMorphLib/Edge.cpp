@@ -7,6 +7,7 @@
 #include "Numbers.h"
 #include "Msg.h"
 #include "Element.h"
+#include "Types.h"
 
 #include <iostream>
 
@@ -156,18 +157,17 @@ Edge::alterRightState( bool newRightState )
 	return true;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge>
 Edge::evalPotSideEdge( const std::shared_ptr<Edge>& frontNeighbor,
 					   const std::shared_ptr<Node>& n )
 {
-	return nullptr;
-	/*Msg::debug("Entering Edge.evalPotSideEdge(..)");
-	Element tri = getTriangleElement(), quad = getQuadElement();
+	Msg::debug("Entering Edge.evalPotSideEdge(..)");
+	auto tri = getTriangleElement();
+	auto quad = getQuadElement();
 	double ang;
 
-	if ( tri != null )
+	if ( tri != nullptr )
 	{
 		ang = sumAngle( tri, n, frontNeighbor );
 	}
@@ -176,96 +176,118 @@ Edge::evalPotSideEdge( const std::shared_ptr<Edge>& frontNeighbor,
 		ang = PIx2 - sumAngle( quad, n, frontNeighbor );
 	}
 
-	Msg.debug( "sumAngle(..) between " + descr() + " and " + frontNeighbor.descr() + ": " + Math.toDegrees( ang ) );
+	Msg::debug( "sumAngle(..) between " + descr() + " and " + frontNeighbor->descr() + ": " + std::to_string( toDegrees * ang ) );
 
-	Msg.debug( "Leaving Edge.evalPotSideEdge(..)" );
+	Msg::debug( "Leaving Edge.evalPotSideEdge(..)" );
 	if ( ang < PIx3div4 )
 	{ // if (ang< PIdiv2+EPSILON) // Could this be better?
 		return frontNeighbor;
 	}
 	else
 	{
-		return null;
-	}*/
+		return nullptr;
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void 
 Edge::classifyStateOfFrontEdge()
 {
-	/*Msg::debug("Entering Edge.classifyStateOfFrontEdge()");
+	Msg::debug("Entering Edge.classifyStateOfFrontEdge()");
 	Msg::debug( "this: " + descr() );
-	final Edge lfn = leftFrontNeighbor, rfn = rightFrontNeighbor;
-
-	Edge l, r;
+	auto lfn = leftFrontNeighbor, rfn = rightFrontNeighbor;
 
 	// Alter states and side Edges on left side:
-	l = evalPotSideEdge( lfn, leftNode );
-	if ( l != null )
+	auto l = evalPotSideEdge( lfn, leftNode );
+	if ( l != nullptr )
 	{
 		leftSide = true;
-		if ( leftNode == lfn.leftNode )
+		if ( leftNode == lfn->leftNode )
 		{
-			lfn.alterLeftState( true );
+			lfn->alterLeftState( true );
 		}
 		else
 		{
-			lfn.alterRightState( true );
+			lfn->alterRightState( true );
 		}
 	}
 	else
 	{
 		leftSide = false;
-		if ( leftNode == lfn.leftNode )
+		if ( leftNode == lfn->leftNode )
 		{
-			lfn.alterLeftState( false );
+			lfn->alterLeftState( false );
 		}
 		else
 		{
-			lfn.alterRightState( false );
+			lfn->alterRightState( false );
 		}
 	}
 
 	// Alter states and side Edges on right side:
-	r = evalPotSideEdge( rfn, rightNode );
-	if ( r != null )
+	auto r = evalPotSideEdge( rfn, rightNode );
+	if ( r != nullptr )
 	{
 		rightSide = true;
-		if ( rightNode == rfn.leftNode )
+		if ( rightNode == rfn->leftNode )
 		{
-			rfn.alterLeftState( true );
+			rfn->alterLeftState( true );
 		}
 		else
 		{
-			rfn.alterRightState( true );
+			rfn->alterRightState( true );
 		}
 	}
 	else
 	{
 		rightSide = false;
-		if ( rightNode == rfn.leftNode )
+		if ( rightNode == rfn->leftNode )
 		{
-			rfn.alterLeftState( false );
+			rfn->alterLeftState( false );
 		}
 		else
 		{
-			rfn.alterRightState( false );
+			rfn->alterRightState( false );
 		}
 	}
 
 	// Add this to a stateList:
-	stateList.get( getState() ).add( this );
-	Msg.debug( "Leaving Edge.classifyStateOfFrontEdge()" );*/
+	stateList[getState()].add( shared_from_this() );
+	Msg::debug( "Leaving Edge.classifyStateOfFrontEdge()" );
 }
 
-//TODO: Implement this method
+//TODO: Tests
+bool
+Edge::isLargeTransition( const std::shared_ptr<Edge>& e )
+{
+	double ratio;
+	double e1Len = length();
+	double e2Len = e->length();
+
+	if ( e1Len > e2Len )
+	{
+		ratio = e1Len / e2Len;
+	}
+	else
+	{
+		ratio = e2Len / e1Len;
+	}
+
+	if ( ratio > 2.5 )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 //TODO: Tests
 std::shared_ptr<Edge>
 Edge::getNextFront()
 {
-	return nullptr;
-	/*std::shared_ptr<Edge> current, selected = nullptr;
+	std::shared_ptr<Edge> current, selected = nullptr;
 	int selState, curState = 2, i;
 
 	// Select a front preferrably in stateList[2]
@@ -313,13 +335,13 @@ Edge::getNextFront()
 
 		if ( selected->isLargeTransition( selected->rightFrontNeighbor ) )
 		{
-			if ( selected->length() > selected->rightFrontNeighbor.length() && selected->rightFrontNeighbor->selectable )
+			if ( selected->length() > selected->rightFrontNeighbor->length() && selected->rightFrontNeighbor->selectable )
 			{
 				return selected->rightFrontNeighbor;
 			}
 		}
 	}
-	return selected;*/
+	return selected;
 }
 
 bool 
@@ -342,55 +364,55 @@ Edge::replaceNode( const std::shared_ptr<Node>& n1,
 	return true;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void
 Edge::seamWith( const std::shared_ptr<Edge>& e )
 {
-	/*Node nK = commonNode(e);
-	Node nKp1 = otherNode( nK ), nKm1 = e.otherNode( nK ), other;
-	boolean found = false;
-	Edge eI, eJ;
+	auto nK = commonNode(e);
+	auto nKp1 = otherNode( nK );
+	auto nKm1 = e->otherNode( nK );
+	std::shared_ptr<Node> other;
+	bool found = false;
 
-	for ( int i = 0; i < nKm1.edgeList.size(); i++ )
+	for ( int i = 0; i < nKm1->edgeList.size(); i++ )
 	{
-		eI = nKm1.edgeList.get( i );
-		other = eI.otherNode( nKm1 );
+		auto eI = nKm1->edgeList.get( i );
+		other = eI->otherNode( nKm1 );
 
 		if ( other != nKp1 )
 		{
-			for ( int j = 0; j < nKp1.edgeList.size(); j++ )
+			for ( int j = 0; j < nKp1->edgeList.size(); j++ )
 			{
-				eJ = nKp1.edgeList.get( j );
+				auto eJ = nKp1->edgeList.get( j );
 
-				if ( other == eJ.otherNode( nKp1 ) )
+				if ( other == eJ->otherNode( nKp1 ) )
 				{
 					found = true;
 
-					other.edgeList.remove( other.edgeList.indexOf( eI ) );
+					other->edgeList.remove( other->edgeList.indexOf( eI ) );
 
-					if ( eI.element1.firstNode == nKm1 )
+					if ( eI->element1->firstNode == nKm1 )
 					{ // Don't forget firstNode!!
-						eI.element1.firstNode = nKp1;
+						eI->element1->firstNode = nKp1;
 					}
-					eI.element1.replaceEdge( eI, eJ );
-					eJ.connectToElement( eI.element1 );
+					eI->element1->replaceEdge( eI, eJ );
+					eJ->connectToElement( eI->element1 );
 					break;
 				}
 			}
 			if ( !found )
 			{
-				if ( eI.element1.firstNode == nKm1 )
+				if ( eI->element1->firstNode == nKm1 )
 				{ // Don't forget firstNode!!
-					eI.element1.firstNode = nKp1;
+					eI->element1->firstNode = nKp1;
 				}
-				if ( eI.element2.firstNode == nKm1 )
+				if ( eI->element2->firstNode == nKm1 )
 				{ // Don't forget firstNode!!
-					eI.element2.firstNode = nKp1;
+					eI->element2->firstNode = nKp1;
 				}
 
-				eI.replaceNode( nKm1, nKp1 );
-				nKp1.edgeList.add( eI );
+				eI->replaceNode( nKm1, nKp1 );
+				nKp1->edgeList.add( eI );
 			}
 			else
 			{
@@ -400,9 +422,9 @@ Edge::seamWith( const std::shared_ptr<Edge>& e )
 		else
 		{
 			// Remove the edge between eKp1 and eKm1 (from the edgeList of eKp1)
-			nKp1.edgeList.remove( nKp1.edgeList.indexOf( eI ) );
+			nKp1->edgeList.remove( nKp1->edgeList.indexOf( eI ) );
 		}
-	}*/
+	}
 }
 
 std::shared_ptr<Node> 
@@ -429,20 +451,18 @@ Edge::length( const std::shared_ptr<Node>& node1,
 	return length( node1->x, node1->y, node2->x, node2->y );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 double
 Edge::angleAt( const std::shared_ptr<Node>& n )
 {
-	return 0.0;
-	/*// Math.acos returns values in the range 0.0 through pi, avoiding neg numbers.
+	// Math.acos returns values in the range 0.0 through pi, avoiding neg numbers.
 	// If this is CW to x-axis, then return pos acos, else return neg acos
 	// double x= leftNode.x-rightNode.x;
 	// double y= leftNode.y-rightNode.y;
-	Node other = otherNode( n );
+	auto other = otherNode( n );
 
-	double x = n.x - other.x;
-	double y = n.y - other.y;
+	double x = n->x - other->x;
+	double y = n->y - other->y;
 
 	if ( x == 0 && y > 0 )
 	{
@@ -454,104 +474,93 @@ Edge::angleAt( const std::shared_ptr<Node>& n )
 	}
 	else
 	{
-		double hyp = Math.sqrt( x * x + y * y );
+		double hyp = std::sqrt( x * x + y * y );
 
 		if ( x > 0 )
 		{
 			if ( y > 0 )
 			{
-				return Math.PI + Math.acos( x / hyp );
+				return PI + std::acos( x / hyp );
 			}
 			else
 			{
-				return Math.PI - Math.acos( x / hyp );
+				return PI - std::acos( x / hyp );
 			}
 		}
 		else
 		{
 			if ( y > 0 )
 			{
-				return Math.PI + Math.PI - Math.acos( -x / hyp );
+				return PI + PI - std::acos( -x / hyp );
 			}
 			else
 			{
-				return Math.acos( -x / hyp );
+				return std::acos( -x / hyp );
 			}
 		}
-	}*/
+	}
 }
 
-std::string 
-Edge::descr()
-{
-	return "(" + std::to_string( leftNode->x ) + ", " + std::to_string( leftNode->y ) + "), (" +
-		std::to_string( rightNode->x ) + ", " + std::to_string( rightNode->y ) + ")";
-}
-
-//TODO: Implement this method
 //TODO: Tests
 double 
 Edge::sumAngle( const std::shared_ptr<Element>& sElem,
 				const std::shared_ptr<Node>& n,
 				const std::shared_ptr<Edge>& eEdge )
 {
-	return 0.0;
-	/*Msg::debug("Entering sumAngle(..)");
+	Msg::debug("Entering sumAngle(..)");
 	Msg::debug( "this: " + descr() );
 	if ( sElem != nullptr )
 	{
 		Msg::debug( "sElem: " + sElem->descr() );
 	}
-	if ( n != null )
+	if ( n != nullptr )
 	{
-		Msg.debug( "n: " + n.descr() );
+		Msg::debug( "n: " + n->descr() );
 	}
-	if ( eEdge != null )
+	if ( eEdge != nullptr )
 	{
-		Msg.debug( "eEdge: " + eEdge.descr() );
+		Msg::debug( "eEdge: " + eEdge->descr() );
 	}
 
-	Element curElem = sElem;
-	Edge curEdge = this;
+	auto curElem = sElem;
+	auto curEdge = shared_from_this();
 	double ang = 0, iang = 0;
 	double d;
 
-	while ( curEdge != eEdge && curElem != null )
+	while ( curEdge != eEdge && curElem != nullptr )
 	{
-		d = curElem.angle( curEdge, n );
+		d = curElem->angle( curEdge, n );
 		ang += d;
-		curEdge = curElem.neighborEdge( n, curEdge );
-		curElem = curElem.neighbor( curEdge );
+		curEdge = curElem->neighborEdge( n, curEdge );
+		curElem = curElem->neighbor( curEdge );
 	}
 
 	// If n is a boundaryNode, the situation gets more complicated:
 	if ( curEdge != eEdge )
 	{
 		// Sum the "internal" angles:
-		curEdge = this;
-		curElem = sElem.neighbor( curEdge );
+		curEdge = shared_from_this();
+		curElem = sElem->neighbor( curEdge );
 
-		while ( curEdge != eEdge && curElem != null )
+		while ( curEdge != eEdge && curElem != nullptr )
 		{
-			d = curElem.angle( curEdge, n );
+			d = curElem->angle( curEdge, n );
 			iang += d;
-			curEdge = curElem.neighborEdge( n, curEdge );
-			curElem = curElem.neighbor( curEdge );
+			curEdge = curElem->neighborEdge( n, curEdge );
+			curElem = curElem->neighbor( curEdge );
 		}
 		ang = PIx2 - iang;
 	}
-	Msg.debug( "Leaving sumAngle(..), returning " + Math.toDegrees( ang ) );
-	return ang;*/
+	Msg::debug( "Leaving sumAngle(..), returning " + std::to_string( toDegrees * ang ) );
+	return ang;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge>
 Edge::firstFrontEdgeAt( const std::shared_ptr<Element>& sElem,
 						const std::shared_ptr<Node>& n )
 {
-	return nullptr;
-	/*auto curElem = sElem;
+	auto curElem = sElem;
 	auto curEdge = shared_from_this();
 
 	while ( !curEdge->frontEdge )
@@ -559,7 +568,7 @@ Edge::firstFrontEdgeAt( const std::shared_ptr<Element>& sElem,
 		curEdge = curElem->neighborEdge( n, curEdge );
 		curElem = curElem->neighbor( curEdge );
 	}
-	return curEdge;*/
+	return curEdge;
 }
 
 double 
@@ -631,17 +640,15 @@ Edge::computePosAngle( const std::shared_ptr<Edge>& edge,
 	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 double
 Edge::computeCCWAngle( const std::shared_ptr<Edge>& edge )
 {
-	return 0.0;
-	/*Node n = commonNode(edge);
+	auto n = commonNode(edge);
 	double temp = computePosAngle( edge, n );
 
 	MyVector thisVector = getVector( n );
-	MyVector edgeVector = edge.getVector( n );
+	MyVector edgeVector = edge->getVector( n );
 
 	if ( thisVector.isCWto( edgeVector ) )
 	{
@@ -650,7 +657,7 @@ Edge::computeCCWAngle( const std::shared_ptr<Edge>& edge )
 	else
 	{
 		return PIx2 - temp;
-	}*/
+	}
 }
 
 std::shared_ptr<Node>
@@ -670,24 +677,22 @@ Edge::commonNode( const std::shared_ptr<Edge> e )
 	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Element> 
 Edge::commonElement( const std::shared_ptr<Edge>& e )
 {
-	return nullptr;
-	/*if ( hasElement(e.element1) )
+	if ( hasElement( e->element1 ) )
 	{
-		return e.element1;
+		return e->element1;
 	}
-	else if ( e.element2 != null && hasElement( e.element2 ) )
+	else if ( e->element2 != nullptr && hasElement( e->element2 ) )
 	{
-		return e.element2;
+		return e->element2;
 	}
 	else
 	{
-		return null;
-	}*/
+		return nullptr;
+	}
 }
 
 void 
@@ -719,81 +724,77 @@ Edge::tryToDisconnectNodes()
 	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void 
 Edge::connectToTriangle( const std::shared_ptr<Triangle>& triangle )
 {
-	/*if ( hasElement(triangle) )
+	if ( hasElement( triangle ) )
 	{
 		return;
 	}
-	if ( element1 == null )
+	if ( element1 == nullptr )
 	{
 		element1 = triangle;
 	}
-	else if ( element2 == null )
+	else if ( element2 == nullptr )
 	{
 		element2 = triangle;
 	}
 	else
 	{
-		Msg.error( "Edge.connectToTriangle(..): An edge cannot be connected to more than two elements. edge= " + descr() );
-	}*/
+		Msg::error( "Edge.connectToTriangle(..): An edge cannot be connected to more than two elements. edge= " + descr() );
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void 
 Edge::connectToQuad( const std::shared_ptr<Quad>& q )
 {
-	/*if ( hasElement(q) )
+	if ( hasElement( q ) )
 	{
 		return;
 	}
-	if ( element1 == null )
+	if ( element1 == nullptr )
 	{
 		element1 = q;
 	}
-	else if ( element2 == null )
+	else if ( element2 == nullptr )
 	{
 		element2 = q;
 	}
 	else
 	{
-		Msg.error( "Edge.connectToQuad(..):An edge cannot be connected to more than two elements." );
-	}*/
+		Msg::error( "Edge.connectToQuad(..):An edge cannot be connected to more than two elements." );
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void
 Edge::connectToElement( const std::shared_ptr<Element>& elem )
 {
-	/*if ( hasElement(elem) )
+	if ( hasElement( elem ) )
 	{
 		return;
 	}
-	if ( element1 == null )
+	if ( element1 == nullptr )
 	{
 		element1 = elem;
 	}
-	else if ( element2 == null )
+	else if ( element2 == nullptr )
 	{
 		element2 = elem;
 	}
 	else
 	{
-		Msg.error( "Edge.connectToElement(..):An edge cannot be connected to more than two elements." );
-	}*/
+		Msg::error( "Edge.connectToElement(..):An edge cannot be connected to more than two elements." );
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
-void 
+void
 Edge::disconnectFromElement( const std::shared_ptr<Element>& elem )
 {
-	/*if ( element1 == elem )
+	if ( element1 == elem )
 	{
 		element1 = element2;
 		element2 = nullptr;
@@ -805,37 +806,35 @@ Edge::disconnectFromElement( const std::shared_ptr<Element>& elem )
 	else
 	{
 		Msg::error( "Edge " + descr() + " is not connected to element " + elem->descr() + "." );
-	}*/
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
-std::shared_ptr<Node> 
+std::shared_ptr<Node>
 Edge::oppositeNode( const std::shared_ptr<Node>& wrongNode )
 {
-	return nullptr;
-	/*std::shared_ptr<Node> candidate = nullptr;
+	std::shared_ptr<Node> candidate = nullptr;
 	std::shared_ptr<Edge> otherEdge = nullptr;
 
 	// Pick one of the other edges in element1
-	int ind = element1->indexOf( this );
+	int ind = element1->indexOf( shared_from_this() );
 	if ( ind == 0 || ind == 1 )
 	{
-		otherEdge = element1.edgeList[2];
+		otherEdge = element1->edgeList[2];
 	}
 	else
 	{
-		otherEdge = element1.edgeList[1];
+		otherEdge = element1->edgeList[1];
 	}
 
 	// This edge contains an opposite node... get this node....
-	if ( otherEdge.leftNode != leftNode && otherEdge.leftNode != rightNode )
+	if ( otherEdge->leftNode != leftNode && otherEdge->leftNode != rightNode )
 	{
-		candidate = otherEdge.leftNode;
+		candidate = otherEdge->leftNode;
 	}
 	else
 	{
-		candidate = otherEdge.rightNode;
+		candidate = otherEdge->rightNode;
 	}
 
 	// Damn, it's the wrong node! Then we must go look in element2.
@@ -843,28 +842,28 @@ Edge::oppositeNode( const std::shared_ptr<Node>& wrongNode )
 	{
 
 		// Pick one of the other edges in element2
-		ind = element2.indexOf( this );
+		ind = element2->indexOf( shared_from_this() );
 		if ( ind == 0 || ind == 1 )
 		{
-			otherEdge = element2.edgeList[2];
+			otherEdge = element2->edgeList[2];
 		}
 		else if ( ind == 2 )
 		{
-			otherEdge = element2.edgeList[1];
+			otherEdge = element2->edgeList[1];
 		}
 
 		// This edge contains an opposite node
 		// get this node....
-		if ( otherEdge.leftNode != leftNode && otherEdge.leftNode != rightNode )
+		if ( otherEdge->leftNode != leftNode && otherEdge->leftNode != rightNode )
 		{
-			candidate = otherEdge.leftNode;
+			candidate = otherEdge->leftNode;
 		}
-		else if ( otherEdge.rightNode != leftNode && otherEdge.rightNode != rightNode )
+		else if ( otherEdge->rightNode != leftNode && otherEdge->rightNode != rightNode )
 		{
-			candidate = otherEdge.rightNode;
+			candidate = otherEdge->rightNode;
 		}
 	}
-	return candidate;*/
+	return candidate;
 }
 
 std::shared_ptr<Edge>
@@ -888,66 +887,63 @@ Edge::unitNormalAt( const std::shared_ptr<Node>& n )
 	return std::make_shared<Edge>( n, newNode );
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge> 
 Edge::getSwappedEdge()
 {
-	return nullptr;
-	/*if ( element2 == nullptr )
+	if ( element2 == nullptr )
 	{
 		Msg::warning( "getSwappedEdge: Cannot swap a boundary edge." );
 		return nullptr;
 	}
-	if ( element1 instanceof Quad || element2 instanceof Quad )
+	if ( rcl::instanceOf<Quad>( element1 ) || rcl::instanceOf<Quad>( element2 ) )
 	{
-		Msg.warning( "getSwappedEdge: Edge must lie between two triangles." );
-		return null;
+		Msg::warning( "getSwappedEdge: Edge must lie between two triangles." );
+		return nullptr;
 	}
 
-	Node n = this.oppositeNode( null );
-	Node m = this.oppositeNode( n );
-	Edge swappedEdge = new Edge( n, m );
+	auto n = oppositeNode( nullptr );
+	auto m = oppositeNode( n );
+	auto swappedEdge = std::make_shared<Edge>( n, m );
 
-	return swappedEdge;*/
+	return swappedEdge;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 void 
 Edge::swapToAndSetElementsFor( const std::shared_ptr<Edge>& e )
 {
-	/*Msg.debug("Entering Edge.swapToAndSetElementsFor(..)");
-	if ( element1 == null || element2 == null )
+	Msg::debug("Entering Edge.swapToAndSetElementsFor(..)");
+	if ( element1 == nullptr || element2 == nullptr )
 	{
-		Msg.error( "Edge.swapToAndSetElementsFor(..): both elements not set" );
+		Msg::error( "Edge.swapToAndSetElementsFor(..): both elements not set" );
 	}
 
-	Msg.debug( "element1: " + element1.descr() );
-	Msg.debug( "element2: " + element2.descr() );
+	Msg::debug( "element1: " + element1->descr() );
+	Msg::debug( "element2: " + element2->descr() );
 
-	Msg.debug( "...this: " + descr() );
+	Msg::debug( "...this: " + descr() );
 
-	Edge e1 = element1.neighborEdge( leftNode, this );
-	Edge e2 = element1.neighborEdge( e1.otherNode( leftNode ), e1 );
-	Edge e3 = element2.neighborEdge( rightNode, this );
-	Edge e4 = element2.neighborEdge( e3.otherNode( rightNode ), e3 );
+	auto e1 = element1->neighborEdge( leftNode, shared_from_this() );
+	auto e2 = element1->neighborEdge( e1->otherNode( leftNode ), e1 );
+	auto e3 = element2->neighborEdge( rightNode, shared_from_this() );
+	auto e4 = element2->neighborEdge( e3->otherNode( rightNode ), e3 );
 
-	element2.disconnectEdges(); // important: element2 *first*, then element1
-	element1.disconnectEdges();
+	element2->disconnectEdges(); // important: element2 *first*, then element1
+	element1->disconnectEdges();
 
-	Triangle t1 = new Triangle( e, e2, e3 );
-	Triangle t2 = new Triangle( e, e4, e1 );
+	auto t1 = std::make_shared<Triangle>( e, e2, e3 );
+	auto t2 = std::make_shared<Triangle>( e, e4, e1 );
 
-	t1.connectEdges();
-	t2.connectEdges();
+	t1->connectEdges();
+	t2->connectEdges();
 
 	// Update edgeLists at this.leftNode and this.rightNode
 	// and at e.leftNode and e.rightNode:
 	disconnectNodes();
-	e.connectNodes();
+	e->connectNodes();
 
-	Msg.debug( "Leaving Edge.swapToAndSetElementsFor(..)" );*/
+	Msg::debug( "Leaving Edge.swapToAndSetElementsFor(..)" );
 }
 
 MyVector 
@@ -957,7 +953,7 @@ Edge::getVector()
 }
 
 MyVector
-Edge::getVector( std::shared_ptr<Node>& origin )
+Edge::getVector( const std::shared_ptr<Node>& origin )
 {
 	if ( origin->equals( leftNode ) )
 	{
@@ -974,24 +970,22 @@ Edge::getVector( std::shared_ptr<Node>& origin )
 	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool
 Edge::bordersToTriangle()
 {
-	return false;
-	/*if ( element1 instanceof Triangle )
+	if ( rcl::instanceOf<Triangle>( element1 ) )
 	{
 		return true;
 	}
-	else if ( element2 != null && element2 instanceof Triangle )
+	else if ( element2 != nullptr && rcl::instanceOf<Triangle>( element2 ) )
 	{
 		return true;
 	}
 	else
 	{
 		return false;
-	}*/
+	}
 }
 
 //TODO: Tests
@@ -1006,20 +1000,18 @@ Edge::boundaryEdge()
 	return false;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool 
 Edge::boundaryOrTriangleEdge()
 {
-	return false;
-	/*if ( element1 == nullptr || element2 == nullptr || element1 instanceof Triangle || element2 instanceof Triangle )
+	if ( element1 == nullptr || element2 == nullptr || rcl::instanceOf<Triangle>( element1 ) || rcl::instanceOf<Triangle>( element2 ) )
 	{
 		return true;
 	}
 	else
 	{
 		return false;
-	}*/
+	}
 }
 
 bool 
@@ -1131,64 +1123,60 @@ Edge::lowerNode()
 	}
 }
 
-//TODO: Implement this function
 //TODO: Tests
-bool noTrianglesInOrbit( const std::shared_ptr<Edge>& e,
+bool 
+Edge::noTrianglesInOrbit( const std::shared_ptr<Edge>& e,
 						 const std::shared_ptr<Quad>& startQ )
 {
-	return false;
-	/*Msg.debug("Entering Edge.noTrianglesInOrbit(..)");
-	Edge curEdge = this;
-	Element curElem = startQ;
-	Node n = commonNode( e );
-	if ( n == null )
+	Msg::debug("Entering Edge.noTrianglesInOrbit(..)");
+	auto curEdge = shared_from_this();
+	std::shared_ptr<Element> curElem = startQ;
+	auto n = commonNode( e );
+	if ( n == nullptr )
 	{
-		Msg.debug( "Leaving Edge.noTrianglesInOrbit(..), returns false" );
+		Msg::debug( "Leaving Edge.noTrianglesInOrbit(..), returns false" );
 		return false;
 	}
-	if ( curEdge.boundaryEdge() )
+	if ( curEdge->boundaryEdge() )
 	{
-		curEdge = n.anotherBoundaryEdge( curEdge );
-		curElem = curEdge.element1;
+		curEdge = n->anotherBoundaryEdge( curEdge );
+		curElem = curEdge->element1;
 	}
 	do
 	{
-		if ( curElem instanceof Triangle )
+		if ( rcl::instanceOf<Triangle>( curElem ) )
 		{
-			Msg.debug( "Leaving Edge.noTrianglesInOrbit(..), returns false" );
+			Msg::debug( "Leaving Edge.noTrianglesInOrbit(..), returns false" );
 			return false;
 		}
-		curEdge = curElem.neighborEdge( n, curEdge );
-		if ( curEdge.boundaryEdge() )
+		curEdge = curElem->neighborEdge( n, curEdge );
+		if ( curEdge->boundaryEdge() )
 		{
-			curEdge = n.anotherBoundaryEdge( curEdge );
-			curElem = curEdge.element1;
+			curEdge = n->anotherBoundaryEdge( curEdge );
+			curElem = curEdge->element1;
 		}
 		else
 		{
-			curElem = curElem.neighbor( curEdge );
+			curElem = curElem->neighbor( curEdge );
 		}
 	} while ( curEdge != e );
 
-	Msg.debug( "Leaving Edge.noTrianglesInOrbit(..), returns true" );
-	return true;*/
+	Msg::debug( "Leaving Edge.noTrianglesInOrbit(..), returns true" );
+	return true;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge>
 Edge::findLeftFrontNeighbor( const ArrayList<std::shared_ptr<Edge>>& frontList2 )
 {
-	return nullptr;
-	/*List<Edge> list = new ArrayList<>();
-	Edge candidate = null;
-	double candAng = Double.POSITIVE_INFINITY, curAng;
-	Triangle t;
+	ArrayList<std::shared_ptr<Edge>> list;
+	std::shared_ptr<Edge> candidate = nullptr;
+	double candAng = std::numeric_limits<double>::infinity(), curAng;
 
-	for ( int j = 0; j < leftNode.edgeList.size(); j++ )
+	for ( int j = 0; j < leftNode->edgeList.size(); j++ )
 	{
-		Edge leftEdge = leftNode.edgeList.get( j );
-		if ( leftEdge != this && leftEdge.isFrontEdge() )
+		auto leftEdge = leftNode->edgeList.get( j );
+		if ( leftEdge != shared_from_this() && leftEdge->isFrontEdge() )
 		{
 			list.add( leftEdge );
 		}
@@ -1201,9 +1189,9 @@ Edge::findLeftFrontNeighbor( const ArrayList<std::shared_ptr<Edge>>& frontList2 
 	{
 
 		// Choose the front edge with the smallest angle
-		t = getTriangleElement();
+		auto t = getTriangleElement();
 
-		for ( Edge leftEdge : list )
+		for ( auto leftEdge : list )
 		{
 			curAng = sumAngle( t, leftNode, leftEdge );
 			if ( curAng < candAng )
@@ -1212,30 +1200,25 @@ Edge::findLeftFrontNeighbor( const ArrayList<std::shared_ptr<Edge>>& frontList2 
 				candidate = leftEdge;
 			}
 
-			// if (noTrianglesInOrbit(leftEdge, q))
-			// return leftEdge;
 		}
 		return candidate;
 	}
-	Msg.warning( "findLeftFrontNeighbor(..): Returning null" );
-	return null;*/
+	Msg::warning( "findLeftFrontNeighbor(..): Returning null" );
+	return nullptr;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge> 
 Edge::findRightFrontNeighbor( const ArrayList<std::shared_ptr<Edge>>& frontList2 )
 {
-	return nullptr;
-	/*List<Edge> list = new ArrayList<>();
-	Edge candidate = null;
-	double candAng = Double.POSITIVE_INFINITY, curAng;
-	Triangle t;
+	ArrayList<std::shared_ptr<Edge>> list;
+	std::shared_ptr<Edge> candidate = nullptr;
+	double candAng = std::numeric_limits<double>::infinity(), curAng;
 
-	for ( int j = 0; j < rightNode.edgeList.size(); j++ )
+	for ( int j = 0; j < rightNode->edgeList.size(); j++ )
 	{
-		Edge rightEdge = rightNode.edgeList.get( j );
-		if ( rightEdge != this && rightEdge.isFrontEdge() )
+		auto rightEdge = rightNode->edgeList.get( j );
+		if ( rightEdge != shared_from_this() && rightEdge->isFrontEdge() )
 		{
 			list.add( rightEdge );
 		}
@@ -1246,26 +1229,23 @@ Edge::findRightFrontNeighbor( const ArrayList<std::shared_ptr<Edge>>& frontList2
 	}
 	else if ( list.size() > 0 )
 	{
-		t = getTriangleElement();
-		for ( Edge rightEdge : list )
+		auto t = getTriangleElement();
+		for ( auto rightEdge : list )
 		{
 			curAng = sumAngle( t, rightNode, rightEdge );
 
-			Msg.debug( "findRightFrontNeighbor(): Angle between edge this: " + descr() + " and edge " + rightEdge.descr() + ": " + curAng );
+			Msg::debug( "findRightFrontNeighbor(): Angle between edge this: " + descr() + " and edge " + rightEdge->descr() + ": " + std::to_string( curAng ) );
 			if ( curAng < candAng )
 			{
 				candAng = curAng;
 				candidate = rightEdge;
 			}
-
-			// if (noTrianglesInOrbit(rightEdge, q))
-			// return rightEdge;
 		}
-		Msg.debug( "findRightFrontNeighbor(): Returning candidate " + candidate.descr() );
+		Msg::debug( "findRightFrontNeighbor(): Returning candidate " + candidate->descr() );
 		return candidate;
 	}
-	Msg.warning( "findRightFrontNeighbor(..): List.size== " + list.size() + ". Returning null" );
-	return null;*/
+	Msg::warning( "findRightFrontNeighbor(..): List.size== " + std::to_string( list.size() ) + ". Returning null" );
+	return nullptr;
 }
 
 void
@@ -1285,15 +1265,13 @@ Edge::setFrontNeighbor( const std::shared_ptr<Edge>& e )
 	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 bool 
 Edge::setFrontNeighbors( const ArrayList<std::shared_ptr<Edge>>& frontList2 )
 {
-	return false;
-	/*auto lFront = findLeftFrontNeighbor(frontList2);
+	auto lFront = findLeftFrontNeighbor( frontList2 );
 	auto rFront = findRightFrontNeighbor( frontList2 );
-	boolean res = false;
+	bool res = false;
 	if ( lFront != leftFrontNeighbor || rFront != rightFrontNeighbor )
 	{
 		res = true;
@@ -1301,17 +1279,15 @@ Edge::setFrontNeighbors( const ArrayList<std::shared_ptr<Edge>>& frontList2 )
 	leftFrontNeighbor = lFront;
 	rightFrontNeighbor = rFront;
 
-	if ( lFront != null && !lFront.hasFrontNeighbor( this ) )
+	if ( lFront != nullptr && !lFront->hasFrontNeighbor( shared_from_this() ) )
 	{
-		// res= true;
-		lFront.setFrontNeighbor( this );
+		lFront->setFrontNeighbor( shared_from_this() );
 	}
-	if ( rFront != null && !rFront.hasFrontNeighbor( this ) )
+	if ( rFront != nullptr && !rFront->hasFrontNeighbor( shared_from_this() ) )
 	{
-		// res= true;
-		rFront.setFrontNeighbor( this );
+		rFront->setFrontNeighbor( shared_from_this() );
 	}
-	return res;*/
+	return res;
 }
 
 void 
@@ -1342,57 +1318,55 @@ Edge::removeFromFront( ArrayList<std::shared_ptr<Edge>>& frontList2 )
 	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge>
 Edge::splitTrianglesAt( const std::shared_ptr<Node>& nN,
 						const std::shared_ptr<Node>& ben,
-						const ArrayList<std::shared_ptr<Triangle>>& triangleList,
-						const ArrayList<std::shared_ptr<Edge>>& edgeList,
+						ArrayList<std::shared_ptr<Triangle>>& triangleList,
+						ArrayList<std::shared_ptr<Edge>>& edgeList,
 						const ArrayList<std::shared_ptr<Node>>& nodeList )
 {
-	return nullptr;
-	/*Msg.debug("Entering Edge.splitTrianglesAt(..)");
-	Edge eK1 = new Edge( leftNode, nN );
-	Edge eK2 = new Edge( rightNode, nN );
+	Msg::debug( "Entering Edge.splitTrianglesAt(..)" );
+	auto eK1 = std::make_shared<Edge>( leftNode, nN );
+	auto eK2 = std::make_shared<Edge>( rightNode, nN );
 
-	Triangle tri1 = (Triangle)element1;
-	Triangle tri2 = (Triangle)element2;
+	auto tri1 = std::dynamic_pointer_cast<Triangle>(element1);
+	auto tri2 = std::dynamic_pointer_cast<Triangle>(element2);
 
-	Node n1 = tri1.oppositeOfEdge( this );
-	Node n2 = tri2.oppositeOfEdge( this );
-	Edge diagonal1 = new Edge( nN, n1 );
-	Edge diagonal2 = new Edge( nN, n2 );
+	auto n1 = tri1->oppositeOfEdge( shared_from_this() );
+	auto n2 = tri2->oppositeOfEdge( shared_from_this() );
+	auto diagonal1 = std::make_shared<Edge>( nN, n1 );
+	auto diagonal2 = std::make_shared<Edge>( nN, n2 );
 
-	Edge e12 = tri1.neighborEdge( leftNode, this );
-	Edge e13 = tri1.neighborEdge( rightNode, this );
-	Edge e22 = tri2.neighborEdge( leftNode, this );
-	Edge e23 = tri2.neighborEdge( rightNode, this );
+	auto e12 = tri1->neighborEdge( leftNode, shared_from_this() );
+	auto e13 = tri1->neighborEdge( rightNode, shared_from_this() );
+	auto e22 = tri2->neighborEdge( leftNode, shared_from_this() );
+	auto e23 = tri2->neighborEdge( rightNode, shared_from_this() );
 
-	Triangle t11 = new Triangle( diagonal1, e12, eK1 );
-	Triangle t12 = new Triangle( diagonal1, e13, eK2 );
-	Triangle t21 = new Triangle( diagonal2, e22, eK1 );
-	Triangle t22 = new Triangle( diagonal2, e23, eK2 );
+	auto t11 = std::make_shared<Triangle>( diagonal1, e12, eK1 );
+	auto t12 = std::make_shared<Triangle>( diagonal1, e13, eK2 );
+	auto t21 = std::make_shared<Triangle>( diagonal2, e22, eK1 );
+	auto t22 = std::make_shared<Triangle>( diagonal2, e23, eK2 );
 
 	// Update the nodes' edgeLists
 	disconnectNodes();
-	eK1.connectNodes();
-	eK2.connectNodes();
-	diagonal1.connectNodes();
-	diagonal2.connectNodes();
+	eK1->connectNodes();
+	eK2->connectNodes();
+	diagonal1->connectNodes();
+	diagonal2->connectNodes();
 
 	// Disconnect old Triangles
-	tri1.disconnectEdges();
-	tri2.disconnectEdges();
+	tri1->disconnectEdges();
+	tri2->disconnectEdges();
 
 	// Connect Edges to new Triangles
-	t11.connectEdges();
-	t12.connectEdges();
-	t21.connectEdges();
-	t22.connectEdges();
+	t11->connectEdges();
+	t12->connectEdges();
+	t21->connectEdges();
+	t22->connectEdges();
 
 	// Update "global" lists
-	edgeList.remove( edgeList.indexOf( this ) );
+	edgeList.remove( edgeList.indexOf( shared_from_this() ) );
 	edgeList.add( eK1 );
 	edgeList.add( eK2 );
 	edgeList.add( diagonal1 );
@@ -1405,144 +1379,131 @@ Edge::splitTrianglesAt( const std::shared_ptr<Node>& nN,
 	triangleList.add( t21 );
 	triangleList.add( t22 );
 
-	Msg.debug( "...Created triangle " + t11.descr() );
-	Msg.debug( "...Created triangle " + t12.descr() );
-	Msg.debug( "...Created triangle " + t21.descr() );
-	Msg.debug( "...Created triangle " + t22.descr() );
+	Msg::debug( "...Created triangle " + t11->descr() );
+	Msg::debug( "...Created triangle " + t12->descr() );
+	Msg::debug( "...Created triangle " + t21->descr() );
+	Msg::debug( "...Created triangle " + t22->descr() );
 
-	Msg.debug( "Leaving Edge.splitTrianglesAt(..)" );
-	if ( eK1.hasNode( ben ) )
+	Msg::debug( "Leaving Edge.splitTrianglesAt(..)" );
+	if ( eK1->hasNode( ben ) )
 	{
 		return eK1;
 	}
-	else if ( eK2.hasNode( ben ) )
+	else if ( eK2->hasNode( ben ) )
 	{
 		return eK2;
 	}
 	else
 	{
-		Msg.error( "" );
-		return null;
-	}*/
+		Msg::error( "" );
+		return nullptr;
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge>
-Edge::splitTrianglesAtMyMidPoint( const ArrayList<std::shared_ptr<Triangle>>& triangleList,
-								  const ArrayList<std::shared_ptr<Edge>>& edgeList,
-								  const ArrayList<std::shared_ptr<Node>>& nodeList,
+Edge::splitTrianglesAtMyMidPoint( ArrayList<std::shared_ptr<Triangle>>& triangleList,
+								  ArrayList<std::shared_ptr<Edge>>& edgeList,
+								  ArrayList<std::shared_ptr<Node>>& nodeList,
 								  const std::shared_ptr<Edge>& baseEdge )
 {
-	return nullptr;
-	/*Msg.debug("Entering Edge.splitTrianglesAtMyMidPoint(..).");
+	Msg::debug("Entering Edge.splitTrianglesAtMyMidPoint(..).");
 
-	Edge lowerEdge;
-	Node ben = baseEdge.commonNode( this );
-	Node mid = this.midPoint();
+	auto ben = baseEdge->commonNode( shared_from_this() );
+	auto mid = midPoint();
 	nodeList.add( mid );
-	mid.color = java.awt.Color.blue;
+	mid->color = Color::Blue;
 
-	Msg.debug( "Splitting edge " + descr() );
-	Msg.debug( "Creating new Node: " + mid.descr() );
+	Msg::debug( "Splitting edge " + descr() );
+	Msg::debug( "Creating new Node: " + mid->descr() );
 
-	lowerEdge = splitTrianglesAt( mid, ben, triangleList, edgeList, nodeList );
+	auto lowerEdge = splitTrianglesAt( mid, ben, triangleList, edgeList, nodeList );
 
-	Msg.debug( "Leaving Edge.splitTrianglesAtMyMidPoint(..)." );
-	return lowerEdge;*/
+	Msg::debug( "Leaving Edge.splitTrianglesAtMyMidPoint(..)." );
+	return lowerEdge;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge> 
 Edge::nextQuadEdgeAt( const std::shared_ptr<Node>& n,
 					  const std::shared_ptr<Element>& startElem )
 {
-	return nullptr;
-	/*Msg.debug("Entering Edge.nextQuadEdgeAt(..)");
-	Element elem;
-	Edge e;
+	Msg::debug("Entering Edge.nextQuadEdgeAt(..)");
 	int i = 3;
 
-	e = startElem.neighborEdge( n, this );
-	elem = startElem.neighbor( e );
+	auto e = startElem->neighborEdge( n, shared_from_this() );
+	auto elem = startElem->neighbor( e );
 
-	while ( elem != null && !(elem instanceof Quad) && elem != startElem )
+	while ( elem != nullptr && !(rcl::instanceOf<Quad>(elem)) && elem != startElem )
 	{
-		e = elem.neighborEdge( n, e );
-		Msg.debug( "..." + i );
+		e = elem->neighborEdge( n, e );
+		Msg::debug( "..." + i );
 		i++;
-		elem = elem.neighbor( e );
+		elem = elem->neighbor( e );
 	}
-	Msg.debug( "Leaving Edge.nextQuadEdgeAt(..)" );
-	if ( elem != null && elem instanceof Quad && elem != startElem )
+	Msg::debug( "Leaving Edge.nextQuadEdgeAt(..)" );
+	if ( elem != nullptr && rcl::instanceOf<Quad>( elem ) && elem != startElem )
 	{
 		return e;
 	}
 	else
 	{
-		return null;
-	}*/
+		return nullptr;
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Quad> 
 Edge::getQuadElement()
 {
-	return nullptr;
-	/*if ( element1 instanceof Quad )
+	if ( rcl::instanceOf<Quad>( element1 ) )
 	{
-		return (Quad)element1;
+		return std::dynamic_pointer_cast<Quad>(element1);
 	}
-	else if ( element2 instanceof Quad )
+	else if ( rcl::instanceOf<Quad>( element2 ) )
 	{
-		return (Quad)element2;
+		return std::dynamic_pointer_cast<Quad>(element2);
 	}
 	else
 	{
-		return null;
-	}*/
+		return nullptr;
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Triangle> 
 Edge::getTriangleElement()
 {
-	return nullptr;
-	/*if ( element1 instanceof Triangle )
+	if ( rcl::instanceOf<Triangle>( element1 ) )
 	{
-		return (Triangle)element1;
+		return std::dynamic_pointer_cast<Triangle>(element1);
 	}
-	else if ( element2 instanceof Triangle )
+	else if ( rcl::instanceOf<Triangle>( element2 ) )
 	{
-		return (Triangle)element2;
+		return std::dynamic_pointer_cast<Triangle>(element2);
 	}
 	else
 	{
-		return null;
-	}*/
+		return nullptr;
+	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Quad>
 Edge::getQuadWithEdge( const std::shared_ptr<Edge>& e )
 {
-	return nullptr;
-	/*if ( element1 instanceof Quad && element1.hasEdge(e) )
+	if ( rcl::instanceOf<Quad>( element1 ) && element1->hasEdge( e ) )
 	{
-		return (Quad)element1;
+		return std::dynamic_pointer_cast<Quad>(element1);
 	}
-	else if ( element2 instanceof Quad && element2.hasEdge( e ) )
+	else if ( rcl::instanceOf<Quad>( element2 ) && element2->hasEdge( e ) )
 	{
-		return (Quad)element2;
+		return std::dynamic_pointer_cast<Quad>(element2);
 	}
 	else
 	{
-		return null;
-	}*/
+		return nullptr;
+	}
 }
 
 std::shared_ptr<Edge> 
@@ -1580,27 +1541,25 @@ Edge::nextFrontNeighbor( const std::shared_ptr<Edge>& prev )
 	}
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Edge> 
 Edge::trueFrontNeighborAt( const std::shared_ptr<Node>& n )
 {
-	return nullptr;
-	/*auto curElem = getTriangleElement();
-	Edge curEdge = this;
+	std::shared_ptr<Element> curElem = getTriangleElement();
+	auto curEdge = shared_from_this();
 
 	if ( !hasNode( n ) )
 	{
-		Msg.error( "trueFrontNeighborAt(..): this Edge hasn't got Node " + n.descr() );
+		Msg::error( "trueFrontNeighborAt(..): this Edge hasn't got Node " + n->descr() );
 	}
 
 	do
 	{
-		curEdge = curElem.neighborEdge( n, curEdge );
-		curElem = curElem.neighbor( curEdge );
-	} while ( !curEdge.isFrontEdge() );
+		curEdge = curElem->neighborEdge( n, curEdge );
+		curElem = curElem->neighbor( curEdge );
+	} while ( !curEdge->isFrontEdge() );
 
-	return curEdge;*/
+	return curEdge;
 }
 
 //TODO: Test
@@ -1614,13 +1573,13 @@ Edge::toString()
 void 
 Edge::markAllSelectable()
 {
-	std::for_each( stateList.begin(), stateList.end(), []( std::vector<std::shared_ptr<Edge>>& l )
-				   {
-					   std::for_each( l.begin(), l.end(), []( std::shared_ptr<Edge>& e )
-									  {
-										  e->selectable = true;
-									  } );
-				   } );
+	for ( auto& l : stateList )
+	{
+		std::for_each( l.begin(), l.end(), []( std::shared_ptr<Edge>& e )
+					   {
+						   e->selectable = true;
+					   } );
+	}
 }
 
 //TODO: Test
@@ -1667,7 +1626,7 @@ Edge::leftTo( const std::shared_ptr<Edge>& e )
 bool 
 Edge::isFrontEdge()
 {
-	if ( (Element::instanceOf<Triangle>( element1 ) && !(Element::instanceOf<Triangle>( element2 ))) || (Element::instanceOf<Triangle>( element2 ) && !(Element::instanceOf<Triangle>( element1 ))) )
+	if ( (rcl::instanceOf<Triangle>( element1 ) && !(rcl::instanceOf<Triangle>( element2 ))) || (rcl::instanceOf<Triangle>( element2 ) && !(rcl::instanceOf<Triangle>( element1 ))) )
 	{
 		return true;
 	}
@@ -1675,12 +1634,6 @@ Edge::isFrontEdge()
 	{
 		return false;
 	}
-
-	/*
-	 * if ((element1 instanceof Quad && element2 instanceof Quad) || (element1
-	 * instanceof Triangle && element2 instanceof Triangle)) return false; else
-	 * return true;
-	 */
 }
 
 //TODO: Test

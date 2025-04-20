@@ -7,6 +7,7 @@
 #include "MyVector.h"
 
 #include "Msg.h"
+#include "Types.h"
 
 #include <iostream>
 
@@ -508,11 +509,10 @@ Quad::indexOf( const std::shared_ptr<Edge>& e )
 }
 
 //TODO: Test
-//TODO: Implement 
 void closeQuad( const std::shared_ptr<Edge>& e1,
 				const std::shared_ptr<Edge>& e2 )
 {
-	/*Msg::debug("Entering Quad.closeQuad(..)");
+	Msg::debug("Entering Quad.closeQuad(..)");
 	auto nK = e1->commonNode( e2 );
 	auto nKp1 = e1->otherNode( nK ), nKm1 = e2->otherNode( nK ), other = nKp1;
 	bool found = false;
@@ -574,7 +574,7 @@ void closeQuad( const std::shared_ptr<Edge>& e1,
 
 			nKm1->edgeList.set( i, nullptr );
 			eI->replaceNode( nKm1, nKp1 );
-			addList.add( eI ); // nKp1.edgeList.add(eI);
+			addList.add( eI ); 
 		}
 		else
 		{
@@ -595,7 +595,7 @@ void closeQuad( const std::shared_ptr<Edge>& e1,
 
 	nKm1->edgeList.clear();
 
-	Msg::debug( "Leaving Quad.closeQuad(..)" );*/
+	Msg::debug( "Leaving Quad.closeQuad(..)" );
 }
 
 //TODO: Test
@@ -865,7 +865,6 @@ Quad::neighborEdge( const std::shared_ptr<Node>& n )
 	}
 }
 
-//TODO: Implement
 //TODO: Test
 double
 Quad::angle( const std::shared_ptr<Edge>& e,
@@ -997,10 +996,10 @@ Quad::hasEdge( const std::shared_ptr<Edge>& e )
 bool
 Quad::boundaryQuad()
 {
-	if ( instanceOf<Quad>( neighbor( edgeList[base] ) ) ||
-		 instanceOf<Quad>( neighbor( edgeList[left] ) ) ||
-		 instanceOf<Quad>( neighbor( edgeList[right] ) ) ||
-		 instanceOf<Quad>( neighbor( edgeList[top] ) ) )
+	if ( rcl::instanceOf<Quad>( neighbor( edgeList[base] ) ) ||
+		 rcl::instanceOf<Quad>( neighbor( edgeList[left] ) ) ||
+		 rcl::instanceOf<Quad>( neighbor( edgeList[right] ) ) ||
+		 rcl::instanceOf<Quad>( neighbor( edgeList[top] ) ) )
 	{
 		return true;
 	}
@@ -1258,6 +1257,7 @@ Quad::nextCCWNode( const std::shared_ptr<Node>& n )
 	}
 }
 
+//TODO: Test
 void
 Quad::updateLR()
 {
@@ -1866,7 +1866,7 @@ Quad::getAdjTriangles()
 
 		while ( curElem != nullptr && curEdge != edgeList[top] )
 		{
-			if ( Element::instanceOf<Triangle>( curElem ) )
+			if ( rcl::instanceOf<Triangle>( curElem ) )
 			{
 				triangleList.add( std::dynamic_pointer_cast<Triangle>(curElem) );
 			}
@@ -2103,18 +2103,18 @@ Quad::nrOfQuadsSharingAnEdgeAt( const std::shared_ptr<Node>& n )
 
 	if ( edgeList[left]->hasNode( n ) )
 	{
-		if ( Element::instanceOf<Quad>( neighbor( edgeList[left] ) ) )
+		if ( rcl::instanceOf<Quad>( neighbor( edgeList[left] ) ) )
 		{
 			count++;
 		}
 		if ( edgeList[base]->hasNode( n ) )
 		{
-			if ( Element::instanceOf<Quad>( neighbor( edgeList[base] ) ) )
+			if ( rcl::instanceOf<Quad>( neighbor( edgeList[base] ) ) )
 			{
 				count++;
 			}
 		}
-		else if ( Element::instanceOf<Quad>( neighbor( edgeList[top] ) ) )
+		else if ( rcl::instanceOf<Quad>( neighbor( edgeList[top] ) ) )
 		{
 			count++;
 		}
@@ -2122,18 +2122,18 @@ Quad::nrOfQuadsSharingAnEdgeAt( const std::shared_ptr<Node>& n )
 	}
 	else if ( edgeList[right]->hasNode( n ) )
 	{
-		if ( Element::instanceOf<Quad>( neighbor( edgeList[right] ) ) )
+		if ( rcl::instanceOf<Quad>( neighbor( edgeList[right] ) ) )
 		{
 			count++;
 		}
 		if ( edgeList[base]->hasNode( n ) )
 		{
-			if ( Element::instanceOf<Quad>( neighbor( edgeList[base] ) ) )
+			if ( rcl::instanceOf<Quad>( neighbor( edgeList[base] ) ) )
 			{
 				count++;
 			}
 		}
-		else if ( Element::instanceOf<Quad>( neighbor( edgeList[top] ) ) )
+		else if ( rcl::instanceOf<Quad>( neighbor( edgeList[top] ) ) )
 		{
 			count++;
 		}

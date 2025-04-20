@@ -90,6 +90,12 @@
     <ClInclude Include="MyLine.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="GeomBasics.h">
+      <Filter>Header Files\Meshing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -127,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="MyLine.cpp">
       <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="GeomBasics.cpp">
+      <Filter>Source Files\Meshing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

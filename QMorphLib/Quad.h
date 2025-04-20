@@ -19,6 +19,7 @@ class Quad :
 	public Element,
 	public std::enable_shared_from_this<Quad>
 {
+public:
 	/** Create ordinary quad */
 	Quad( const std::shared_ptr<Edge>& baseEdge,
 		  const std::shared_ptr<Edge>& leftEdge,

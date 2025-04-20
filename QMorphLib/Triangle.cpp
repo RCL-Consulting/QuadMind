@@ -6,10 +6,10 @@
 #include "Node.h"
 
 #include "Msg.h"
+#include "Types.h"
 
 #include <iostream>
 
-//TODO: Implement this method
 //TODO: Tests
 Triangle::Triangle( const std::shared_ptr<Edge>& edge1,
 					const std::shared_ptr<Edge>& edge2,
@@ -18,7 +18,7 @@ Triangle::Triangle( const std::shared_ptr<Edge>& edge1,
 					double ang1, double ang2, double ang3,
 					bool lengthsOpt, bool anglesOpt )
 {
-	/*edgeList.assign(3, nullptr);
+	edgeList.assign(3, nullptr);
 
 	edgeList[0] = edge1;
 	edgeList[1] = edge2;
@@ -54,7 +54,7 @@ Triangle::Triangle( const std::shared_ptr<Edge>& edge1,
 	if ( !anglesOpt )
 	{
 		updateAngles();
-	}*/
+	}
 }
 
 //TODO: Tests
@@ -74,17 +74,16 @@ Triangle::Triangle( const Triangle& t )
 	firstNode = t.firstNode;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 Triangle::Triangle( const std::shared_ptr<Edge>& edge1,
 					const std::shared_ptr<Edge>& edge2,
 					const std::shared_ptr<Edge>& edge3 )
 {
-	/*edgeList = new Edge[3];
+	edgeList.assign( 3, nullptr );
 
-	if ( edge1 == null || edge2 == null || edge3 == null )
+	if ( edge1 == nullptr || edge2 == nullptr || edge3 == nullptr )
 	{
-		Msg.error( "Triangle: cannot create Triangle with null Edge." );
+		Msg::error( "Triangle: cannot create Triangle with null Edge." );
 	}
 
 	edgeList[0] = edge1;
@@ -94,22 +93,21 @@ Triangle::Triangle( const std::shared_ptr<Edge>& edge1,
 	// Make a pointer to the base node that is the origin of vector(edgeList[a])
 	// so that the cross product vector(edgeList[a]) x vector(edgeList[b]) >= 0
 	// where a,b in {1,2}
-	firstNode = edgeList[0].leftNode;
+	firstNode = edgeList[0]->leftNode;
 	if ( inverted() )
 	{
-		firstNode = edgeList[0].rightNode;
+		firstNode = edgeList[0]->rightNode;
 	}
 
-	Edge temp;
-	if ( firstNode == edgeList[0].commonNode( edgeList[2] ) )
+	if ( firstNode == edgeList[0]->commonNode( edgeList[2] ) )
 	{
-		temp = edgeList[1];
+		auto temp = edgeList[1];
 		edgeList[1] = edgeList[2];
 		edgeList[2] = temp;
 	}
 
-	ang = new double[3];
-	updateAngles();*/
+	ang.assign( 3, 0.0 );
+	updateAngles();
 }
 
 //TODO: Tests
@@ -121,107 +119,140 @@ Triangle::updateLengths()
 	edgeList[2]->len = edgeList[2]->computeLength();
 }
 
-//TODO: Implement this method
 //TODO: Tests
 std::shared_ptr<Element> 
 Triangle::elementWithExchangedNodes( const std::shared_ptr<Node>& original,
 									 const std::shared_ptr<Node>& replacement )
 {
-	return nullptr;
-	/*Node node1 = edgeList[0].leftNode;
-	Node node2 = edgeList[0].rightNode;
-	Node node3 = edgeList[1].rightNode;
+	auto node1 = edgeList[0]->leftNode;
+	auto node2 = edgeList[0]->rightNode;
+	auto node3 = edgeList[1]->rightNode;
 	if ( node3 == node1 || node3 == node2 )
 	{
-		node3 = edgeList[1].leftNode;
+		node3 = edgeList[1]->leftNode;
 	}
-	Node common1;
 
 	// Make a copy of the original triangle...
-	Triangle t = new Triangle( this );
-	Edge edge1 = t.edgeList[0], edge2 = t.edgeList[1], edge3 = t.edgeList[2];
+	auto t = std::make_shared<Triangle>( *this );
+	auto edge1 = t->edgeList[0], edge2 = t->edgeList[1], edge3 = t->edgeList[2];
 
 	// ... and then replace the node
 	if ( node1 == original )
 	{
-		common1 = edge1.commonNode( edge2 );
+		const auto& common1 = edge1->commonNode( edge2 );
 		if ( original == common1 )
 		{
-			edge2.replaceNode( original, replacement );
+			edge2->replaceNode( original, replacement );
 		}
 		else
 		{
-			edge3.replaceNode( original, replacement );
+			edge3->replaceNode( original, replacement );
 		}
-		edge1.replaceNode( original, replacement );
+		edge1->replaceNode( original, replacement );
 	}
 	else if ( node2 == original )
 	{
-		common1 = edge1.commonNode( edge2 );
+		const auto& common1 = edge1->commonNode( edge2 );
 		if ( original == common1 )
 		{
-			edge2.replaceNode( original, replacement );
+			edge2->replaceNode( original, replacement );
 		}
 		else
 		{
-			edge3.replaceNode( original, replacement );
+			edge3->replaceNode( original, replacement );
 		}
-		edge1.replaceNode( original, replacement );
+		edge1->replaceNode( original, replacement );
 	}
 	else if ( node3 == original )
 	{
-		common1 = edge2.commonNode( edge1 );
+		const auto& common1 = edge2->commonNode( edge1 );
 		if ( original == common1 )
 		{
-			edge1.replaceNode( original, replacement );
+			edge1->replaceNode( original, replacement );
 		}
 		else
 		{
-			edge3.replaceNode( original, replacement );
+			edge3->replaceNode( original, replacement );
 		}
-		edge2.replaceNode( original, replacement );
+		edge2->replaceNode( original, replacement );
 	}
 	else
 	{
-		return null;
+		return nullptr;
 	}
 
 	if ( original == firstNode )
 	{
-		t.firstNode = replacement;
+		t->firstNode = replacement;
 	}
 	else
 	{
-		t.firstNode = firstNode;
+		t->firstNode = firstNode;
 	}
-	return t;*/
+	return t;
 }
 
-//TODO: Implement this method
-//TODO: Tests
 bool 
-Triangle::equals( const std::shared_ptr<Constants>& elem ) const 
+Triangle::invertedWhenNodeRelocated( const std::shared_ptr<Node>& n1,
+									 const std::shared_ptr<Node>& n2 )
 {
-	return false;
-	/*if ( o instanceof Triangle )
+	Msg::debug( "Entering Triangle.invertedWhenNodeRelocated(..)" );
+	
+	auto a = firstNode;
+	auto b = edgeList[0]->otherNode( a );
+	auto c = edgeList[1]->rightNode;
+	if ( c == a || c == b )
 	{
-		Triangle t = (Triangle)o;
-		Node node1, node2, node3;
-		Node tnode1, tnode2, tnode3;
-		node1 = edgeList[0].leftNode;
-		node2 = edgeList[0].rightNode;
-		node3 = edgeList[1].rightNode;
+		c = edgeList[1]->leftNode;
+	}
+
+	if ( a == n1 )
+	{
+		a = n2;
+	}
+	else if ( b == n1 )
+	{
+		b = n2;
+	}
+	else if ( c == n1 )
+	{
+		c = n2;
+	}
+
+	MyVector ac( a, c );
+	MyVector bc( b, c );
+
+	Msg::debug( "Leaving Triangle.invertedWhenNodeRelocated(..)" );
+	if ( ac.cross( bc ) <= 0 )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//TODO: Tests
+bool
+Triangle::equals( const std::shared_ptr<Constants>& elem ) const
+{
+	if ( auto t = std::dynamic_pointer_cast<Triangle>(elem) )
+	{
+		auto node1 = edgeList[0]->leftNode;
+		auto node2 = edgeList[0]->rightNode;
+		auto node3 = edgeList[1]->rightNode;
 		if ( node3 == node1 || node3 == node2 )
 		{
-			node3 = edgeList[1].leftNode;
+			node3 = edgeList[1]->leftNode;
 		}
 
-		tnode1 = t.edgeList[0].leftNode;
-		tnode2 = t.edgeList[0].rightNode;
-		tnode3 = t.edgeList[1].rightNode;
+		auto tnode1 = t->edgeList[0]->leftNode;
+		auto tnode2 = t->edgeList[0]->rightNode;
+		auto tnode3 = t->edgeList[1]->rightNode;
 		if ( tnode3 == tnode1 || tnode3 == tnode2 )
 		{
-			tnode3 = t.edgeList[1].leftNode;
+			tnode3 = t->edgeList[1]->leftNode;
 		}
 
 		if ( node1 == tnode1 && node2 == tnode2 && node3 == tnode3 )
@@ -236,7 +267,7 @@ Triangle::equals( const std::shared_ptr<Constants>& elem ) const
 	else
 	{
 		return false;
-	}*/
+	}
 }
 
 //TODO: Tests

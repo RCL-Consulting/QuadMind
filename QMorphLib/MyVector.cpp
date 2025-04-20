@@ -48,14 +48,13 @@ MyVector::equals( const std::shared_ptr<Constants>& elem ) const
 	return false;
 }
 
-//TODO: Implement this method
 //TODO: Tests
 MyVector::MyVector( const Ray& r,
 					double length )
 {
-	/*origin = r.origin;
+	origin = r.origin;
 	x = length * r.x;
-	y = length * r.y;*/
+	y = length * r.y;
 }
 
 //TODO: Tests

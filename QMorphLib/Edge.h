@@ -81,6 +81,8 @@ public:
 	// this: the edge to be classified (gets a state value, and is added to a
 	// statelist)
 	void classifyStateOfFrontEdge();
+
+	bool isLargeTransition( const std::shared_ptr<Edge>& e );
 	
 	// Select the next front to be processed. The selection criteria is:
 	// Primary: the edge state
@@ -228,7 +230,7 @@ public:
 
 	MyVector getVector();
 
-	MyVector getVector( std::shared_ptr<Node>& origin );
+	MyVector getVector( const std::shared_ptr<Node>& origin );
 
 	bool bordersToTriangle();
 
@@ -297,8 +299,8 @@ public:
 	 */
 	std::shared_ptr<Edge> splitTrianglesAt( const std::shared_ptr<Node>& nN,
 											const std::shared_ptr<Node>& ben,
-											const ArrayList<std::shared_ptr<Triangle>>& triangleList,
-											const ArrayList<std::shared_ptr<Edge>>& edgeList,
+											ArrayList<std::shared_ptr<Triangle>>& triangleList,
+											ArrayList<std::shared_ptr<Edge>>& edgeList,
 											const ArrayList<std::shared_ptr<Node>>& nodeList );
 
 	/**
@@ -307,9 +309,9 @@ public:
 	 * @return the "lower" (the one incident with the baseEdge) of the two edges
 	 *         created from splitting this edge.
 	 */
-	std::shared_ptr<Edge> splitTrianglesAtMyMidPoint( const ArrayList<std::shared_ptr<Triangle>>& triangleList,
-													  const ArrayList<std::shared_ptr<Edge>>& edgeList,
-													  const ArrayList<std::shared_ptr<Node>>& nodeList,
+	std::shared_ptr<Edge> splitTrianglesAtMyMidPoint( ArrayList<std::shared_ptr<Triangle>>& triangleList,
+													  ArrayList<std::shared_ptr<Edge>>& edgeList,
+													  ArrayList<std::shared_ptr<Node>>& nodeList,
 													  const std::shared_ptr<Edge>& baseEdge );
 
 	/**

@@ -18,7 +18,9 @@ class Triangle;
  * issues regarding nodes.
  */
 
-class Node: public Constants
+class Node:
+	public Constants,
+	public std::enable_shared_from_this<Node>
 {
 public:
 	/** Boolean indicating whether the node has been moved by the OBS */
@@ -373,7 +375,7 @@ public:
 	 */
 	bool fitsVertexPat( uint8_t start,
 						const std::vector<double>& ang,
-						std::vector<bool>& vertexPat,
+						const std::vector<bool>& vertexPat,
 						int len );
 
 	/**

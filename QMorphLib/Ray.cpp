@@ -10,20 +10,19 @@
 
 #include <iostream>
 
-//TODO: Implement this method
 //TODO: Tests
 Ray::Ray( const std::shared_ptr<Node>& origin,
 		  const std::shared_ptr<Edge>& relEdge,
 		  double angle )
 {
-	/*this->origin = origin;
+	this->origin = origin;
 	double temp = relEdge->angleAt( origin );
 	Msg::debug( "relEdge.angleAt(origin)==" + std::to_string( Constants::toDegrees * temp ) + " degrees" );
 	double ang = temp + angle;
 	Msg::debug( "Ray(..): relEdge.angleAt(origin)+ angle== " + std::to_string( Constants::toDegrees * ang ) + " degrees" );
 
 	this->x = std::cos( ang );
-	this->y = std::sin( ang );*/
+	this->y = std::sin( ang );
 }
 
 Ray::Ray( const std::shared_ptr<Node>& origin, double angle )
