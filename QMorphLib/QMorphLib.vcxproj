@@ -142,12 +142,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Dart.h" />
+    <ClInclude Include="DelaunayMeshGen.h" />
     <ClInclude Include="Edge.h" />
     <ClInclude Include="Element.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="ArrayList.h" />
     <ClInclude Include="GeomBasics.h" />
+    <ClInclude Include="GlobalSmooth.h" />
+    <ClInclude Include="MeshLoader.h" />
     <ClInclude Include="MyLine.h" />
     <ClInclude Include="MyVector.h" />
     <ClInclude Include="Node.h" />
@@ -156,14 +159,18 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="TopoCleanup.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Dart.cpp" />
+    <ClCompile Include="DelaunayMeshGen.cpp" />
     <ClCompile Include="Edge.cpp" />
     <ClCompile Include="Element.cpp" />
     <ClCompile Include="GeomBasics.cpp" />
+    <ClCompile Include="GlobalSmooth.cpp" />
+    <ClCompile Include="MeshLoader.cpp" />
     <ClCompile Include="Msg.cpp" />
     <ClCompile Include="MyLine.cpp" />
     <ClCompile Include="MyVector.cpp" />
@@ -177,6 +184,7 @@
     </ClCompile>
     <ClCompile Include="Quad.cpp" />
     <ClCompile Include="Ray.cpp" />
+    <ClCompile Include="TopoCleanup.cpp" />
     <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
