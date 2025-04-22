@@ -17,7 +17,7 @@ public:
 		  const std::shared_ptr<Edge>& e,
 		  const std::shared_ptr<Element>& elem );
 
-	std::string descr();
+	std::string descr() const;
 
 	std::shared_ptr<Node> n;
 	std::shared_ptr<Edge> e;

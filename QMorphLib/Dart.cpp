@@ -22,7 +22,7 @@ Dart::Dart( const std::shared_ptr<Node>& n,
 }
 
 std::string 
-Dart::descr()
+Dart::descr() const
 {
 	return "(elem: " + elem->descr() + ", e: " + e->descr() + ", n: " + n->descr() + ")";
 }
