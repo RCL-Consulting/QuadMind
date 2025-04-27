@@ -2379,7 +2379,7 @@ Quad::trianglesContained( const std::shared_ptr<Triangle>& first )
 
 //TODO: Test
 bool
-Quad::containsHole( const ArrayList<std::shared_ptr<Element>>& tris )
+Quad::containsHole( const ArrayList<std::shared_ptr<Triangle>>& tris )
 {
 	if ( tris.size() == 0 )
 	{

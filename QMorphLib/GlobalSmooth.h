@@ -66,4 +66,8 @@ public:
 	/** The overall smoothing algorithm from section 3 in the paper. */
 	void run();
 
+	bool equals( const std::shared_ptr<Constants>& elem ) const override
+	{
+		return std::dynamic_pointer_cast<GlobalSmooth>(elem) != nullptr;
+	}
 }; // End of class GlobalSmooth

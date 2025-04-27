@@ -108,6 +108,9 @@
     <ClInclude Include="TopoCleanup.h">
       <Filter>Header Files\Meshing</Filter>
     </ClInclude>
+    <ClInclude Include="QMorph.h">
+      <Filter>Header Files\Meshing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -159,6 +162,9 @@
       <Filter>Source Files\Meshing</Filter>
     </ClCompile>
     <ClCompile Include="TopoCleanup.cpp">
+      <Filter>Source Files\Meshing</Filter>
+    </ClCompile>
+    <ClCompile Include="QMorph.cpp">
       <Filter>Source Files\Meshing</Filter>
     </ClCompile>
   </ItemGroup>

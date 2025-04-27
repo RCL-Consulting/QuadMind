@@ -404,7 +404,7 @@ public:
 	 * @return true if there are one or more holes present within the four edges
 	 *         defining the quad.
 	 */
-	bool containsHole( const ArrayList<std::shared_ptr<Element>>& tris );
+	bool containsHole( const ArrayList<std::shared_ptr<Triangle>>& tris );
 
 	/** Set the color of the edges to green. */
 	void markEdgesLegal() override;

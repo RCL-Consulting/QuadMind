@@ -56,6 +56,11 @@ public:
 	/** Main loop for global topological clean-up */
 	void run();
 
+	bool equals( const std::shared_ptr<Constants>& elem ) const override
+	{
+		return std::dynamic_pointer_cast<TopoCleanup>(elem) != nullptr;
+	}
+
 private:
 	bool elimChevsFinished = false;
 	bool connCleanupFinished = false;
@@ -246,485 +251,62 @@ private:
 									 const std::vector<std::shared_ptr<Node>>& neighbors,
 									 int i );
 
-//	/**
-//	 * Collapse a quad by joining two and two of its consecutive edges.
-//	 *
-//	 * @param q        the quad to be collapsed
-//	 * @param e1       an edge of q that has the node nK
-//	 * @param nK       the node that is to be joined with its opposite node in q
-//	 * @param centroid boolean indicating whether to look for a new pos for the
-//	 *                 joined nodes somewhere between the original positions,
-//	 *                 starting at the centroid of q, or to unconditionally try
-//	 *                 using the position of the node in q which is opposite to nK.
-//	 * @return the new current dart.
-//	 */
-//	private Dart closeQuad( Quad q, Edge e1, Node nK, boolean centroid )
-//	{
-//		Msg.debug( "Entering closeQuad(..)" );
-//		Dart d = new Dart();
-//		Element nElem = q.neighbor( e1 ); // Save for later...
-//		Node nKOpp = q.oppositeNode( nK );
-//		Node nKp1 = e1.otherNode( nK ); // , nKm1= eKm1.otherNode(nK);
-//		Edge e2 = q.neighborEdge( nKp1, e1 ), e4 = q.neighborEdge( nK, e1 );
-//
-//		List<Element> lK = nK.adjElements(), lKOpp = nKOpp.adjElements();
-//		Node n = null;
-//		int i;
-//
-//		if ( centroid )
-//		{
-//			n = safeNewPosWhenCollapsingQuad( q, nK, nKOpp );
-//			if ( n == null )
-//			{
-//				Msg.debug( "Leaving closeQuad(..), returning null!" );
-//				return null;
-//			}
-//		}
-//		else
-//		{
-//			if ( q.anyInvertedElementsWhenCollapsed( nKOpp, nK, nKOpp, lK, lKOpp ) )
-//			{
-//				Msg.debug( "Leaving closeQuad(..), returning null!" );
-//				return null;
-//			}
-//			else
-//			{
-//				n = nKOpp;
-//			}
-//		}
-//		elementList.remove( elementList.indexOf( q ) );
-//
-//		edgeList.remove( edgeList.indexOf( e1 ) ); // e2
-//		edgeList.remove( edgeList.indexOf( q.neighborEdge( nK, e1 ) ) ); // (nKOpp, e2)
-//		q.disconnectEdges();
-//		q.closeQuad( e2, e1 ); // (e1,e2)
-//
-//		nKOpp.setXY( n ); // nK.setXY(n);
-//		nodeList.remove( nodeList.indexOf( nK ) ); // nKOpp
-//		i = nodes.indexOf( nK );
-//		if ( i != -1 )
-//		{
-//			nodes.set( i, null ); // nKOpp
-//		}
-//		nKOpp.update(); // nK.update();
-//
-//		d.elem = nElem;
-//		d.e = e2; // e1;
-//		d.n = nKOpp; // nK;
-//
-//		Msg.debug( "Leaving closeQuad(..)" );
-//		return d;
-//	}
-//
-//	/**
-//	 * Create a new quad by "opening" one at the specified node inside the specified
-//	 * quad. This effectively results in a splitting of the specified quad.
-//	 *
-//	 * @param q  the quad
-//	 * @param e  an edge in q (not used by method), but contained in returned dart
-//	 * @param n1 split q along the diagonal between n1 and its opposite node
-//	 */
-//	private Dart openQuad( Quad q, Edge e, Node n1 )
-//	{
-//		Msg.debug( "Entering openQuad(..)" );
-//		Dart d = new Dart();
-//		Node c = q.centroid();
-//		Edge e1 = q.neighborEdge( n1 );
-//		Edge e2 = q.neighborEdge( n1, e1 );
-//
-//		Node n2 = e2.otherNode( n1 );
-//		Edge e3 = q.neighborEdge( n2, e2 );
-//		Node n3 = e3.otherNode( n2 );
-//		Edge e4 = q.neighborEdge( n3, e3 );
-//		Node n4 = e4.otherNode( n3 );
-//
-//		Edge e1New = new Edge( c, n1 );
-//		Edge e4New = new Edge( c, n3 );
-//
-//		e1New.connectNodes();
-//		e4New.connectNodes();
-//
-//		q.replaceEdge( e1, e1New );
-//		q.replaceEdge( e4, e4New );
-//		e1.disconnectFromElement( q );
-//		e4.disconnectFromElement( q );
-//
-//		e1New.connectToQuad( q );
-//		e4New.connectToQuad( q );
-//
-//		Quad qNew;
-//		if ( e1.leftNode == n1 )
-//		{
-//			qNew = new Quad( e1, e1New, e4, e4New );
-//		}
-//		else
-//		{
-//			qNew = new Quad( e1, e4, e1New, e4New );
-//		}
-//
-//		qNew.connectEdges();
-//
-//		edgeList.add( e1New );
-//		edgeList.add( e4New );
-//
-//		elementList.add( qNew );
-//		c.color = java.awt.Color.red; // Indicate it was created during clean-up
-//		nodeList.add( c );
-//		nodes.add( c );
-//
-//		q.updateLR();
-//
-//		d.elem = q;
-//		d.e = e;
-//		d.n = n1;
-//
-//		Msg.debug( "Leaving openQuad(..)" );
-//		return d;
-//	}
-//
-//	/**
-//	 * Create 2 new quads from 2 specified quads, in which the common edge of the
-//	 * given quads has been rotated one step in the CCW direction. Delete the old
-//	 * quads.
-//	 *
-//	 * @param qa  one of the two quads adjacent the edge to be switched, e1a
-//	 * @param e1a the edge to be switched
-//	 * @param n   one of e1a's nodes
-//	 * @return a dart representing the input dart after the operation is performed.
-//	 */
-//	private Dart switchDiagonalCCW( Quad qa, Edge e1a, Node n )
-//	{
-//		Msg.debug( "Entering switchDiagonalCCW(..)" );
-//		Dart d = new Dart();
-//		Node n1a, n2a, n3a, n4a, n1b, n2b, n3b, n4b;
-//		Edge e2a, e3a, e4a, e1b, e2b, e3b, e4b;
-//		Edge eNew, l, r;
-//		Quad q1, q2;
-//
-//		Quad qb = (Quad)qa.neighbor( e1a );
-//		int qaIndex = elementList.indexOf( qa ), qbIndex = elementList.indexOf( qb );
-//
-//		// First get the edges of qa in ccw order:
-//		n2a = qa.nextCCWNode( e1a.leftNode );
-//		if ( n2a == e1a.rightNode )
-//		{
-//			n1a = e1a.leftNode;
-//		}
-//		else
-//		{
-//			n1a = e1a.rightNode;
-//			n2a = e1a.leftNode;
-//		}
-//
-//		e2a = qa.neighborEdge( n2a, e1a );
-//		n3a = e2a.otherNode( n2a );
-//		e3a = qa.neighborEdge( n3a, e2a );
-//		n4a = e3a.otherNode( n3a );
-//		e4a = qa.neighborEdge( n4a, e3a );
-//
-//		// Now get the edges of qb in ccw order:
-//		e1b = e1a;
-//		n2b = qb.nextCCWNode( e1b.leftNode );
-//		if ( n2b == e1b.rightNode )
-//		{
-//			n1b = e1b.leftNode;
-//		}
-//		else
-//		{
-//			n1b = e1b.rightNode;
-//			n2b = e1b.leftNode;
-//		}
-//		e2b = qb.neighborEdge( n2b, e1b );
-//		n3b = e2b.otherNode( n2b );
-//		e3b = qb.neighborEdge( n3b, e2b );
-//		n4b = e3b.otherNode( n3b );
-//		e4b = qb.neighborEdge( n4b, e3b );
-//
-//		Node nOld, smoothed;
-//		// Check to see if the switch will violate the mesh topology:
-//		if ( e4a.sumAngle( qa, n1a, e2b ) >= Math.PI )
-//		{ // if angle >= 180 degrees...
-//			if ( n1a.boundaryNode() )
-//			{ // exit if node on boundary
-//				Msg.debug( "Leaving switchDiagonalCCW(..): returning null" );
-//				return null;
-//			}
-//
-//			// ...then try smoothing the pos of the node:
-//			nOld = new Node( n1a.x, n1a.y );
-//			smoothed = n1a.laplacianSmoothExclude( n2a );
-//			if ( !n1a.equals( smoothed ) )
-//			{
-//				n1a.setXY( smoothed.x, smoothed.y );
-//				inversionCheckAndRepair( n1a, nOld );
-//				n1a.update();
-//			}
-//
-//			if ( e4a.sumAngle( qa, n1a, e2b ) >= Math.PI )
-//			{ // Still angle >= 180 degrees?
-//				Msg.debug( "Leaving switchDiagonalCCW(..): returning null" );
-//				return null;
-//			}
-//		}
-//
-//		if ( e2a.sumAngle( qa, n2a, e4b ) >= Math.PI )
-//		{ // if angle >= 180 degrees...
-//			if ( n2a.boundaryNode() )
-//			{ // exit if node on boundary
-//				Msg.debug( "Leaving switchDiagonalCCW(..): returning null" );
-//				return null;
-//			}
-//
-//			// ...then try smoothing the pos of the node:
-//			nOld = new Node( n2a.x, n2a.y );
-//			smoothed = n2a.laplacianSmoothExclude( n1a );
-//			if ( !n2a.equals( smoothed ) )
-//			{
-//				n2a.setXY( smoothed.x, smoothed.y );
-//				inversionCheckAndRepair( n2a, nOld );
-//				n2a.update();
-//			}
-//
-//			if ( e2a.sumAngle( qa, n2a, e4b ) >= Math.PI )
-//			{ // Still angle >= 180 degrees?
-//				Msg.debug( "Leaving switchDiagonalCCW(..): returning null" );
-//				return null;
-//			}
-//		}
-//		// The new diagonal:
-//		eNew = new Edge( n3a, n3b );
-//
-//		// Create the new quads:
-//		l = qa.neighborEdge( e4a.leftNode, e4a );
-//		r = qa.neighborEdge( e4a.rightNode, e4a );
-//		if ( l == e1a )
-//		{
-//			l = e2b;
-//		}
-//		else
-//		{
-//			r = e2b;
-//		}
-//		q1 = new Quad( e4a, l, r, eNew );
-//
-//		l = qb.neighborEdge( e4b.leftNode, e4b );
-//		r = qb.neighborEdge( e4b.rightNode, e4b );
-//		if ( l == e1b )
-//		{
-//			l = e2a;
-//		}
-//		else
-//		{
-//			r = e2a;
-//		}
-//		q2 = new Quad( e4b, l, r, eNew );
-//
-//		qa.disconnectEdges();
-//		qb.disconnectEdges();
-//		e1a.disconnectNodes();
-//		q1.connectEdges();
-//		q2.connectEdges();
-//		eNew.connectNodes();
-//
-//		// Update lists:
-//		edgeList.set( edgeList.indexOf( e1a ), eNew );
-//
-//		elementList.set( qaIndex, q1 );
-//		elementList.set( qbIndex, q2 );
-//
-//		d.elem = q1;
-//		d.e = eNew;
-//		if ( n == n1a )
-//		{
-//			d.n = n3b;
-//		}
-//		else
-//		{
-//			d.n = n3a;
-//		}
-//
-//		Msg.debug( "Leaving switchDiagonalCCW(..)" );
-//		return d;
-//	}
-//
-//	/**
-//	 * Create 2 new quads from 2 specified quads, in which the common edge of the
-//	 * given quads has been rotated one step in the CW direction. Delete the old
-//	 * quads. Update the nodes list.
-//	 *
-//	 * @param qa  one of the two quads adjacent the edge to be switched, e1a
-//	 * @param e1a the edge to be switched
-//	 * @param n   one of e1a's nodes
-//	 * @return a dart representing the input dart after the operation is performed.
-//	 */
-//	private Dart switchDiagonalCW( Quad qa, Edge e1a, Node n )
-//	{
-//		Msg.debug( "Entering switchDiagonalCW(..)" );
-//		Dart d = new Dart();
-//		Node n1a, n2a, n3a, n4a, n1b, n2b, n3b, n4b;
-//		Edge e2a, e3a, e4a, e1b, e2b, e3b, e4b;
-//		Edge eNew, l, r;
-//		Quad q1, q2;
-//
-//		Quad qb = (Quad)qa.neighbor( e1a );
-//		int qaIndex = elementList.indexOf( qa ), qbIndex = elementList.indexOf( qb );
-//
-//		// First get the edges of qa in ccw order:
-//		n2a = qa.nextCCWNode( e1a.leftNode );
-//		if ( n2a == e1a.rightNode )
-//		{
-//			n1a = e1a.leftNode;
-//		}
-//		else
-//		{
-//			n1a = e1a.rightNode;
-//			n2a = e1a.leftNode;
-//		}
-//		e2a = qa.neighborEdge( n2a, e1a );
-//		n3a = e2a.otherNode( n2a );
-//		e3a = qa.neighborEdge( n3a, e2a );
-//		n4a = e3a.otherNode( n3a );
-//		e4a = qa.neighborEdge( n4a, e3a );
-//
-//		// Now get the edges of qb in ccw order:
-//		e1b = e1a;
-//		n2b = qb.nextCCWNode( e1b.leftNode );
-//		if ( n2b == e1b.rightNode )
-//		{
-//			n1b = e1b.leftNode;
-//		}
-//		else
-//		{
-//			n1b = e1b.rightNode;
-//			n2b = e1b.leftNode;
-//		}
-//		e2b = qb.neighborEdge( n2b, e1b );
-//		n3b = e2b.otherNode( n2b );
-//		e3b = qb.neighborEdge( n3b, e2b );
-//		n4b = e3b.otherNode( n3b );
-//		e4b = qb.neighborEdge( n4b, e3b );
-//
-//		Node nOld, smoothed;
-//		// Check to see if the switch will violate the mesh topology:
-//		if ( e4a.sumAngle( qa, n1a, e2b ) >= Math.PI )
-//		{ // if angle >= 180 degrees...
-//// ...then try smoothing the pos of the node:
-//			nOld = new Node( n1a.x, n1a.y );
-//			smoothed = n1a.laplacianSmooth();
-//			if ( !n1a.equals( smoothed ) )
-//			{
-//				n1a.moveTo( smoothed );
-//				inversionCheckAndRepair( n1a, nOld );
-//				n1a.update();
-//			}
-//
-//			if ( e4a.sumAngle( qa, n1a, e2b ) >= Math.PI )
-//			{ // Still angle >= 180 degrees?
-//				Msg.debug( "Leaving switchDiagonalCW(..): returning null" );
-//				return null;
-//			}
-//		}
-//
-//		// Check to see if the switch will violate the mesh topology:
-//		if ( e2a.sumAngle( qa, n2a, e4b ) >= Math.PI )
-//		{ // if angle >= 180 degrees...
-//// ...then try smoothing the pos of the node:
-//			nOld = new Node( n2a.x, n2a.y );
-//			smoothed = n2a.laplacianSmooth();
-//			if ( !n2a.equals( smoothed ) )
-//			{
-//				n2a.moveTo( smoothed );
-//				inversionCheckAndRepair( n2a, nOld );
-//				n2a.update();
-//			}
-//
-//			if ( e2a.sumAngle( qa, n2a, e4b ) >= Math.PI )
-//			{ // Still angle >= 180 degrees?
-//				Msg.debug( "Leaving switchDiagonalCW(..): returning null" );
-//				return null;
-//			}
-//		}
-//
-//		// The new diagonal:
-//		eNew = new Edge( n4a, n4b );
-//
-//		// Create the new quads:
-//		l = qa.neighborEdge( e2a.leftNode, e2a );
-//		r = qa.neighborEdge( e2a.rightNode, e2a );
-//		if ( l == e1a )
-//		{
-//			l = e4b;
-//		}
-//		else
-//		{
-//			r = e4b;
-//		}
-//		q1 = new Quad( e2a, l, r, eNew );
-//
-//		l = qb.neighborEdge( e2b.leftNode, e2b );
-//		r = qb.neighborEdge( e2b.rightNode, e2b );
-//		if ( l == e1b )
-//		{
-//			l = e4a;
-//		}
-//		else
-//		{
-//			r = e4a;
-//		}
-//		q2 = new Quad( e2b, l, r, eNew );
-//
-//		qa.disconnectEdges();
-//		qb.disconnectEdges();
-//		e1a.disconnectNodes();
-//		q1.connectEdges();
-//		q2.connectEdges();
-//		eNew.connectNodes();
-//
-//		// Update lists:
-//		edgeList.set( edgeList.indexOf( e1a ), eNew );
-//
-//		elementList.set( qaIndex, q1 );
-//		elementList.set( qbIndex, q2 );
-//
-//		d.elem = q1;
-//		d.e = eNew;
-//		if ( n == n1a )
-//		{
-//			d.n = n4a;
-//		}
-//		else
-//		{
-//			d.n = n4b;
-//		}
-//
-//		Msg.debug( "Leaving switchDiagonalCW(..)" );
-//		return d;
-//	}
-//
-//	private void globalSmooth()
-//	{
-//		Msg.debug( "Entering TopoCleanup.globalSmoth()" );
-//		Node n, nn, nOld;
-//
-//		for ( Object element : nodeList )
-//		{
-//			n = (Node)element;
-//
-//			if ( !n.boundaryNode() )
-//			{
-//
-//				// Try smoothing the pos of the node:
-//				nOld = new Node( n.x, n.y );
-//				nn = n.laplacianSmooth();
-//				if ( !n.equals( nn ) )
-//				{
-//					n.setXY( nn.x, nn.y );
-//					inversionCheckAndRepair( n, nOld );
-//					n.update();
-//				}
-//			}
-//		}
-//		Msg.debug( "Leaving TopoCleanup.globalSmoth()" );
-//	}
+	/**
+	 * Collapse a quad by joining two and two of its consecutive edges.
+	 *
+	 * @param q        the quad to be collapsed
+	 * @param e1       an edge of q that has the node nK
+	 * @param nK       the node that is to be joined with its opposite node in q
+	 * @param centroid boolean indicating whether to look for a new pos for the
+	 *                 joined nodes somewhere between the original positions,
+	 *                 starting at the centroid of q, or to unconditionally try
+	 *                 using the position of the node in q which is opposite to nK.
+	 * @return the new current dart.
+	 */
+	std::shared_ptr<Dart> closeQuad( const std::shared_ptr<Quad>& q,
+									 const std::shared_ptr<Edge>& e1,
+									 const std::shared_ptr<Node>& nK,
+									 bool centroid );
+
+	/**
+	 * Create a new quad by "opening" one at the specified node inside the specified
+	 * quad. This effectively results in a splitting of the specified quad.
+	 *
+	 * @param q  the quad
+	 * @param e  an edge in q (not used by method), but contained in returned dart
+	 * @param n1 split q along the diagonal between n1 and its opposite node
+	 */
+	std::shared_ptr<Dart> openQuad( const std::shared_ptr<Quad>& q,
+									const std::shared_ptr<Edge>& e,
+									const std::shared_ptr<Node>& n1 );
+
+	/**
+	 * Create 2 new quads from 2 specified quads, in which the common edge of the
+	 * given quads has been rotated one step in the CCW direction. Delete the old
+	 * quads.
+	 *
+	 * @param qa  one of the two quads adjacent the edge to be switched, e1a
+	 * @param e1a the edge to be switched
+	 * @param n   one of e1a's nodes
+	 * @return a dart representing the input dart after the operation is performed.
+	 */
+	std::shared_ptr<Dart> switchDiagonalCCW( const std::shared_ptr<Quad>& qa,
+											 const std::shared_ptr<Edge>& e1a,
+											 const std::shared_ptr<Node>& n );
+
+	/**
+	 * Create 2 new quads from 2 specified quads, in which the common edge of the
+	 * given quads has been rotated one step in the CW direction. Delete the old
+	 * quads. Update the nodes list.
+	 *
+	 * @param qa  one of the two quads adjacent the edge to be switched, e1a
+	 * @param e1a the edge to be switched
+	 * @param n   one of e1a's nodes
+	 * @return a dart representing the input dart after the operation is performed.
+	 */
+	std::shared_ptr<Dart> switchDiagonalCW( const std::shared_ptr<Quad>& qa,
+											const std::shared_ptr<Edge>& e1a,
+											const std::shared_ptr<Node>& n );
+	void globalSmooth();
 
 };

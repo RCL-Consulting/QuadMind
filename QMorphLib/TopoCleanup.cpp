@@ -3,6 +3,7 @@
 
 #include "Quad.h"
 #include "Triangle.h"
+#include "GlobalSmooth.h"
 
 #include "Msg.h"
 #include "Types.h"
@@ -11,7 +12,7 @@
 void 
 TopoCleanup::init()
 {
-	setCurMethod( shared_from_this );
+	setCurMethod( shared_from_this() );
 
 	elimChevsFinished = false;
 	connCleanupFinished = false;
@@ -55,9 +56,9 @@ TopoCleanup::run()
 {
 	Msg::debug( "Entering TopoCleanup.run()" );
 
-	int i, j;
+	int j;
 
-	if ( !step )
+	if ( !m_step )
 	{
 		// Initial pass to eliminate chevrons
 		while ( !elimChevsFinished )
@@ -112,7 +113,7 @@ TopoCleanup::run()
 
 	if ( doSmooth )
 	{
-		setCurMethod( globalSmooth );
+		setCurMethod( m_globalSmooth );
 	}
 	else
 	{
@@ -127,7 +128,6 @@ TopoCleanup::step()
 {
 	Msg::debug( "Entering TopoCleanup.step()" );
 	std::shared_ptr<Element> elem;
-	int i, j;
 
 	if ( !elimChevsFinished )
 	{
@@ -165,7 +165,7 @@ TopoCleanup::step()
 			passNum = 0;
 			if ( doSmooth )
 			{
-				setCurMethod( globalSmooth );
+				setCurMethod( m_globalSmooth );
 			}
 			else
 			{
@@ -196,7 +196,7 @@ TopoCleanup::elimChevsStep()
 	Msg::debug( "Entering TopoCleanup.elimChevsStep()" );
 
 	std::shared_ptr<Element> elem;
-	int i, j;
+	int i;
 
 	while ( count < elementList.size() )
 	{
@@ -249,7 +249,7 @@ TopoCleanup::eliminateChevron( const std::shared_ptr<Quad>& q )
 	Msg::debug( "Entering eliminateChevron(..)" );
 	Msg::debug( "...q== " + q->descr() );
 
-	int i, j;
+	int j;
 	std::array<int, 6> valenceAlt1;
 	std::array<int, 6> valenceAlt2;
 	int irrAlt1 = 0, irrAlt2 = 0, badAlt1 = 0, badAlt2 = 0;
@@ -555,7 +555,7 @@ TopoCleanup::fill4( const std::shared_ptr<Quad>& q,
 	Msg::debug( "...q= " + q->descr() + ", e= " + e->descr() + ", n= " + n2->descr() );
 
 	auto d = std::make_shared<Dart>();
-	auto qn = std::make_shared<Quad>( q->neighbor( e ) );
+	auto qn = std::dynamic_pointer_cast<Quad>( q->neighbor( e ) );
 	// First get the nodes and edges in the two quads
 	//Edge temp;
 	auto n5 = e->otherNode( n2 );
@@ -700,7 +700,6 @@ TopoCleanup::applyComposition( const std::shared_ptr<Dart>& startDart,
 {
 	Msg::debug( "Entering applyComposition(..)" );
 	uint8_t a;
-	int qaIndex, qbIndex;
 	auto d = startDart;
 	Msg::debug( "d== " + startDart->descr() );
 
@@ -733,17 +732,17 @@ TopoCleanup::applyComposition( const std::shared_ptr<Dart>& startDart,
 		}
 		else if ( a == 5 )
 		{
-			qaIndex = elementList.indexOf( d->elem );
+			auto qaIndex = elementList.indexOf( d->elem );
 			elementList.remove( qaIndex );
-			qbIndex = elementList.indexOf( d->elem->neighbor( d->e ) );
+			auto qbIndex = elementList.indexOf( d->elem->neighbor( d->e ) );
 			elementList.remove( qbIndex );
 			d = fill3( std::dynamic_pointer_cast<Quad>(d->elem), d->e, d->n, true );
 		}
 		else if ( a == 6 )
 		{
-			qaIndex = elementList.indexOf( d->elem );
+			auto qaIndex = elementList.indexOf( d->elem );
 			elementList.remove( qaIndex );
-			qbIndex = elementList.indexOf( d->elem->neighbor( d->e ) );
+			auto qbIndex = elementList.indexOf( d->elem->neighbor( d->e ) );
 			elementList.remove( qbIndex );
 			d = fill4( std::dynamic_pointer_cast<Quad>(d->elem), d->e, d->n );
 		}
@@ -825,7 +824,7 @@ TopoCleanup::connCleanupStep()
 			d = getDartAt( c, ccwNeighbors, vInd - 2 );
 			applyComposition( d, stdComp1 );
 
-			vInd = nodes.indexOf( c );
+			vInd = static_cast<int>(nodes.indexOf( c ));
 			if ( vInd != -1 )
 			{
 				nodes.remove( vInd );
@@ -838,7 +837,7 @@ TopoCleanup::connCleanupStep()
 			d = getDartAt( c, ccwNeighbors, vInd - 2 );
 			applyComposition( d, stdComp2a );
 
-			vInd = nodes.indexOf( c );
+			vInd = static_cast<int>(nodes.indexOf( c ));
 			if ( vInd != -1 )
 			{
 				nodes.remove( vInd );
@@ -851,7 +850,7 @@ TopoCleanup::connCleanupStep()
 			d = getDartAt( c, ccwNeighbors, vInd - 2 );
 			applyComposition( d, stdComp2b );
 
-			vInd = nodes.indexOf( c );
+			vInd = static_cast<int>(nodes.indexOf( c ));
 			if ( vInd != -1 )
 			{
 				nodes.remove( vInd );
@@ -864,7 +863,7 @@ TopoCleanup::connCleanupStep()
 			d = getDartAt( c, ccwNeighbors, vInd - 2 );
 			applyComposition( d, stdComp3a );
 
-			vInd = nodes.indexOf( c );
+			vInd = static_cast<int>(nodes.indexOf( c ));
 			if ( vInd != -1 )
 			{
 				nodes.remove( vInd );
@@ -877,7 +876,7 @@ TopoCleanup::connCleanupStep()
 			d = getDartAt( c, ccwNeighbors, vInd - 2 );
 			applyComposition( d, stdComp3b );
 
-			vInd = nodes.indexOf( c );
+			vInd = static_cast<int>(nodes.indexOf( c ));
 			if ( vInd != -1 )
 			{
 				nodes.remove( vInd );
@@ -911,7 +910,7 @@ TopoCleanup::connCleanupStep()
 			if ( d != nullptr )
 			{
 				applyComposition( d, comp1a );
-				vInd = nodes.indexOf( c );
+				vInd = static_cast<int>(nodes.indexOf( c ));
 				if ( vInd != -1 )
 				{
 					nodes.remove( vInd );
@@ -926,7 +925,7 @@ TopoCleanup::connCleanupStep()
 			if ( d != nullptr )
 			{
 				applyComposition( d, comp1b );
-				vInd = nodes.indexOf( c );
+				vInd = static_cast<int>(nodes.indexOf( c ));
 				if ( vInd != -1 )
 				{
 					nodes.remove( vInd );
@@ -941,7 +940,7 @@ TopoCleanup::connCleanupStep()
 			if ( d != nullptr )
 			{
 				applyComposition( d, comp2 );
-				vInd = nodes.indexOf( c );
+				vInd = static_cast<int>(nodes.indexOf( c ));
 				if ( vInd != -1 )
 				{
 					nodes.remove( vInd );
@@ -956,7 +955,7 @@ TopoCleanup::connCleanupStep()
 			if ( d != nullptr )
 			{
 				applyComposition( d, comp3 );
-				vInd = nodes.indexOf( c );
+				vInd = static_cast<int>(nodes.indexOf( c ));
 				if ( vInd != -1 )
 				{
 					nodes.remove( vInd );
@@ -971,7 +970,7 @@ TopoCleanup::connCleanupStep()
 			if ( d != nullptr )
 			{
 				applyComposition( d, comp4 );
-				vInd = nodes.indexOf( c );
+				vInd = static_cast<int>(nodes.indexOf( c ));
 				if ( vInd != -1 )
 				{
 					nodes.remove( vInd );
@@ -986,7 +985,7 @@ TopoCleanup::connCleanupStep()
 			if ( d != nullptr )
 			{
 				applyComposition( d, comp5 );
-				vInd = nodes.indexOf( c );
+				vInd = static_cast<int>(nodes.indexOf( c ));
 				if ( vInd != -1 )
 				{
 					nodes.remove( vInd );
@@ -1033,13 +1032,12 @@ void
 TopoCleanup::addNodes( const std::vector<std::shared_ptr<Node>>& arrayOfNodes, int len )
 {
 	std::shared_ptr<Node> n;
-	int j;
 	for ( int i = 0; i < len; i++ )
 	{
 		n = arrayOfNodes[i];
 		if ( n != nullptr )
 		{
-			j = nodes.indexOf( n );
+			auto j = nodes.indexOf( n );
 			if ( j == -1 )
 			{
 				j = nodeList.indexOf( n );
@@ -1088,7 +1086,7 @@ TopoCleanup::boundaryCleanupStep()
 				d = getDartAt( n1, ccwNeighbors, 0 );
 				applyComposition( d, bcomp1a );
 
-				j = nodes.indexOf( n1 );
+				j = static_cast<int>(nodes.indexOf( n1 ));
 				if ( j != -1 )
 				{
 					nodes.remove( j );
@@ -1101,7 +1099,7 @@ TopoCleanup::boundaryCleanupStep()
 				d = getDartAt( n1, ccwNeighbors, 0 );
 				applyComposition( d, bcomp1b );
 
-				j = nodes.indexOf( n1 );
+				j = static_cast<int>(nodes.indexOf( n1 ));
 				if ( j != -1 )
 				{
 					nodes.remove( j );
@@ -1137,7 +1135,7 @@ TopoCleanup::boundaryCleanupStep()
 				d = getDartAt( n1, ccwNeighbors, 0 );
 				applyComposition( d, bcomp2a );
 
-				j = nodes.indexOf( n1 );
+				j = static_cast<int>(nodes.indexOf( n1 ));
 				if ( j != -1 )
 				{
 					nodes.remove( j );
@@ -1150,7 +1148,7 @@ TopoCleanup::boundaryCleanupStep()
 				d = getDartAt( n1, ccwNeighbors, 0 );
 				applyComposition( d, bcomp2b );
 
-				j = nodes.indexOf( n1 );
+				j = static_cast<int>(nodes.indexOf( n1 ));
 				if ( j != -1 )
 				{
 					nodes.remove( j );
@@ -1192,7 +1190,7 @@ TopoCleanup::boundaryCleanupStep()
 				d = getDartAt( n1, ccwNeighbors, index - 2 );
 				applyComposition( d, bcomp3 );
 
-				j = nodes.indexOf( n1 );
+				j = static_cast<int>(nodes.indexOf( n1 ));
 				if ( j != -1 )
 				{
 					nodes.remove( j );
@@ -1227,7 +1225,7 @@ TopoCleanup::boundaryCleanupStep()
 				d = getDartAt( n1, ccwNeighbors, 0 );
 				applyComposition( d, bcomp4 );
 
-				j = nodes.indexOf( n1 );
+				j = static_cast<int>(nodes.indexOf( n1 ));
 				if ( j != -1 )
 				{
 					nodes.remove( j );
@@ -1329,7 +1327,7 @@ TopoCleanup::boundaryCleanupStep()
 								fill3( q3, e3, n2, true );
 								elementList.remove( elementList.indexOf( qNew ) );
 
-								j = nodes.indexOf( n1 );
+								j = static_cast<int>(nodes.indexOf( n1 ));
 								if ( j != -1 )
 								{
 									nodes.remove( j );
@@ -1348,7 +1346,7 @@ TopoCleanup::boundaryCleanupStep()
 
 								elementList.remove( elementList.indexOf( qNew ) );
 
-								j = nodes.indexOf( n1 );
+								j = static_cast<int>(nodes.indexOf( n1 ));
 								if ( j != -1 )
 								{
 									nodes.remove( j );
@@ -1475,7 +1473,7 @@ TopoCleanup::shapeCleanupStep()
 	std::shared_ptr<Quad> q = nullptr, q2 = nullptr, qo = nullptr, qtemp;
 	std::shared_ptr<Edge> e1, e2, e3, e4, eo;
 	std::shared_ptr<Node> n, n1, n2, n3, n4, nqOpp, nq2Opp, noOpp;
-	int i, j;
+	int i;
 	double ang, ang1 = 0, ang2 = 0, ango = 0, angtmp, q2angn3;
 
 	if ( !shape1stTypeFin )
@@ -1716,4 +1714,462 @@ TopoCleanup::getDartAt( const std::shared_ptr<Node>& c,
 	{
 		return nullptr;
 	}
+}
+
+//TODO: Tests
+std::shared_ptr<Dart>
+TopoCleanup::closeQuad( const std::shared_ptr<Quad>& q,
+						const std::shared_ptr<Edge>& e1,
+						const std::shared_ptr<Node>& nK,
+						bool centroid )
+{
+	Msg::debug( "Entering closeQuad(..)" );
+	auto d = std::make_shared<Dart>();
+	auto nElem = q->neighbor( e1 ); // Save for later...
+	auto nKOpp = q->oppositeNode( nK );
+	auto nKp1 = e1->otherNode( nK );
+	auto e2 = q->neighborEdge( nKp1, e1 ), e4 = q->neighborEdge( nK, e1 );
+
+	auto lK = nK->adjElements(), lKOpp = nKOpp->adjElements();
+	std::shared_ptr<Node> n = nullptr;
+	int i;
+
+	if ( centroid )
+	{
+		n = safeNewPosWhenCollapsingQuad( q, nK, nKOpp );
+		if ( n == nullptr )
+		{
+			Msg::debug( "Leaving closeQuad(..), returning null!" );
+			return nullptr;
+		}
+	}
+	else
+	{
+		if ( q->anyInvertedElementsWhenCollapsed( nKOpp, nK, nKOpp, lK, lKOpp ) )
+		{
+			Msg::debug( "Leaving closeQuad(..), returning null!" );
+			return nullptr;
+		}
+		else
+		{
+			n = nKOpp;
+		}
+	}
+	elementList.remove( elementList.indexOf( q ) );
+
+	edgeList.remove( edgeList.indexOf( e1 ) ); // e2
+	edgeList.remove( edgeList.indexOf( q->neighborEdge( nK, e1 ) ) ); 
+	q->disconnectEdges();
+	q->closeQuad( e2, e1 ); 
+
+	nKOpp->setXY( *n ); 
+	nodeList.remove( nodeList.indexOf( nK ) ); // nKOpp
+	i = static_cast<int>(nodes.indexOf( nK ));
+	if ( i != -1 )
+	{
+		nodes.set( i, nullptr ); // nKOpp
+	}
+	nKOpp->update(); // nK.update();
+
+	d->elem = nElem;
+	d->e = e2; 
+	d->n = nKOpp;
+
+	Msg::debug( "Leaving closeQuad(..)" );
+	return d;
+}
+
+//TODO: Tests
+std::shared_ptr<Dart>
+TopoCleanup::openQuad( const std::shared_ptr<Quad>& q,
+					   const std::shared_ptr<Edge>& e,
+					   const std::shared_ptr<Node>& n1 )
+{
+	Msg::debug( "Entering openQuad(..)" );
+	auto d = std::make_shared<Dart>();
+	auto c = q->centroid();
+	auto e1 = q->neighborEdge( n1 );
+	auto e2 = q->neighborEdge( n1, e1 );
+
+	auto n2 = e2->otherNode( n1 );
+	auto e3 = q->neighborEdge( n2, e2 );
+	auto n3 = e3->otherNode( n2 );
+	auto e4 = q->neighborEdge( n3, e3 );
+	auto n4 = e4->otherNode( n3 );
+
+	auto e1New = std::make_shared<Edge>( c, n1 );
+	auto e4New = std::make_shared<Edge>( c, n3 );
+
+	e1New->connectNodes();
+	e4New->connectNodes();
+
+	q->replaceEdge( e1, e1New );
+	q->replaceEdge( e4, e4New );
+	e1->disconnectFromElement( q );
+	e4->disconnectFromElement( q );
+
+	e1New->connectToQuad( q );
+	e4New->connectToQuad( q );
+
+	std::shared_ptr<Quad> qNew;
+	if ( e1->leftNode == n1 )
+	{
+		qNew = std::make_shared<Quad>( e1, e1New, e4, e4New );
+	}
+	else
+	{
+		qNew = std::make_shared<Quad>( e1, e4, e1New, e4New );
+	}
+
+	qNew->connectEdges();
+
+	edgeList.add( e1New );
+	edgeList.add( e4New );
+
+	elementList.add( qNew );
+	c->color = Color::Red; // Indicate it was created during clean-up
+	nodeList.add( c );
+	nodes.add( c );
+
+	q->updateLR();
+
+	d->elem = q;
+	d->e = e;
+	d->n = n1;
+
+	Msg::debug( "Leaving openQuad(..)" );
+	return d;
+}
+
+//TODO: Tests
+std::shared_ptr<Dart>
+TopoCleanup::switchDiagonalCCW( const std::shared_ptr<Quad>& qa,
+								const std::shared_ptr<Edge>& e1a,
+								const std::shared_ptr<Node>& n )
+{
+	Msg::debug( "Entering switchDiagonalCCW(..)" );
+	auto d = std::make_shared<Dart>();
+	std::shared_ptr<Node> n1a, n2a, n3a, n4a, n1b, n2b, n3b, n4b;
+	std::shared_ptr<Edge> e2a, e3a, e4a, e1b, e2b, e3b, e4b;
+	std::shared_ptr<Edge> eNew, l, r;
+	std::shared_ptr<Quad> q1, q2;
+
+	auto qb = std::dynamic_pointer_cast<Quad>(qa->neighbor( e1a ));
+	auto qaIndex = elementList.indexOf( qa ), qbIndex = elementList.indexOf( qb );
+
+	// First get the edges of qa in ccw order:
+	n2a = qa->nextCCWNode( e1a->leftNode );
+	if ( n2a == e1a->rightNode )
+	{
+		n1a = e1a->leftNode;
+	}
+	else
+	{
+		n1a = e1a->rightNode;
+		n2a = e1a->leftNode;
+	}
+
+	e2a = qa->neighborEdge( n2a, e1a );
+	n3a = e2a->otherNode( n2a );
+	e3a = qa->neighborEdge( n3a, e2a );
+	n4a = e3a->otherNode( n3a );
+	e4a = qa->neighborEdge( n4a, e3a );
+
+	// Now get the edges of qb in ccw order:
+	e1b = e1a;
+	n2b = qb->nextCCWNode( e1b->leftNode );
+	if ( n2b == e1b->rightNode )
+	{
+		n1b = e1b->leftNode;
+	}
+	else
+	{
+		n1b = e1b->rightNode;
+		n2b = e1b->leftNode;
+	}
+	e2b = qb->neighborEdge( n2b, e1b );
+	n3b = e2b->otherNode( n2b );
+	e3b = qb->neighborEdge( n3b, e2b );
+	n4b = e3b->otherNode( n3b );
+	e4b = qb->neighborEdge( n4b, e3b );
+
+	std::shared_ptr<Node> nOld, smoothed;
+	// Check to see if the switch will violate the mesh topology:
+	if ( e4a->sumAngle( qa, n1a, e2b ) >= PI )
+	{ // if angle >= 180 degrees...
+		if ( n1a->boundaryNode() )
+		{ // exit if node on boundary
+			Msg::debug( "Leaving switchDiagonalCCW(..): returning null" );
+			return nullptr;
+		}
+
+		// ...then try smoothing the pos of the node:
+		nOld = std::make_shared<Node>( n1a->x, n1a->y );
+		smoothed = n1a->laplacianSmoothExclude( n2a );
+		if ( !n1a->equals( smoothed ) )
+		{
+			n1a->setXY( smoothed->x, smoothed->y );
+			inversionCheckAndRepair( n1a, nOld );
+			n1a->update();
+		}
+
+		if ( e4a->sumAngle( qa, n1a, e2b ) >= PI )
+		{ // Still angle >= 180 degrees?
+			Msg::debug( "Leaving switchDiagonalCCW(..): returning null" );
+			return nullptr;
+		}
+	}
+
+	if ( e2a->sumAngle( qa, n2a, e4b ) >= PI )
+	{ // if angle >= 180 degrees...
+		if ( n2a->boundaryNode() )
+		{ // exit if node on boundary
+			Msg::debug( "Leaving switchDiagonalCCW(..): returning null" );
+			return nullptr;
+		}
+
+		// ...then try smoothing the pos of the node:
+		nOld = std::make_shared<Node>( n2a->x, n2a->y );
+		smoothed = n2a->laplacianSmoothExclude( n1a );
+		if ( !n2a->equals( smoothed ) )
+		{
+			n2a->setXY( smoothed->x, smoothed->y );
+			inversionCheckAndRepair( n2a, nOld );
+			n2a->update();
+		}
+
+		if ( e2a->sumAngle( qa, n2a, e4b ) >= PI )
+		{ // Still angle >= 180 degrees?
+			Msg::debug( "Leaving switchDiagonalCCW(..): returning null" );
+			return nullptr;
+		}
+	}
+	// The new diagonal:
+	eNew = std::make_shared<Edge>( n3a, n3b );
+
+	// Create the new quads:
+	l = qa->neighborEdge( e4a->leftNode, e4a );
+	r = qa->neighborEdge( e4a->rightNode, e4a );
+	if ( l == e1a )
+	{
+		l = e2b;
+	}
+	else
+	{
+		r = e2b;
+	}
+	q1 = std::make_shared<Quad>( e4a, l, r, eNew );
+
+	l = qb->neighborEdge( e4b->leftNode, e4b );
+	r = qb->neighborEdge( e4b->rightNode, e4b );
+	if ( l == e1b )
+	{
+		l = e2a;
+	}
+	else
+	{
+		r = e2a;
+	}
+	q2 = std::make_shared<Quad>( e4b, l, r, eNew );
+
+	qa->disconnectEdges();
+	qb->disconnectEdges();
+	e1a->disconnectNodes();
+	q1->connectEdges();
+	q2->connectEdges();
+	eNew->connectNodes();
+
+	// Update lists:
+	edgeList.set( edgeList.indexOf( e1a ), eNew );
+
+	elementList.set( qaIndex, q1 );
+	elementList.set( qbIndex, q2 );
+
+	d->elem = q1;
+	d->e = eNew;
+	if ( n == n1a )
+	{
+		d->n = n3b;
+	}
+	else
+	{
+		d->n = n3a;
+	}
+
+	Msg::debug( "Leaving switchDiagonalCCW(..)" );
+	return d;
+}
+
+//TODO: Tests
+std::shared_ptr<Dart>
+TopoCleanup::switchDiagonalCW( const std::shared_ptr<Quad>& qa,
+							   const std::shared_ptr<Edge>& e1a,
+							   const std::shared_ptr<Node>& n )
+{
+	Msg::debug( "Entering switchDiagonalCW(..)" );
+	auto d = std::make_shared<Dart>();
+	std::shared_ptr<Node> n1a, n2a, n3a, n4a, n1b, n2b, n3b, n4b;
+	std::shared_ptr<Edge> e2a, e3a, e4a, e1b, e2b, e3b, e4b;
+	std::shared_ptr<Edge> eNew, l, r;
+	std::shared_ptr<Quad> q1, q2;
+
+	auto qb = std::dynamic_pointer_cast<Quad>(qa->neighbor( e1a ));
+	auto qaIndex = elementList.indexOf( qa ), qbIndex = elementList.indexOf( qb );
+
+	// First get the edges of qa in ccw order:
+	n2a = qa->nextCCWNode( e1a->leftNode );
+	if ( n2a == e1a->rightNode )
+	{
+		n1a = e1a->leftNode;
+	}
+	else
+	{
+		n1a = e1a->rightNode;
+		n2a = e1a->leftNode;
+	}
+	e2a = qa->neighborEdge( n2a, e1a );
+	n3a = e2a->otherNode( n2a );
+	e3a = qa->neighborEdge( n3a, e2a );
+	n4a = e3a->otherNode( n3a );
+	e4a = qa->neighborEdge( n4a, e3a );
+
+	// Now get the edges of qb in ccw order:
+	e1b = e1a;
+	n2b = qb->nextCCWNode( e1b->leftNode );
+	if ( n2b == e1b->rightNode )
+	{
+		n1b = e1b->leftNode;
+	}
+	else
+	{
+		n1b = e1b->rightNode;
+		n2b = e1b->leftNode;
+	}
+	e2b = qb->neighborEdge( n2b, e1b );
+	n3b = e2b->otherNode( n2b );
+	e3b = qb->neighborEdge( n3b, e2b );
+	n4b = e3b->otherNode( n3b );
+	e4b = qb->neighborEdge( n4b, e3b );
+
+	std::shared_ptr<Node> nOld, smoothed;
+	// Check to see if the switch will violate the mesh topology:
+	if ( e4a->sumAngle( qa, n1a, e2b ) >= PI )
+	{ // if angle >= 180 degrees...
+// ...then try smoothing the pos of the node:
+		nOld = std::make_shared<Node>( n1a->x, n1a->y );
+		smoothed = n1a->laplacianSmooth();
+		if ( !n1a->equals( smoothed ) )
+		{
+			n1a->moveTo( *smoothed );
+			inversionCheckAndRepair( n1a, nOld );
+			n1a->update();
+		}
+
+		if ( e4a->sumAngle( qa, n1a, e2b ) >= PI )
+		{ // Still angle >= 180 degrees?
+			Msg::debug( "Leaving switchDiagonalCW(..): returning null" );
+			return nullptr;
+		}
+	}
+
+	// Check to see if the switch will violate the mesh topology:
+	if ( e2a->sumAngle( qa, n2a, e4b ) >= PI )
+	{ // if angle >= 180 degrees...
+// ...then try smoothing the pos of the node:
+		nOld = std::make_shared<Node>( n2a->x, n2a->y );
+		smoothed = n2a->laplacianSmooth();
+		if ( !n2a->equals( smoothed ) )
+		{
+			n2a->moveTo( *smoothed );
+			inversionCheckAndRepair( n2a, nOld );
+			n2a->update();
+		}
+
+		if ( e2a->sumAngle( qa, n2a, e4b ) >= PI )
+		{ // Still angle >= 180 degrees?
+			Msg::debug( "Leaving switchDiagonalCW(..): returning null" );
+			return nullptr;
+		}
+	}
+
+	// The new diagonal:
+	eNew = std::make_shared<Edge>( n4a, n4b );
+
+	// Create the new quads:
+	l = qa->neighborEdge( e2a->leftNode, e2a );
+	r = qa->neighborEdge( e2a->rightNode, e2a );
+	if ( l == e1a )
+	{
+		l = e4b;
+	}
+	else
+	{
+		r = e4b;
+	}
+	q1 = std::make_shared<Quad>( e2a, l, r, eNew );
+
+	l = qb->neighborEdge( e2b->leftNode, e2b );
+	r = qb->neighborEdge( e2b->rightNode, e2b );
+	if ( l == e1b )
+	{
+		l = e4a;
+	}
+	else
+	{
+		r = e4a;
+	}
+	q2 = std::make_shared<Quad>( e2b, l, r, eNew );
+
+	qa->disconnectEdges();
+	qb->disconnectEdges();
+	e1a->disconnectNodes();
+	q1->connectEdges();
+	q2->connectEdges();
+	eNew->connectNodes();
+
+	// Update lists:
+	edgeList.set( edgeList.indexOf( e1a ), eNew );
+
+	elementList.set( qaIndex, q1 );
+	elementList.set( qbIndex, q2 );
+
+	d->elem = q1;
+	d->e = eNew;
+	if ( n == n1a )
+	{
+		d->n = n4a;
+	}
+	else
+	{
+		d->n = n4b;
+	}
+
+	Msg::debug( "Leaving switchDiagonalCW(..)" );
+	return d;
+}
+
+//TODO: Tests
+void
+TopoCleanup::globalSmooth()
+{
+	Msg::debug( "Entering TopoCleanup.globalSmoth()" );
+	std::shared_ptr<Node> n, nn, nOld;
+
+	for ( auto n: nodeList )
+	{
+		if ( !n->boundaryNode() )
+		{
+
+			// Try smoothing the pos of the node:
+			nOld = std::make_shared<Node>( n->x, n->y );
+			nn = n->laplacianSmooth();
+			if ( !n->equals( nn ) )
+			{
+				n->setXY( nn->x, nn->y );
+				inversionCheckAndRepair( n, nOld );
+				n->update();
+			}
+		}
+	}
+	Msg::debug( "Leaving TopoCleanup.globalSmoth()" );
 }

@@ -32,7 +32,7 @@ public:
 	inline static bool m_step = false;
 
 	inline static std::shared_ptr<TopoCleanup> topoCleanup = nullptr;
-	inline static std::shared_ptr<GlobalSmooth> globalSmooth = nullptr;
+	inline static std::shared_ptr<GlobalSmooth> m_globalSmooth = nullptr;
 
 	inline static std::string meshFilename = "";
 	inline static std::string meshDirectory = ".";
