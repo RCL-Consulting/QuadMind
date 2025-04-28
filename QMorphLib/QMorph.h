@@ -48,6 +48,11 @@ public:
 	/** @return the frontList, that is, the list of front edges */
 	const ArrayList<std::shared_ptr<Edge>>& getFrontList() { return frontList; }
 
+	bool equals( const std::shared_ptr<Constants>& elem ) const override
+	{
+		return std::dynamic_pointer_cast<QMorph>(elem) != nullptr;
+	}
+
 private:
 	/**
 	 * Count the number of front edges in the new loops created if we were to create

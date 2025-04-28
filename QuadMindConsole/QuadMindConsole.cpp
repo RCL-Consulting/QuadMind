@@ -1,8 +1,8 @@
 // QuadMindConsole.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-//#include "GeomBasics.h"
-//#include "QMorph.h"
+#include "GeomBasics.h"
+#include "QMorph.h"
 
 #include <iostream>
 #include <filesystem>
@@ -15,7 +15,7 @@ int main( int argc, char* argv[] )
 		return 1;
 	}
 
-	/*std::string inputFilename = argv[1];
+	std::string inputFilename = argv[1];
 	std::filesystem::path inputPath( inputFilename );
 
 	GeomBasics::clearLists();
@@ -24,9 +24,9 @@ int main( int argc, char* argv[] )
 	GeomBasics::loadMesh();
 	GeomBasics::findExtremeNodes();
 
-	auto Morph = new QMorph();
+	auto Morph = std::make_shared<QMorph>();
 	Morph->init();
-	Morph->run();*/
+	Morph->run();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

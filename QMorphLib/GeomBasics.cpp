@@ -493,7 +493,7 @@ GeomBasics::nextDouble( const std::string& iline )
 	std::string ndouble;
 	if ( cInd > iline.length() )
 	{
-		return std::numeric_limits<double>::infinity();
+		return std::numeric_limits<double>::quiet_NaN();
 	}
 
 	auto nInd = iline.find( ',', cInd );
@@ -518,7 +518,7 @@ GeomBasics::loadMesh()
 
 	try
 	{
-		std::ifstream fis( meshDirectory + meshFilename );
+		std::ifstream fis( meshDirectory + "\\" + meshFilename);
 		double x1, x2, x3, x4, y1, y2, y3, y4;
 		int i = 0;
 

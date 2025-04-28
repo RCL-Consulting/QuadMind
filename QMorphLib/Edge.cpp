@@ -305,7 +305,7 @@ Edge::getNextFront()
 		}
 		curState--;
 	}
-	if ( selected == nullptr )
+	if ( selected == nullptr || !selected->frontEdge )
 	{
 		Msg::warning( "getNextFront(): no selectable fronts found in stateLists." );
 		return nullptr;
@@ -1591,19 +1591,19 @@ Edge::printStateLists()
 		std::cout << "frontsInState 1-1:\n";
 		for ( auto edge : stateList[2] )
 		{
-			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")\n";
+			std::cout << "" << edge->descr() << ", (" << std::to_string( edge->getState() ) << ")\n";
 		}
 
 		std::cout << "frontsInState 0-1 and 1-0:\n";
 		for ( auto edge : stateList[1] )
 		{
-			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")\n";
+			std::cout << "" << edge->descr() << ", (" << std::to_string( edge->getState() ) << ")\n";
 		}
 
 		std::cout << "frontsInState 0-0:\n";
 		for ( auto edge : stateList[0] )
 		{
-			std::cout << "" << edge->descr() << ", (" << edge->getState() << ")\n";
+			std::cout << "" << edge->descr() << ", (" << std::to_string( edge->getState() ) << ")\n";
 		}
 	}
 }

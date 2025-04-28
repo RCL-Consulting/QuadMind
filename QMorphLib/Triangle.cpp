@@ -683,6 +683,75 @@ Triangle::nextCCWEdge( const std::shared_ptr<Edge>& e1 )
 }
 
 //TODO: Tests
+std::shared_ptr<Edge>
+Triangle::nextCWEdge( const std::shared_ptr<Edge>& e1 )
+{
+	std::shared_ptr<Node> e1commone2, e1commone3;
+	std::shared_ptr<Edge> e2, e3;
+	MyVector v1Forv2, v1Forv3, v2, v3;
+	if ( e1 == edgeList[0] )
+	{
+		e2 = edgeList[1];
+		e3 = edgeList[2];
+	}
+	else if ( e1 == edgeList[1] )
+	{
+		e2 = edgeList[0];
+		e3 = edgeList[2];
+	}
+	else if ( e1 == edgeList[2] )
+	{
+		e2 = edgeList[0];
+		e3 = edgeList[1];
+	}
+	else
+	{
+		Msg::error( "Edge " + e1->descr() + " is not part of triangle" );
+		return nullptr;
+	}
+
+	e1commone2 = e1->commonNode( e2 );
+	e1commone3 = e1->commonNode( e3 );
+
+	v2 = MyVector( e1commone2, e2->otherNode( e1commone2 ) );
+	v3 = MyVector( e1commone3, e3->otherNode( e1commone3 ) );
+	v1Forv2 = MyVector( e1commone2, e1->otherNode( e1commone2 ) );
+	v1Forv3 = MyVector( e1commone3, e1->otherNode( e1commone3 ) );
+
+	// Positive angles between e1 and each of the other two edges:
+	double ang1, ang2;
+	ang1 = ang[angleIndex( e1, e2 )];
+	ang2 = ang[angleIndex( e1, e3 )];
+
+	// Transform into true angles:
+	e1commone2 = e1->commonNode( e2 );
+	e1commone3 = e1->commonNode( e3 );
+
+	v2 = MyVector( e1commone2, e2->otherNode( e1commone2 ) );
+	v3 = MyVector( e1commone3, e3->otherNode( e1commone3 ) );
+	v1Forv2 = MyVector( e1commone2, e1->otherNode( e1commone2 ) );
+	v1Forv3 = MyVector( e1commone3, e1->otherNode( e1commone3 ) );
+
+	if ( v2.isCWto( v1Forv2 ) )
+	{
+		ang1 += PI;
+	}
+	if ( v3.isCWto( v1Forv3 ) )
+	{
+		ang2 += PI;
+	}
+
+	if ( ang2 > ang1 )
+	{
+		return e2;
+	}
+	else
+	{
+		return e3;
+	}
+}
+
+//TODO: Tests
 bool 
 Triangle::areaLargerThan0() 
 {

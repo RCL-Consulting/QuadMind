@@ -7,10 +7,28 @@ template< typename T >
 class ArrayList 
 {
 public:
-	void resize( size_t size )
+
+	typename std::vector<T>::iterator erase( typename std::vector<T>::iterator pos )
+	{
+		return mArray.erase( pos );
+	}
+
+	// Wrap std::vector::erase (range of iterators)
+	typename std::vector<T>::iterator erase( typename std::vector<T>::iterator first,
+											 typename std::vector<T>::iterator last )
+	{
+		return mArray.erase( first, last );
+	}
+
+	void reserve( size_t size )
+	{
+		mArray.reserve( size );
+	}
+
+	/*void resize( size_t size )
 	{
 		mArray.resize( size );
-	}
+	}*/
 
 	void add( size_t index, const T& item )
 	{
@@ -105,7 +123,7 @@ public:
 
 		for ( size_t i = start; i < end; ++i )
 		{
-			if ( mArray[i]->equals( value ) )
+			if ( mArray[i] && mArray[i]->equals( value ) )
 			{
 				return static_cast<std::ptrdiff_t>( i );
 			}

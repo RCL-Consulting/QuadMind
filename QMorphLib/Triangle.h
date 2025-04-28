@@ -113,6 +113,73 @@ public:
 	// e1.
 	std::shared_ptr<Edge> nextCCWEdge( const std::shared_ptr<Edge>& e1 );
 
+	std::shared_ptr<Edge> nextCWEdge( const std::shared_ptr<Edge>& e1 );
+	//{
+	//	Node e1commone2, e1commone3;
+	//	Edge e2, e3;
+	//	MyVector v1Forv2, v1Forv3, v2, v3;
+	//	if ( e1 == edgeList[0] )
+	//	{
+	//		e2 = edgeList[1];
+	//		e3 = edgeList[2];
+	//	}
+	//	else if ( e1 == edgeList[1] )
+	//	{
+	//		e2 = edgeList[0];
+	//		e3 = edgeList[2];
+	//	}
+	//	else if ( e1 == edgeList[2] )
+	//	{
+	//		e2 = edgeList[0];
+	//		e3 = edgeList[1];
+	//	}
+	//	else
+	//	{
+	//		Msg.error( "Edge " + e1.descr() + " is not part of triangle" );
+	//		return null;
+	//	}
+
+	//	e1commone2 = e1.commonNode( e2 );
+	//	e1commone3 = e1.commonNode( e3 );
+
+	//	v2 = new MyVector( e1commone2, e2.otherNode( e1commone2 ) );
+	//	v3 = new MyVector( e1commone3, e3.otherNode( e1commone3 ) );
+	//	v1Forv2 = new MyVector( e1commone2, e1.otherNode( e1commone2 ) );
+	//	v1Forv3 = new MyVector( e1commone3, e1.otherNode( e1commone3 ) );
+
+	//	// Positive angles between e1 and each of the other two edges:
+	//	double ang1, ang2;
+	//	ang1 = ang[angleIndex( e1, e2 )];
+	//	ang2 = ang[angleIndex( e1, e3 )];
+
+	//	// Transform into true angles:
+	//	e1commone2 = e1.commonNode( e2 );
+	//	e1commone3 = e1.commonNode( e3 );
+
+	//	v2 = new MyVector( e1commone2, e2.otherNode( e1commone2 ) );
+	//	v3 = new MyVector( e1commone3, e3.otherNode( e1commone3 ) );
+	//	v1Forv2 = new MyVector( e1commone2, e1.otherNode( e1commone2 ) );
+	//	v1Forv3 = new MyVector( e1commone3, e1.otherNode( e1commone3 ) );
+
+	//	if ( v2.isCWto( v1Forv2 ) )
+	//	{
+	//		ang1 += Math.PI;
+	//	}
+	//	if ( v3.isCWto( v1Forv3 ) )
+	//	{
+	//		ang2 += Math.PI;
+	//	}
+
+	//	if ( ang2 > ang1 )
+	//	{
+	//		return e2;
+	//	}
+	//	else
+	//	{
+	//		return e3;
+	//	}
+	//}
+
 	// We simply check that the nodes of the element are not collinear.
 	bool areaLargerThan0() override;
 

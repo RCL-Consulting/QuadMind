@@ -509,10 +509,11 @@ Quad::indexOf( const std::shared_ptr<Edge>& e )
 }
 
 //TODO: Test
-void closeQuad( const std::shared_ptr<Edge>& e1,
-				const std::shared_ptr<Edge>& e2 )
+void
+Quad::closeQuad( const std::shared_ptr<Edge>& e1,
+				 const std::shared_ptr<Edge>& e2 )
 {
-	Msg::debug("Entering Quad.closeQuad(..)");
+	Msg::debug( "Entering Quad.closeQuad(..)" );
 	auto nK = e1->commonNode( e2 );
 	auto nKp1 = e1->otherNode( nK ), nKm1 = e2->otherNode( nK ), other = nKp1;
 	bool found = false;
@@ -1530,7 +1531,7 @@ Quad::inverted()
 		okays = 4 - okays;
 	}
 
-	Msg::debug( "Leaving Quad.inverted(), okays: " + okays );
+	Msg::debug( "Leaving Quad.inverted(), okays: " + std::to_string( okays ) );
 	if ( okays >= 3 )
 	{
 		return false;

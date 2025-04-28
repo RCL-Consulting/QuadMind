@@ -115,10 +115,13 @@ QMorph::run()
 	}
 }
 
+static int stepcount = 0;
+
 //TODO: Tests
 void 
 QMorph::step()
 {
+	++stepcount;
 	std::shared_ptr<Quad> q;
 	std::shared_ptr<Edge> e;
 	int i, oldBaseState;
@@ -813,7 +816,7 @@ QMorph::localSmooth( const std::shared_ptr<Quad>& q,
 		bottomRightOld = bottomRight->copyXY();
 
 		adjNodes = q->getAdjNodes();
-		adjNodesNew.resize( adjNodes.size() );
+		adjNodesNew.reserve( adjNodes.size() );
 
 		// Calculate smoothed pos for each element node and those nodes connected to
 		// the element. If the element has become inverted, then repair it.
@@ -914,7 +917,7 @@ QMorph::localSmooth( const std::shared_ptr<Quad>& q,
 		bottomRightOld = bottomRight->copyXY();
 
 		adjNodes = q->getAdjNodes();
-		adjNodesNew.resize( adjNodes.size() );
+		adjNodesNew.reserve( adjNodes.size() );
 
 		// Calculate smoothed pos for each element node and those nodes connected to
 		// the element. If the element has become inverted, then repair it.
@@ -2992,7 +2995,7 @@ QMorph::recoverEdge( const std::shared_ptr<Node>& nC,
 			nI = tI->oppositeOfEdge( eI );
 			vI = std::make_shared<MyVector>( nC, nI );
 			eN = tI->nextCCWEdge( eI );
-			eNp1 = tI->nextCCWEdge( eI );
+			eNp1 = tI->nextCWEdge( eI );
 
 			Msg::debug( "eN= " + eN->descr() );
 			Msg::debug( "eNp1= " + eNp1->descr() );

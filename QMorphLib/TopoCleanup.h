@@ -46,7 +46,6 @@ private:
 	Dart d;
 	/** A dart used when traversing the mesh in cleanup operations. */
 	int count = 0;
-	ArrayList<std::shared_ptr<Element>> deleteList;
 	ArrayList<std::shared_ptr<Node>> nodes;
 
 public:

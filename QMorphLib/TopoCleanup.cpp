@@ -45,7 +45,6 @@ TopoCleanup::init()
 		}
 	}
 
-	deleteList.clear();
 	nodes = nodeList;
 	d = Dart();
 }
@@ -196,7 +195,6 @@ TopoCleanup::elimChevsStep()
 	Msg::debug( "Entering TopoCleanup.elimChevsStep()" );
 
 	std::shared_ptr<Element> elem;
-	int i;
 
 	while ( count < elementList.size() )
 	{
@@ -230,12 +228,11 @@ TopoCleanup::elimChevsStep()
 		}
 	}
 
-	for ( i = 0; i < deleteList.size(); i++ )
-	{
-		elem = deleteList.get( i );
-		elementList.remove( elementList.indexOf( elem ) );
-	}
-	deleteList.clear();
+	//Remove all nullptr items from the elementList:
+	elementList.erase(
+		std::remove( elementList.begin(), elementList.end(), nullptr ),
+		elementList.end()
+	);
 
 	elimChevsFinished = true;
 	count = 0;
@@ -382,9 +379,7 @@ TopoCleanup::eliminateChevron( const std::shared_ptr<Quad>& q )
 	{
 
 		Msg::debug( "...alt1 preferred, q1: " + q1->descr() );
-		deleteList.add( nullptr );
 		elementList.set( elementList.indexOf( q ), nullptr );
-		deleteList.add( nullptr );
 		elementList.set( elementList.indexOf( q1 ), nullptr );
 
 		if ( q->ang[q->angleIndex( n1 )] + q1->ang[q1->angleIndex( n1 )] < DEG_180 )
@@ -400,9 +395,7 @@ TopoCleanup::eliminateChevron( const std::shared_ptr<Quad>& q )
 	else if ( q2 != nullptr )
 	{
 		Msg::debug( "...alt2 preferred, q2: " + q2->descr() );
-		deleteList.add( nullptr ); // q don't need any special treatment;
 		elementList.set( elementList.indexOf( q ), nullptr );
-		deleteList.add( nullptr ); // but q2 does, because it migth be at a later pos
 		elementList.set( elementList.indexOf( q2 ), nullptr );
 
 		if ( q->ang[q->angleIndex( n3 )] + q2->ang[q2->angleIndex( n3 )] < DEG_180 )
@@ -1671,12 +1664,10 @@ TopoCleanup::shapeCleanupStep()
 		}
 	}
 
-	for ( i = 0; i < deleteList.size(); i++ )
-	{
-		elem = deleteList.get( i );
-		elementList.remove( elementList.indexOf( elem ) );
-	}
-	deleteList.clear();
+	elementList.erase(
+		std::remove( elementList.begin(), elementList.end(), nullptr ),
+		elementList.end()
+	);
 
 	nodes = nodeList;
 	shapeCleanupFinished = true;
