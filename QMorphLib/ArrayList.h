@@ -25,11 +25,6 @@ public:
 		mArray.reserve( size );
 	}
 
-	/*void resize( size_t size )
-	{
-		mArray.resize( size );
-	}*/
-
 	void add( size_t index, const T& item )
 	{
 		if ( index > mArray.size() )

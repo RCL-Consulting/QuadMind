@@ -33,11 +33,12 @@ private:
 	bool finished = false;
 	int level = 0;
 	int nrOfFronts = 0;
+	int m_step_limit = -1;
 	bool evenInitNrOfFronts = false;
 
 public:
 	/** Initialize the class */
-	void init();
+	void init( int step_limit = -1 );
 
 	///** Run the implementation on the given triangle mesh */
 	void run();

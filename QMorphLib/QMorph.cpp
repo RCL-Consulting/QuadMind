@@ -15,9 +15,9 @@
 
 //TODO: Tests
 void 
-QMorph::init()
+QMorph::init( int step_limit )
 {
-
+	m_step_limit = step_limit;
 	if ( leftmost == nullptr || lowermost == nullptr || rightmost == nullptr || uppermost == nullptr )
 	{
 		findExtremeNodes();
@@ -75,6 +75,8 @@ QMorph::init()
 	}
 }
 
+static int stepcount = 0;
+
 //TODO: Tests
 void 
 QMorph::run()
@@ -87,15 +89,18 @@ QMorph::run()
 			Msg::debug( "Main loop goes here......." );
 			Msg::debug( "---------------------------------------------------" );
 
+			stepcount = 0;
 			// The program's main loop from where all the real action originates
 			while ( !finished )
 			{
 				step();
+				if ( m_step_limit != -1 && stepcount == m_step_limit )
+					finished = true;
 			}
 
 		}
 	}
-	else if ( !m_step )
+    else if (!m_step && m_step_limit != -1)
 	{
 		// Post-processing methods
 		if ( doCleanUp )
@@ -114,8 +119,6 @@ QMorph::run()
 		printElements( elementList );
 	}
 }
-
-static int stepcount = 0;
 
 //TODO: Tests
 void 
@@ -804,7 +807,6 @@ QMorph::localSmooth( const std::shared_ptr<Quad>& q,
 
 	if ( q->isFake )
 	{
-
 		auto top = q->edgeList[left]->otherNode( q->edgeList[base]->leftNode );
 		bottomLeft = q->edgeList[base]->leftNode;
 		bottomRight = q->edgeList[base]->rightNode;
