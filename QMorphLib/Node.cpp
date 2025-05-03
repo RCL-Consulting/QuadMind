@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Node.h"
 
 #include "Edge.h"
@@ -822,7 +822,10 @@ Node::blackerSmooth( const std::shared_ptr<Node>& nJ,
 	{
 		Msg::debug( "...step 2..." );
 		MyVector vJ( origin, nJ );
-		MyVector vIJ( nJ, vImarked.x, vImarked.y );
+        MyVector vIJ(origin, nI);
+        vIJ.plus(deltaA);
+        vIJ = vIJ.minus(vJ);
+		//MyVector vIJ( nJ, vImarked.x, vImarked.y );
 		double la = vIJ.length();
 
 		MyVector deltaB = deltaA.plus( vI );
@@ -1015,105 +1018,105 @@ bool
 Node::incrAdjustUntilNotInvertedOrZeroArea( const std::shared_ptr<Node>& old,
 										   const ArrayList<std::shared_ptr<Element>>& elements )
 {
-	Msg::debug( "Entering incrAdjustUntilNotInvertedOrZeroArea(..)" );
-	Msg::debug( "..this: " + descr() );
-	Msg::debug( "..old: " + old->descr() );
+    Msg::debug("Entering incrAdjustUntilNotInvertedOrZeroArea(..)");
+    Msg::debug("..this: " + descr());
+    Msg::debug("..old: " + old->descr());
 
-	MyVector back( shared_from_this(), old);
-	double startX = x, startY = y;
-	double xstep = back.x / 50.0, ystep = back.y / 50.0;
-	double xinc, yinc;
-	int steps, i;
+    MyVector back(shared_from_this(), old);
+    double startX = x, startY = y;
+    double xstep = back.x / 50.0, ystep = back.y / 50.0;
+    double xinc, yinc;
+    int steps, i;
 
-	if ( std::abs( xstep ) < COINCTOL || std::abs( ystep ) < COINCTOL )
-	{
+    if (std::abs(xstep) < COINCTOL || std::abs(ystep) < COINCTOL)
+    {
+        if (COINCTOL < std::abs(back.x) && COINCTOL < std::abs(back.y))
+        {  // && or || ?
+            Msg::debug("...ok, resorting to use of minimum increment");
+            if (std::abs(back.x) < std::abs(back.y))
+            {
+                if (back.x < 0)
+                {
+                    xinc = -COINCTOL;
+                }
+                else
+                {
+                    xinc = COINCTOL;
+                }
 
-		if ( COINCTOL < std::abs( back.x ) && COINCTOL < std::abs( back.y ) )
-		{// && or || ?
-			Msg::debug( "...ok, resorting to use of minimum increment" );
-			if ( std::abs( back.x ) < std::abs( back.y ) )
-			{
-				if ( back.x < 0 )
-				{
-					xinc = -COINCTOL;
-				}
-				else
-				{
-					xinc = COINCTOL;
-				}
+                yinc = std::abs(old->y) * COINCTOL / std::abs(old->x);
+                if (back.y < 0)
+                {
+                    yinc = -yinc;
+                }
 
-				yinc = std::abs( old->y ) * COINCTOL / std::abs( old->x );
-				if ( back.y < 0 )
-				{
-					yinc = -yinc;
-				}
+                steps = (int)(back.x / xinc);
+            }
+            else
+            {
+                if (back.y < 0)
+                {
+                    yinc = -COINCTOL;
+                }
+                else
+                {
+                    yinc = COINCTOL;
+                }
 
-				steps = (int)(back.x / xinc);
-			}
-			else
-			{
-				if ( back.y < 0 )
-				{
-					yinc = -COINCTOL;
-				}
-				else
-				{
-					yinc = COINCTOL;
-				}
+                xinc = std::abs(old->x) * COINCTOL / std::abs(old->y);
+                if (back.x < 0)
+                {
+                    xinc = -xinc;
+                }
 
-				xinc = std::abs( old->x ) * COINCTOL / std::abs( old->y );
-				if ( back.x < 0 )
-				{
-					xinc = -xinc;
-				}
+                steps = (int)(back.y / yinc);
+            }
 
-				steps = (int)(back.y / yinc);
-			}
+            Msg::debug("...back.x is: " + std::to_string(back.x));
+            Msg::debug("...back.y is: " + std::to_string(back.y));
 
-			Msg::debug( "...back.x is: " + std::to_string( back.x ) );
-			Msg::debug( "...back.y is: " + std::to_string( back.y ) );
+            Msg::debug("...xinc is: " + std::to_string(xinc));
+            Msg::debug("...yinc is: " + std::to_string(yinc));
 
-			Msg::debug( "...xinc is: " + std::to_string( xinc ) );
-			Msg::debug( "...yinc is: " + std::to_string( yinc ) );
+            for (i = 1; i <= steps; i++)
+            {
+                x = startX + xinc * i;
+                y = startY + yinc * i;
 
-			for ( i = 1; i <= steps; i++ )
-			{
-				x = startX + xinc * i;
-				y = startY + yinc * i;
+                if (!invertedOrZeroAreaElements(elements))
+                {
+                    Msg::debug(
+                        "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)");
+                    return true;
+                }
+            }
+        }
+    }
+    else
+    {
+        for (i = 1; i <= 49; i++)
+        {
+            x = startX + back.x * i / 50.0;
+            y = startY + back.y * i / 50.0;
 
-				if ( !invertedOrZeroAreaElements( elements ) )
-				{
-					Msg::debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
-					return true;
-				}
-			}
-		}
-	}
-	else
-	{
-		for ( i = 1; i <= 49; i++ )
-		{
-			x = startX + back.x * i / 50.0;
-			y = startY + back.y * i / 50.0;
+            if (!invertedOrZeroAreaElements(elements))
+            {
+                Msg::debug("Leaving incrAdjustUntilNotInvertedOrZeroArea(..)");
+                return true;
+            }
+        }
+    }
 
-			if ( !invertedOrZeroAreaElements( elements ) )
-			{
-				Msg::debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
-				return true;
-			}
-		}
-	}
+    x = old->x;
+    y = old->y;
+    if (!invertedOrZeroAreaElements(elements))
+    {
+        Msg::debug("Leaving incrAdjustUntilNotInvertedOrZeroArea(..)");
+        return true;
+    }
 
-	x = old->x;
-	y = old->y;
-	if ( !invertedOrZeroAreaElements( elements ) )
-	{
-		Msg::debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
-		return true;
-	}
-
-	Msg::debug( "Leaving incrAdjustUntilNotInvertedOrZeroArea(..)" );
-	return false;
+    Msg::debug("Leaving incrAdjustUntilNotInvertedOrZeroArea(..)");
+    return false;
 }
 
 //TODO: Tests
@@ -2122,7 +2125,8 @@ Node::replaceWithStdMesh()
 std::string
 Node::descr()
 {
-	return "(" + std::to_string( x ) + ", " + std::to_string( y ) + ")";
+	//return "(" + std::to_string( x ) + ", " + std::to_string( y ) + ")";
+    return std::to_string(mNumber);
 }
 
 std::string

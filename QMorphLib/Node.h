@@ -32,12 +32,15 @@ public:
 	// byte state= 0; // For front Nodes only
 	ArrayList<std::shared_ptr<Edge>> edgeList;
 	Color color = Color::Cyan;
+    int mNumber = 0;
+    inline static int mLastNumber = 0;
 
 	/** Create new node with position (x,y). */
 	Node( double x, double y )
 		: x( x )
 		, y( y )
 	{
+        mNumber = ++mLastNumber;
 	}
 
 	bool equals( const std::shared_ptr<Constants>& elem ) const override;

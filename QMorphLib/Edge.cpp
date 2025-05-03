@@ -1640,8 +1640,9 @@ Edge::isFrontEdge()
 std::string
 Edge::descr()
 {
-	return "(" + std::to_string( leftNode->x ) + ", " + std::to_string( leftNode->y ) + "), (" + 
-		std::to_string( rightNode->x ) + ", " + std::to_string( rightNode->y ) + ")";
+	/*return "(" + std::to_string( leftNode->x ) + ", " + std::to_string( leftNode->y ) + "), (" + 
+		std::to_string( rightNode->x ) + ", " + std::to_string( rightNode->y ) + ")";*/
+    return "(" + leftNode->descr() + ", " + rightNode->descr() + ")";
 }
 
 //TODO: Test

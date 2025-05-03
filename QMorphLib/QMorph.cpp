@@ -15,9 +15,12 @@
 
 //TODO: Tests
 void 
-QMorph::init( int step_limit )
+QMorph::init( int step_limit, double mesh_size, bool skip_last_smooth)
 {
 	m_step_limit = step_limit;
+    m_mesh_size = mesh_size;
+    m_skip_last_smooth = skip_last_smooth;
+
 	if ( leftmost == nullptr || lowermost == nullptr || rightmost == nullptr || uppermost == nullptr )
 	{
 		findExtremeNodes();
@@ -91,6 +94,7 @@ QMorph::run()
 
 			stepcount = 0;
 			// The program's main loop from where all the real action originates
+            finished = m_step_limit != -1 && stepcount == m_step_limit;
 			while ( !finished )
 			{
 				step();
@@ -137,6 +141,18 @@ QMorph::step()
 		{
 			level++;
 			nrOfFronts = countNOFrontsAtCurLowestLevel( frontList );
+            for (auto& edge:frontList)
+			{
+                auto quad = edge->getQuadElement();
+                auto node_K = edge->leftNode;
+                auto front_2 = node_K->anotherFrontEdge(edge);
+                auto neighbour = quad->neighborEdge(node_K, edge);
+                if (neighbour)
+                {
+                    auto node_J = neighbour->otherNode(node_K);
+                    smoothFrontNode(node_K, node_J, quad, edge, front_2);
+                }
+			}
 		}
 
 		Edge::printStateLists();
@@ -168,10 +184,11 @@ QMorph::step()
 		}
 
 		Msg::debug( "frontList:" );
-		printEdgeList( frontList );
+		printEdgeList( frontList ); 
 		Edge::printStateLists();
 
-		if ( q->firstNode != nullptr )
+		bool skip = m_skip_last_smooth && stepcount == m_step_limit;
+		if (q->firstNode != nullptr && !skip)
 		{ // for specialCases, smoothing is performed already
 			localSmooth( q, frontList );
 		}
@@ -541,6 +558,8 @@ QMorph::smoothFrontNode( const std::shared_ptr<Node>& nK,
 						 const std::shared_ptr<Edge>& front1,
 						 const std::shared_ptr<Edge>& front2 )
 {
+    const int kIterLimit = 1;
+
 	Msg::debug( "Entering smoothFrontNode(..)..." );
 	//		List<Element> adjQuads = nK.adjQuads();
 	double tr, ld = 0;
@@ -566,80 +585,96 @@ QMorph::smoothFrontNode( const std::shared_ptr<Node>& nK,
 		eD = nK->edgeList.get( nK->edgeList.indexOf( eD ) );
 	}
 
-	if ( seqQuads == 2 )
-	{ 
-		if ( front1->length() > front2->length() )
-		{
-			tr = front1->length() / front2->length();
-		}
-		else
-		{
-			tr = front2->length() / front1->length();
-		}
+	for (auto i = 0; i < kIterLimit; ++i)
+    {
+        if (seqQuads == 2)
+        {
+            if (front1->length() > front2->length())
+            {
+                tr = front1->length() / front2->length();
+            }
+            else
+            {
+                tr = front2->length() / front1->length();
+            }
 
-		if ( tr > 20 )
-		{
-			// Msg.debug("******************* tr > 20");
-			ld = nK->meanNeighborEdgeLength();
-			newNode = eD->otherNodeGivenNewLength( ld, nJ );
-		}
-		else if ( tr <= 20 && tr > 2.5 )
-		{
-			Msg::debug( "******************* tr<= 20 && tr> 2.5" );
-			// The mean of (some of) the other edges in all the adjacent elements
-			ld = 0;
-			// First add the lengths of edges from Triangles ahead of the front
-			for ( auto e : nK->edgeList )
-			{
-				if ( e != eD && e != front1 && e != front2 )
-				{
-					ld += e->length();
-					Msg::debug( "from edge ahead of the front adding " + std::to_string( e->length() ) );
-					n++;
-				}
-			}
-			// Then add the lengths of edges from the two Quads behind the front
-			q = front1->getQuadElement();
-			ld += q->edgeList[base]->length();
-			Msg::debug( "adding " + std::to_string( q->edgeList[base]->length() ) );
-			if ( q->edgeList[left] != eD )
-			{
-				ld += q->edgeList[left]->length();
-				Msg::debug( "adding " + std::to_string( q->edgeList[left]->length() ) );
-			}
-			else
-			{
-				ld += q->edgeList[right]->length();
-				Msg::debug( "adding " + std::to_string( q->edgeList[right]->length() ) );
-			}
+            if (tr > 20)
+            {
+                // Msg.debug("******************* tr > 20");
+                ld = nK->meanNeighborEdgeLength();
+                newNode = eD->otherNodeGivenNewLength(ld, nJ);
+            }
+            else if (tr <= 20 && tr > 2.5)
+            {
+                Msg::debug("******************* tr<= 20 && tr> 2.5");
+                // The mean of (some of) the other edges in all the adjacent
+                // elements
+                ld = 0;
+                // First add the lengths of edges from Triangles ahead of the
+                // front
+                for (auto e : nK->edgeList)
+                {
+                    if (e != eD && e != front1 && e != front2)
+                    {
+                        ld += e->length();
+                        Msg::debug("from edge ahead of the front adding " +
+                                   std::to_string(e->length()));
+                        n++;
+                    }
+                }
+                // Then add the lengths of edges from the two Quads behind the
+                // front
+                q = front1->getQuadElement();
+                ld += q->edgeList[base]->length();
+                Msg::debug("adding " +
+                           std::to_string(q->edgeList[base]->length()));
+                if (q->edgeList[left] != eD)
+                {
+                    ld += q->edgeList[left]->length();
+                    Msg::debug("adding " +
+                               std::to_string(q->edgeList[left]->length()));
+                }
+                else
+                {
+                    ld += q->edgeList[right]->length();
+                    Msg::debug("adding " +
+                               std::to_string(q->edgeList[right]->length()));
+                }
 
-			q = front2->getQuadElement();
-			ld += q->edgeList[base]->length();
-			Msg::debug( "adding " + std::to_string( q->edgeList[base]->length() ) );
-			if ( q->edgeList[left] != eD )
-			{
-				ld += q->edgeList[left]->length();
-				Msg::debug( "adding " + std::to_string( q->edgeList[left]->length() ) );
-			}
-			else
-			{
-				ld += q->edgeList[right]->length();
-				Msg::debug( "adding " + std::to_string( q->edgeList[right]->length() ) );
-			}
+                q = front2->getQuadElement();
+                ld += q->edgeList[base]->length();
+                Msg::debug("adding " +
+                           std::to_string(q->edgeList[base]->length()));
+                if (q->edgeList[left] != eD)
+                {
+                    ld += q->edgeList[left]->length();
+                    Msg::debug("adding " +
+                               std::to_string(q->edgeList[left]->length()));
+                }
+                else
+                {
+                    ld += q->edgeList[right]->length();
+                    Msg::debug("adding " +
+                               std::to_string(q->edgeList[right]->length()));
+                }
 
-			ld = ld / (4.0 + n);
-			Msg::debug( "ld= " + std::to_string( ld ) );
-			newNode = eD->otherNodeGivenNewLength( ld, nJ );
-		}
-		else
-		{
-			newNode = nK->blackerSmooth( nJ, front1, front2, eD->length() );
-		}
-	}
-	else
-	{ 
-		newNode = nK->blackerSmooth( nJ, front1, front2, eD->length() );
-	}
+                ld = ld / (4.0 + n);
+                Msg::debug("ld= " + std::to_string(ld));
+                newNode = eD->otherNodeGivenNewLength(ld, nJ);
+            }
+            else
+            {
+                auto Size =
+                    abs(m_mesh_size) < 1e-10 ? eD->length() : m_mesh_size;
+                newNode = nK->blackerSmooth(nJ, front1, front2, Size);
+            }
+        }
+        else
+        {
+            auto Size = abs(m_mesh_size) < 1e-10 ? eD->length() : m_mesh_size;
+            newNode = nK->blackerSmooth(nJ, front1, front2, Size);
+        }
+    }
 
 	Msg::debug( "Leaving smoothFrontNode(..)...returning " + newNode->descr() );
 	return newNode;
@@ -796,7 +831,8 @@ QMorph::getSmoothedPos( const std::shared_ptr<Node>& n,
 //TODO: Tests
 void
 QMorph::localSmooth( const std::shared_ptr<Quad>& q,
-					 const ArrayList<std::shared_ptr<Edge>>& frontList2 )
+					 const ArrayList<std::shared_ptr<Edge>>& frontList2,
+					 int iterations )
 {
 	Msg::debug( "Entering localSmooth(..)" );
 	std::shared_ptr<Quad> tempQ1, tempQ2;
@@ -924,10 +960,45 @@ QMorph::localSmooth( const std::shared_ptr<Quad>& q,
 		// Calculate smoothed pos for each element node and those nodes connected to
 		// the element. If the element has become inverted, then repair it.
 
-		topLeftNew = getSmoothedPos( topLeft, q );
-		topRightNew = getSmoothedPos( topRight, q );
-		bottomLeftNew = getSmoothedPos( bottomLeft, q );
-		bottomRightNew = getSmoothedPos( bottomRight, q );
+
+		for (auto k = 0; k < iterations; ++k)
+        {
+            topLeftNew = getSmoothedPos(topLeft, q);
+            Msg::debug("...Checking topLeft for inversion:");
+            if (!topLeft->equals(topLeftNew))
+            {
+                topLeft->moveTo(*topLeftNew);
+                inversionCheckAndRepair(topLeft, topLeftOld);
+                topLeft->update();
+            }
+
+            topRightNew = getSmoothedPos(topRight, q);
+            Msg::debug("...Checking topRight for inversion:");
+            if (!topRight->equals(topRightNew))
+            {
+                topRight->moveTo(*topRightNew);
+                inversionCheckAndRepair(topRight, topRightOld);
+                topRight->update();
+            }
+
+            bottomLeftNew = getSmoothedPos(bottomLeft, q);
+            Msg::debug("...Checking bottomLeft for inversion:");
+            if (!bottomLeft->equals(bottomLeftNew))
+            {
+                bottomLeft->moveTo(*bottomLeftNew);
+                inversionCheckAndRepair(bottomLeft, bottomLeftOld);
+                bottomLeft->update();
+            }
+
+            bottomRightNew = getSmoothedPos(bottomRight, q);
+            Msg::debug("...Checking bottomRight for inversion:");
+            if (!bottomRight->equals(bottomRightNew))
+            {
+                bottomRight->moveTo(*bottomRightNew);
+                inversionCheckAndRepair(bottomRight, bottomRightOld);
+                bottomRight->update();
+            }
+        }
 
 		for ( int i = 0; i < adjNodes.size(); i++ )
 		{
@@ -961,7 +1032,7 @@ QMorph::localSmooth( const std::shared_ptr<Quad>& q,
 			}
 		}
 
-		Msg::debug( "...Checking topLeft for inversion:" );
+		/*Msg::debug( "...Checking topLeft for inversion:" );
 		if ( !topLeft->equals( topLeftNew ) )
 		{
 			topLeft->moveTo( *topLeftNew );
@@ -991,7 +1062,7 @@ QMorph::localSmooth( const std::shared_ptr<Quad>& q,
 			bottomRight->moveTo( *bottomRightNew );
 			inversionCheckAndRepair( bottomRight, bottomRightOld );
 			bottomRight->update();
-		}
+		}*/
 
 		Msg::debug( "...Checking the surrounding nodes for inversion:" );
 		for ( int i = 0; i < adjNodes.size(); i++ )

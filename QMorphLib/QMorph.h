@@ -35,10 +35,14 @@ private:
 	int nrOfFronts = 0;
 	int m_step_limit = -1;
 	bool evenInitNrOfFronts = false;
+    double m_mesh_size = 0.0;
+    bool m_skip_last_smooth = false;
 
 public:
 	/** Initialize the class */
-	void init( int step_limit = -1 );
+	void init( int step_limit = -1,
+			   double mesh_size = 0.0,
+			   bool skip_last_smooth = false);
 
 	///** Run the implementation on the given triangle mesh */
 	void run();
@@ -142,7 +146,8 @@ private:
 	 * smoothed. So is every node directly connected to these.
 	 */
 	void localSmooth( const std::shared_ptr<Quad>& q,
-					  const ArrayList<std::shared_ptr<Edge>>& frontList2 );
+					  const ArrayList<std::shared_ptr<Edge>>& frontList2,
+					  int iterations = 1 );
 
 	/**
 	 * Delete all interior triangles within the edges of this quad
