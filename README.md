@@ -11,6 +11,6 @@ This project is being used to investigate the application of machine learning te
 
 This project is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
-It is a reimplementation of [qmorph]([https://github.com/original/repo](https://github.com/KarlLevik/qmorph)), originally created by Karl Levik and licensed under the MIT License.
+It is a reimplementation of [qmorph](https://github.com/KarlLevik/qmorph), originally created by Karl Levik and licensed under the MIT License.
 
 No original code was reused — only the structure and functionality were referenced. The original MIT license is included for attribution and compliance purposes.
