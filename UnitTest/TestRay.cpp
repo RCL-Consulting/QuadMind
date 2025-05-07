@@ -135,21 +135,21 @@ TEST( RayTests, ValuesTest )
 {
     auto origin = std::make_shared<Node>( 0.0, 0.0 );
     Ray ray1( origin, 0.0 );
-    EXPECT_EQ( ray1.values(), "(0.000000, 0.000000), x= 1.000000, y= 0.000000" );
+    EXPECT_EQ( ray1.values(), "394, x= 1.000000, y= 0.000000" );
 
     Ray ray2( origin, std::numbers::pi / 2 );
-    EXPECT_EQ( ray2.values(), "(0.000000, 0.000000), x= 0.000000, y= 1.000000" );
+    EXPECT_EQ( ray2.values(), "394, x= 0.000000, y= 1.000000" );
 
     auto passThrough = std::make_shared<Node>( 1.0, 1.0 );
     Ray ray3( origin, passThrough );
-    EXPECT_EQ( ray3.values(), "(0.000000, 0.000000), x= 0.707107, y= 0.707107" );
+    EXPECT_EQ( ray3.values(), "394, x= 0.707107, y= 0.707107" );
 }
 
 TEST( RayTest, DescrWithAngle )
 {
     auto origin = std::make_shared<Node>( 0.0, 0.0 );
     Ray ray( origin, 45.0 * Constants::toRadians );
-    std::string expected = "(0.000000, 0.000000), (0.707107, 0.707107)";
+    std::string expected = "399, (0.707107, 0.707107)";
     EXPECT_EQ( ray.descr(), expected );
 }
 
@@ -158,7 +158,7 @@ TEST( RayTest, DescrWithPassThrough )
     auto origin = std::make_shared<Node>( 0.0, 0.0 );
     auto passThrough = std::make_shared<Node>( 1.0, 1.0 );
     Ray ray( origin, passThrough );
-    std::string expected = "(0.000000, 0.000000), (0.707107, 0.707107)";
+    std::string expected = "400, (0.707107, 0.707107)";
     EXPECT_EQ( ray.descr(), expected );
 }
 

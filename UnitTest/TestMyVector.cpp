@@ -592,7 +592,7 @@ TEST( MyVectorTests, DescrTestWithZeroValues )
 TEST( MyVectorTests, Intersects_ParallelVectors )
 {
     auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto origin2 = std::make_shared<Node>( 1.0, 1.0 );
+    auto origin2 = std::make_shared<Node>( 1.0, 0.0 );
     MyVector v1( origin1, 1.0, 1.0 );
     MyVector v2( origin2, 1.0, 1.0 );
     EXPECT_FALSE( v1.intersects( v2 ) );
@@ -630,7 +630,7 @@ TEST( MyVectorTests, PointIntersects_True )
     auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
     auto origin2 = std::make_shared<Node>( 1.0, 1.0 );
     MyVector v1( origin1, 1.0, 1.0 );
-    MyVector v2( origin2, -1.0, -1.0 );
+    MyVector v2( origin2, 1.0, 0.0 );
 
     EXPECT_TRUE( v1.pointIntersects( v2 ) );
 }
