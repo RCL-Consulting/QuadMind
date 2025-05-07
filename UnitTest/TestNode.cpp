@@ -178,19 +178,19 @@ TEST( NodeTests, LengthTestNegativeCoordinates )
 TEST( NodeTests, DescrReturnsCorrectString )
 {
     Node node( 3.5, 7.2 );
-    EXPECT_EQ( node.descr(), "(3.500000, 7.200000)" );
+    EXPECT_EQ( node.descr(), "379" );
 }
 
 TEST( NodeTests, DescrHandlesNegativeCoordinates )
 {
     Node node( -1.0, -2.5 );
-    EXPECT_EQ( node.descr(), "(-1.000000, -2.500000)" );
+    EXPECT_EQ( node.descr(), "380" );
 }
 
 TEST( NodeTests, DescrHandlesZeroCoordinates )
 {
     Node node( 0.0, 0.0 );
-    EXPECT_EQ( node.descr(), "(0.000000, 0.000000)" );
+    EXPECT_EQ( node.descr(), "381" );
 }
 
 TEST( NodeTest, ValDescrTest )

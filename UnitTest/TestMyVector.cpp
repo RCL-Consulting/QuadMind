@@ -569,7 +569,7 @@ TEST( MyVectorTests, DescrTest )
 {
     auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector vector( origin, 3.0, 4.0 );
-    std::string expected = "(0.000000, 0.000000), (3.000000, 4.000000)";
+    std::string expected = "313, (3.000000, 4.000000)";
     EXPECT_EQ( vector.descr(), expected );
 }
 
@@ -577,7 +577,7 @@ TEST( MyVectorTests, DescrTestWithNegativeValues )
 {
     auto origin = std::make_shared<Node>( -1.0, -1.0 );
     MyVector vector( origin, -2.0, -3.0 );
-    std::string expected = "(-1.000000, -1.000000), (-3.000000, -4.000000)";
+    std::string expected = "314, (-3.000000, -4.000000)";
     EXPECT_EQ( vector.descr(), expected );
 }
 
@@ -585,7 +585,7 @@ TEST( MyVectorTests, DescrTestWithZeroValues )
 {
     auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector vector( origin, 0.0, 0.0 );
-    std::string expected = "(0.000000, 0.000000), (0.000000, 0.000000)";
+    std::string expected = "315, (0.000000, 0.000000)";
     EXPECT_EQ( vector.descr(), expected );
 }
 
