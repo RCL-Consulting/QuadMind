@@ -7,9 +7,27 @@
 
 #include <numbers>
 
-TEST( RayTests, ConstructorWithOriginAndAngle )
+class RayTest : public ::testing::Test
 {
-	auto origin = std::make_shared<Node>( 0.0, 0.0 );
+protected:
+    std::shared_ptr<Node> origin = std::make_shared<Node>(0.0, 0.0);
+    std::shared_ptr<Node> origin1 = std::make_shared<Node>(1.0, 1.0);
+
+    void SetUp() override
+    {
+        origin->setXY(0.0, 0.0);
+        origin1->setXY(1.0, 1.0);
+    }
+
+    void TearDown() override
+    {
+
+    }
+};
+
+
+TEST_F( RayTest, ConstructorWithOriginAndAngle )
+{
     double angle = Constants::PIdiv2; // 90 degrees
 
     Ray ray( origin, angle );
@@ -19,9 +37,8 @@ TEST( RayTests, ConstructorWithOriginAndAngle )
     EXPECT_NEAR( ray.y, 1.0, 1e-9 );
 }
 
-TEST( RayTests, ConstructorWithOriginAndPassThrough )
+TEST_F( RayTest, ConstructorWithOriginAndPassThrough )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     origin->x = 0.0;
     origin->y = 0.0;
 
@@ -37,7 +54,7 @@ TEST( RayTests, ConstructorWithOriginAndPassThrough )
 }
 
 //TODO: Implement this test
-/*TEST(RayTests, ConstructorWithOriginRelEdgeAndAngle)
+/*TEST_F(RayTest, ConstructorWithOriginRelEdgeAndAngle)
 {
     auto origin = std::make_shared<Node>();
     auto relEdge = std::make_shared<Edge>();
@@ -53,9 +70,8 @@ TEST( RayTests, ConstructorWithOriginAndPassThrough )
     EXPECT_NEAR( ray.y, 1.0, 1e-9 );
 }*/
 
-TEST( RayTest, CrossProductWithVector )
+TEST_F( RayTest, CrossProductWithVector )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     Ray ray( origin, 0.0 ); // Ray along the x-axis
     MyVector vector( origin, 0.0, 1.0 ); // Vector along the y-axis
 
@@ -63,9 +79,8 @@ TEST( RayTest, CrossProductWithVector )
     EXPECT_DOUBLE_EQ( result, 1.0 ); // Cross product should be 1
 }
 
-TEST( RayTest, CrossProductWithVectorAtAngle )
+TEST_F( RayTest, CrossProductWithVectorAtAngle )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     Ray ray( origin, std::numbers::pi / 4 ); // Ray at 45 degrees
     MyVector vector( origin, 1.0, 0.0 ); // Vector along the x-axis
 
@@ -73,9 +88,8 @@ TEST( RayTest, CrossProductWithVectorAtAngle )
     EXPECT_DOUBLE_EQ( result, -std::sin( std::numbers::pi / 4 ) ); // Cross product should be -sin(45 degrees)
 }
 
-TEST( RayTest, CrossProductWithVectorNegative )
+TEST_F( RayTest, CrossProductWithVectorNegative )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     Ray ray( origin, std::numbers::pi / 2 ); // Ray along the y-axis
     MyVector vector( origin, 1.0, 0.0 ); // Vector along the x-axis
 
@@ -83,87 +97,76 @@ TEST( RayTest, CrossProductWithVectorNegative )
     EXPECT_DOUBLE_EQ( result, -1.0 ); // Cross product should be -1
 }
 
-TEST( RayTests, PointIntersectsAt_ParallelRays )
+TEST_F( RayTest, PointIntersectsAt_ParallelRays )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto origin2 = std::make_shared<Node>( 1.0, 1.0 );
-    Ray ray1( origin1, 0.0 );
-    MyVector vector2( origin2, 1.0, 0.0 );
-
-    auto result = ray1.pointIntersectsAt( vector2 );
-    EXPECT_EQ( result, nullptr );
-}
-
-TEST( RayTests, PointIntersectsAt_IntersectingRays )
-{
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto origin2 = std::make_shared<Node>( 1.0, 1.0 );
-    Ray ray1( origin1, 0.0 );
-    MyVector vector2( origin2, -1.0, -1.0 );
-
-    auto result = ray1.pointIntersectsAt( vector2 );
-    ASSERT_NE( result, nullptr );
-    EXPECT_DOUBLE_EQ( result->x, 0.0 );
-    EXPECT_DOUBLE_EQ( result->y, 0.0 );
-}
-
-TEST( RayTests, PointIntersectsAt_NoIntersection )
-{
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto origin2 = std::make_shared<Node>( 1.0, 1.0 );
-    Ray ray1( origin1, 0.0 );
-    MyVector vector2( origin2, 0.0, 1.0 );
-
-    auto result = ray1.pointIntersectsAt( vector2 );
-    EXPECT_EQ( result, nullptr );
-}
-
-TEST( RayTests, PointIntersectsAt_IntersectionAtOrigin )
-{
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto origin2 = std::make_shared<Node>( 0.0, 0.0 );
-    Ray ray1( origin1, 0.0 );
-    MyVector vector2( origin2, 1.0, 0.0 );
-
-    auto result = ray1.pointIntersectsAt( vector2 );
-    ASSERT_NE( result, nullptr );
-    EXPECT_DOUBLE_EQ( result->x, 0.0 );
-    EXPECT_DOUBLE_EQ( result->y, 0.0 );
-}
-
-TEST( RayTests, ValuesTest )
-{
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     Ray ray1( origin, 0.0 );
-    EXPECT_EQ( ray1.values(), "394, x= 1.000000, y= 0.000000" );
+    MyVector vector2( origin1, 1.0, 0.0 );
+
+    auto result = ray1.pointIntersectsAt( vector2 );
+    EXPECT_EQ( result, nullptr );
+}
+
+TEST_F( RayTest, PointIntersectsAt_IntersectingRays )
+{
+    Ray ray1( origin, 0.0 );
+    MyVector vector2( origin1, -1.0, -1.0 );
+
+    auto result = ray1.pointIntersectsAt( vector2 );
+    ASSERT_NE( result, nullptr );
+    EXPECT_DOUBLE_EQ( result->x, 0.0 );
+    EXPECT_DOUBLE_EQ( result->y, 0.0 );
+}
+
+TEST_F( RayTest, PointIntersectsAt_NoIntersection )
+{
+    Ray ray1( origin, 0.0 );
+    MyVector vector2( origin1, 0.0, 1.0 );
+
+    auto result = ray1.pointIntersectsAt( vector2 );
+    EXPECT_EQ( result, nullptr );
+}
+
+TEST_F( RayTest, PointIntersectsAt_IntersectionAtOrigin )
+{
+    Ray ray1( origin, 0.0 );
+    MyVector vector2( origin, 1.0, 0.0 );
+
+    auto result = ray1.pointIntersectsAt( vector2 );
+    ASSERT_NE( result, nullptr );
+    EXPECT_DOUBLE_EQ( result->x, 0.0 );
+    EXPECT_DOUBLE_EQ( result->y, 0.0 );
+}
+
+TEST_F( RayTest, ValuesTest )
+{
+    Ray ray1( origin, 0.0 );
+    EXPECT_EQ( ray1.values(), "84, x= 1.000000, y= 0.000000" );
 
     Ray ray2( origin, std::numbers::pi / 2 );
-    EXPECT_EQ( ray2.values(), "394, x= 0.000000, y= 1.000000" );
+    EXPECT_EQ( ray2.values(), "84, x= 0.000000, y= 1.000000" );
 
     auto passThrough = std::make_shared<Node>( 1.0, 1.0 );
     Ray ray3( origin, passThrough );
-    EXPECT_EQ( ray3.values(), "394, x= 0.707107, y= 0.707107" );
+    EXPECT_EQ( ray3.values(), "84, x= 0.707107, y= 0.707107" );
 }
 
-TEST( RayTest, DescrWithAngle )
+TEST_F( RayTest, DescrWithAngle )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     Ray ray( origin, 45.0 * Constants::toRadians );
-    std::string expected = "399, (0.707107, 0.707107)";
+    std::string expected = "87, (0.707107, 0.707107)";
     EXPECT_EQ( ray.descr(), expected );
 }
 
-TEST( RayTest, DescrWithPassThrough )
+TEST_F( RayTest, DescrWithPassThrough )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     auto passThrough = std::make_shared<Node>( 1.0, 1.0 );
     Ray ray( origin, passThrough );
-    std::string expected = "400, (0.707107, 0.707107)";
+    std::string expected = "89, (0.707107, 0.707107)";
     EXPECT_EQ( ray.descr(), expected );
 }
 
 //TODO: Implement this test
-//TEST( RayTest, DescrWithRelEdge )
+//TEST_F( RayTest, DescrWithRelEdge )
 //{
 //    auto origin = std::make_shared<Node>( 0.0, 0.0 );
 //    auto relEdge = std::make_shared<Edge>();

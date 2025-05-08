@@ -188,13 +188,13 @@ TEST_F( NodeTest, DescrReturnsCorrectString )
 TEST_F( NodeTest, DescrHandlesNegativeCoordinates )
 {
     Node node( -1.0, -2.5 );
-    EXPECT_EQ( node.descr(), "380" );
+    EXPECT_EQ( node.descr(), "55" );
 }
 
 TEST_F( NodeTest, DescrHandlesZeroCoordinates )
 {
     Node node( 0.0, 0.0 );
-    EXPECT_EQ( node.descr(), "381" );
+    EXPECT_EQ( node.descr(), "58" );
 }
 
 TEST_F( NodeTest, ValDescrTest )

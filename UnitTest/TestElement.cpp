@@ -2,6 +2,21 @@
 #include "Element.h"
 #include "Node.h"
 
+class ElementTest : public ::testing::Test
+{
+protected:
+    void SetUp() override
+    {
+
+    }
+
+    void TearDown() override
+    {
+
+    }
+};
+
+
 TEST( ElementTest, CrossProductTest )
 {
     auto o1 = std::make_shared<Node>( 0.0, 0.0 );

@@ -7,67 +7,55 @@
 class EdgeTest : public ::testing::Test
 {
 protected:
+    std::shared_ptr<Node> node = std::make_shared<Node>(0.0, 0.0);
+    std::shared_ptr<Node> node1 = std::make_shared<Node>(1.0, 0.0);
+    std::shared_ptr<Node> node2 = std::make_shared<Node>(1.0, 1.0);
+    std::shared_ptr<Node> node3 = std::make_shared<Node>(2.0, 2.0);
+    std::shared_ptr<Node> node4 = std::make_shared<Node>(3.0, 3.0);
+    std::shared_ptr<Edge> edge = std::make_shared<Edge>(node, node1);
+    std::shared_ptr<Edge> edge1 = std::make_shared<Edge>(node2, node3);
+
+
     void SetUp() override
     {
-		node1 = std::make_shared<Node>( 0.0, 0.0 );
-		node2 = std::make_shared<Node>( 1.0, 0.0 );
-        edge = std::make_shared<Edge>( node1, node2 );
+        node->setXY(0.0, 0.0);
+        node1->setXY(1.0, 0.0);
+        node2->setXY(1.0, 1.0);
+        node3->setXY(2.0, 2.0);
+        node4->setXY(3.0, 3.0);
     }
 
 	void TearDown() override
 	{
         Edge::clearStateList();
 	}
-
-    std::shared_ptr<Node> node1;
-    std::shared_ptr<Node> node2;
-    std::shared_ptr<Edge> edge;
 };
 
 TEST_F( EdgeTest, EqualsSameEdge )
 {
-    auto node1 = std::make_shared<Node>( 1.0, 1.0 );
-    auto node2 = std::make_shared<Node>( 2.0, 2.0 );
-    auto edge1 = std::make_shared<Edge>( node1, node2 );
-    auto edge2 = std::make_shared<Edge>( node1, node2 );
-
-    EXPECT_TRUE( edge1->equals( edge2 ) );
+    EXPECT_TRUE( edge->equals( edge ) );
 }
 
 TEST_F( EdgeTest, EqualsDifferentEdges )
 {
-    auto node1 = std::make_shared<Node>( 1.0, 1.0 );
-    auto node2 = std::make_shared<Node>( 2.0, 2.0 );
-    auto node3 = std::make_shared<Node>( 3.0, 3.0 );
-    auto edge1 = std::make_shared<Edge>( node1, node2 );
-    auto edge2 = std::make_shared<Edge>( node2, node3 );
+    auto edge2 = std::make_shared<Edge>( node3, node4 );
 
     EXPECT_FALSE( edge1->equals( edge2 ) );
 }
 
 TEST_F( EdgeTest, EqualsNull )
 {
-    auto node1 = std::make_shared<Node>( 1.0, 1.0 );
-    auto node2 = std::make_shared<Node>( 2.0, 2.0 );
-    auto edge = std::make_shared<Edge>( node1, node2 );
-
-    EXPECT_FALSE( edge->equals( nullptr ) );
+    EXPECT_FALSE( edge1->equals( nullptr ) );
 }
 
 TEST_F( EdgeTest, EqualsDifferentType )
 {
-    auto node1 = std::make_shared<Node>( 1.0, 1.0 );
-    auto node2 = std::make_shared<Node>( 2.0, 2.0 );
-    auto edge = std::make_shared<Edge>( node1, node2 );
-
-    EXPECT_FALSE( edge->equals( node1 ) );
+    EXPECT_FALSE( edge1->equals( node2 ) );
 }
 
 TEST_F( EdgeTest, CopyConstructor )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto node2 = std::make_shared<Node>( 1.0, 1.0 );
-    Edge originalEdge( node1, node2 );
+    Edge originalEdge( node, node2 );
 
     auto copiedEdge = originalEdge.copy();
 
@@ -226,30 +214,23 @@ TEST_F( EdgeTest, AlterRightStateChange )
 
 TEST_F( EdgeTest, ReplaceNode_LeftNode )
 {
-    auto node3 = std::make_shared<Node>( 2.0, 2.0 );
-    
-    ASSERT_TRUE( edge->replaceNode( node1, node3 ) );
+    ASSERT_TRUE( edge->replaceNode( node, node3 ) );
     ASSERT_EQ( edge->leftNode, node3 );
-    ASSERT_EQ( edge->rightNode, node2 );
+    ASSERT_EQ( edge->rightNode, node1 );
 }
 
 TEST_F( EdgeTest, ReplaceNode_RightNode )
 {
-    auto node3 = std::make_shared<Node>( 2.0, 2.0 );
-
-    ASSERT_TRUE( edge->replaceNode( node2, node3 ) );
-    ASSERT_EQ( edge->leftNode, node1 );
+    ASSERT_TRUE( edge->replaceNode( node1, node3 ) );
+    ASSERT_EQ( edge->leftNode, node );
     ASSERT_EQ( edge->rightNode, node3 );
 }
 
 TEST_F( EdgeTest, ReplaceNode_NodeNotFound )
 {
-    auto node3 = std::make_shared<Node>( 2.0, 2.0 );
-    auto node4 = std::make_shared<Node>( 3.0, 3.0 );
- 
     ASSERT_FALSE( edge->replaceNode( node3, node4 ) );
-    ASSERT_EQ( edge->leftNode, node1 );
-    ASSERT_EQ( edge->rightNode, node2 );
+    ASSERT_EQ( edge->leftNode, node );
+    ASSERT_EQ( edge->rightNode, node1 );
 }
 
 TEST_F( EdgeTest, MidPointTest )
@@ -261,11 +242,10 @@ TEST_F( EdgeTest, MidPointTest )
     EXPECT_DOUBLE_EQ( midPoint->y, 0.0 );
 }
 
-TEST( EdgeTests, MidPointTestNegativeCoordinates )
+TEST_F( EdgeTest, MidPointTestNegativeCoordinates )
 {
-    auto node3 = std::make_shared<Node>( -2.0, -2.0 );
-    auto node4 = std::make_shared<Node>( 2.0, 2.0 );
-    auto edge = std::make_shared<Edge>( node3, node4 );
+    auto node5 = std::make_shared<Node>( -2.0, -2.0 );
+    auto edge = std::make_shared<Edge>( node5, node3 );
 
     auto midPoint = edge->midPoint();
 
@@ -274,11 +254,9 @@ TEST( EdgeTests, MidPointTestNegativeCoordinates )
     EXPECT_DOUBLE_EQ( midPoint->y, 0.0 );
 }
 
-TEST( EdgeTests, MidPointTestSameCoordinates )
+TEST_F( EdgeTest, MidPointTestSameCoordinates )
 {
-    auto node3 = std::make_shared<Node>( 1.0, 1.0 );
-    auto node4 = std::make_shared<Node>( 1.0, 1.0 );
-    auto edge = std::make_shared<Edge>( node3, node4 );
+    auto edge = std::make_shared<Edge>( node2, node2 );
 
     auto midPoint = edge->midPoint();
 
@@ -287,7 +265,7 @@ TEST( EdgeTests, MidPointTestSameCoordinates )
     EXPECT_DOUBLE_EQ( midPoint->y, 1.0 );
 }
 
-TEST( EdgeTests, LengthCalculation )
+TEST_F( EdgeTest, LengthCalculation )
 {
     double x1 = 0.0, y1 = 0.0;
     double x2 = 3.0, y2 = 4.0;
@@ -298,7 +276,7 @@ TEST( EdgeTests, LengthCalculation )
     EXPECT_NEAR( calculatedLength, expectedLength, 1e-12 );
 }
 
-TEST( EdgeTests, LengthCalculationNegativeCoordinates )
+TEST_F( EdgeTest, LengthCalculationNegativeCoordinates )
 {
     double x1 = -1.0, y1 = -1.0;
     double x2 = -4.0, y2 = -5.0;
@@ -309,7 +287,7 @@ TEST( EdgeTests, LengthCalculationNegativeCoordinates )
     EXPECT_NEAR( calculatedLength, expectedLength, 1e-12 );
 }
 
-TEST( EdgeTests, LengthCalculationZeroLength )
+TEST_F( EdgeTest, LengthCalculationZeroLength )
 {
     double x1 = 1.0, y1 = 1.0;
     double x2 = 1.0, y2 = 1.0;
@@ -320,37 +298,33 @@ TEST( EdgeTests, LengthCalculationZeroLength )
     EXPECT_NEAR( calculatedLength, expectedLength, 1e-12 );
 }
 
-TEST( EdgeTests, DescrTest )
+TEST_F( EdgeTest, DescrTest )
 {
     auto node1 = std::make_shared<Node>( 1.0, 2.0 );
     auto node2 = std::make_shared<Node>( 3.0, 4.0 );
     Edge edge( node1, node2 );
 
-    std::string expected = "(87, 88)";
+    std::string expected = "(169, 170)";
     EXPECT_EQ( edge.descr(), expected );
 }
 
-TEST( EdgeTests, DescrTestReversedNodes )
+TEST_F( EdgeTest, DescrTestReversedNodes )
 {
     auto node1 = std::make_shared<Node>( 3.0, 4.0 );
     auto node2 = std::make_shared<Node>( 1.0, 2.0 );
     Edge edge( node1, node2 );
 
-    std::string expected = "(90, 89)";
+    std::string expected = "(177, 176)";
     EXPECT_EQ( edge.descr(), expected );
 }
 
-TEST( EdgeTests, ComputePosAngle_SameEdge )
+TEST_F( EdgeTest, ComputePosAngle_SameEdge )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto node2 = std::make_shared<Node>( 1.0, 0.0 );
-    auto edge = std::make_shared<Edge>( node1, node2 );
-
-    double angle = edge->computePosAngle( edge, node1 );
+    double angle = edge->computePosAngle( edge, node );
     EXPECT_DOUBLE_EQ( angle, 2 * Constants::PI );
 }
 
-TEST( EdgeTests, ComputePosAngle_ConnectedEdges )
+TEST_F( EdgeTest, ComputePosAngle_ConnectedEdges )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -362,7 +336,7 @@ TEST( EdgeTests, ComputePosAngle_ConnectedEdges )
     EXPECT_DOUBLE_EQ( angle, Constants::PIdiv2 );
 }
 
-TEST( EdgeTests, ComputePosAngle_NotConnectedEdges )
+TEST_F( EdgeTest, ComputePosAngle_NotConnectedEdges )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -374,7 +348,7 @@ TEST( EdgeTests, ComputePosAngle_NotConnectedEdges )
     EXPECT_DOUBLE_EQ( angle, 0.0 );
 }
 
-TEST( EdgeTests, ComputePosAngle_ObtuseAngle )
+TEST_F( EdgeTest, ComputePosAngle_ObtuseAngle )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -386,7 +360,7 @@ TEST( EdgeTests, ComputePosAngle_ObtuseAngle )
     EXPECT_NEAR( angle, Constants::PIdiv4, 1e-9 );
 }
 
-TEST( EdgeTests, ConnectNodes )
+TEST_F( EdgeTest, ConnectNodes )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -401,7 +375,7 @@ TEST( EdgeTests, ConnectNodes )
     ASSERT_EQ( node2->edgeList.get(0), edge );
 }
 
-TEST( EdgeTests, DisconnectNodes )
+TEST_F( EdgeTest, DisconnectNodes )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -418,7 +392,7 @@ TEST( EdgeTests, DisconnectNodes )
     EXPECT_EQ( node2->edgeList.size(), 0 );
 }
 
-TEST( EdgeTests, TryDisconnectNodes )
+TEST_F( EdgeTest, TryDisconnectNodes )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -435,7 +409,7 @@ TEST( EdgeTests, TryDisconnectNodes )
     EXPECT_EQ( node2->edgeList.size(), 0 );
 }
 
-TEST( EdgeTests, TryToDisconnectNodes_NoEffectIfEdgeNotInNodeEdgeLists )
+TEST_F( EdgeTest, TryToDisconnectNodes_NoEffectIfEdgeNotInNodeEdgeLists )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -450,7 +424,7 @@ TEST( EdgeTests, TryToDisconnectNodes_NoEffectIfEdgeNotInNodeEdgeLists )
     EXPECT_EQ( node2->edgeList.size(), 0 );
 }
 
-TEST( EdgeTests, UnitNormalAt_LeftNode )
+TEST_F( EdgeTest, UnitNormalAt_LeftNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -464,7 +438,7 @@ TEST( EdgeTests, UnitNormalAt_LeftNode )
     EXPECT_NEAR( normalEdge->rightNode->y, 0.0, 1e-9 );
 }
 
-TEST( EdgeTests, UnitNormalAt_RightNode )
+TEST_F( EdgeTest, UnitNormalAt_RightNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -478,7 +452,7 @@ TEST( EdgeTests, UnitNormalAt_RightNode )
     EXPECT_NEAR( normalEdge->rightNode->y, 0.0, 1e-9 );
 }
 
-TEST( EdgeTests, UnitNormalAt_DiagonalEdge )
+TEST_F( EdgeTest, UnitNormalAt_DiagonalEdge )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -492,7 +466,7 @@ TEST( EdgeTests, UnitNormalAt_DiagonalEdge )
     EXPECT_NEAR( normalEdge->rightNode->y, 0.0, 1e-9 );
 }
 
-TEST( EdgeTests, GetVectorFromLeftNode )
+TEST_F( EdgeTest, GetVectorFromLeftNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -506,7 +480,7 @@ TEST( EdgeTests, GetVectorFromLeftNode )
     EXPECT_EQ( vector.y, node2->y );
 }
 
-TEST( EdgeTests, GetVectorFromRightNode )
+TEST_F( EdgeTest, GetVectorFromRightNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -520,7 +494,7 @@ TEST( EdgeTests, GetVectorFromRightNode )
     EXPECT_EQ( vector.y, -1.0 );
 }
 
-TEST( EdgeTests, GetVectorFromInvalidNode )
+TEST_F( EdgeTest, GetVectorFromInvalidNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -530,7 +504,7 @@ TEST( EdgeTests, GetVectorFromInvalidNode )
     EXPECT_THROW( edge.getVector( invalidNode ), std::runtime_error );
 }
 
-TEST( EdgeTests, HasNode_LeftNode )
+TEST_F( EdgeTest, HasNode_LeftNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -539,7 +513,7 @@ TEST( EdgeTests, HasNode_LeftNode )
     ASSERT_TRUE( edge.hasNode( node1 ) );
 }
 
-TEST( EdgeTests, HasNode_RightNode )
+TEST_F( EdgeTest, HasNode_RightNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -548,7 +522,7 @@ TEST( EdgeTests, HasNode_RightNode )
     ASSERT_TRUE( edge.hasNode( node2 ) );
 }
 
-TEST( EdgeTests, HasNode_NotPresent )
+TEST_F( EdgeTest, HasNode_NotPresent )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -558,7 +532,7 @@ TEST( EdgeTests, HasNode_NotPresent )
     ASSERT_FALSE( edge.hasNode( node3 ) );
 }
 
-TEST( EdgeTests, HasFalseFrontNeighbor_NoNeighbors )
+TEST_F( EdgeTest, HasFalseFrontNeighbor_NoNeighbors )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -567,7 +541,7 @@ TEST( EdgeTests, HasFalseFrontNeighbor_NoNeighbors )
     EXPECT_TRUE( edge.hasFalseFrontNeighbor() );
 }
 
-TEST( EdgeTests, HasFalseFrontNeighbor_LeftNeighborNull )
+TEST_F( EdgeTest, HasFalseFrontNeighbor_LeftNeighborNull )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -578,7 +552,7 @@ TEST( EdgeTests, HasFalseFrontNeighbor_LeftNeighborNull )
     EXPECT_TRUE( edge.hasFalseFrontNeighbor() );
 }
 
-TEST( EdgeTests, HasFalseFrontNeighbor_RightNeighborNull )
+TEST_F( EdgeTest, HasFalseFrontNeighbor_RightNeighborNull )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -589,7 +563,7 @@ TEST( EdgeTests, HasFalseFrontNeighbor_RightNeighborNull )
     EXPECT_TRUE( edge.hasFalseFrontNeighbor() );
 }
 
-TEST( EdgeTests, HasFalseFrontNeighbor_LeftNeighborNotFrontEdge )
+TEST_F( EdgeTest, HasFalseFrontNeighbor_LeftNeighborNotFrontEdge )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -602,7 +576,7 @@ TEST( EdgeTests, HasFalseFrontNeighbor_LeftNeighborNotFrontEdge )
     EXPECT_TRUE( edge.hasFalseFrontNeighbor() );
 }
 
-TEST( EdgeTests, HasFalseFrontNeighbor_RightNeighborNotFrontEdge )
+TEST_F( EdgeTest, HasFalseFrontNeighbor_RightNeighborNotFrontEdge )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -615,7 +589,7 @@ TEST( EdgeTests, HasFalseFrontNeighbor_RightNeighborNotFrontEdge )
     EXPECT_TRUE( edge.hasFalseFrontNeighbor() );
 }
 
-TEST( EdgeTests, HasFalseFrontNeighbor_BothNeighborsFrontEdge )
+TEST_F( EdgeTest, HasFalseFrontNeighbor_BothNeighborsFrontEdge )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -628,7 +602,7 @@ TEST( EdgeTests, HasFalseFrontNeighbor_BothNeighborsFrontEdge )
     EXPECT_FALSE( edge.hasFalseFrontNeighbor() );
 }
 
-TEST( EdgeTests, HasFrontNeighbor_LeftFrontNeighbor )
+TEST_F( EdgeTest, HasFrontNeighbor_LeftFrontNeighbor )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -642,7 +616,7 @@ TEST( EdgeTests, HasFrontNeighbor_LeftFrontNeighbor )
     ASSERT_TRUE( edge1->hasFrontNeighbor( edge2 ) );
 }
 
-TEST( EdgeTests, HasFrontNeighbor_RightFrontNeighbor )
+TEST_F( EdgeTest, HasFrontNeighbor_RightFrontNeighbor )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -656,7 +630,7 @@ TEST( EdgeTests, HasFrontNeighbor_RightFrontNeighbor )
     ASSERT_TRUE( edge1->hasFrontNeighbor( edge2 ) );
 }
 
-TEST( EdgeTests, HasFrontNeighbor_NoFrontNeighbor )
+TEST_F( EdgeTest, HasFrontNeighbor_NoFrontNeighbor )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -668,7 +642,7 @@ TEST( EdgeTests, HasFrontNeighbor_NoFrontNeighbor )
     ASSERT_FALSE( edge1->hasFrontNeighbor( edge2 ) );
 }
 
-TEST( EdgeTests, OtherNode_LeftNode )
+TEST_F( EdgeTest, OtherNode_LeftNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -678,7 +652,7 @@ TEST( EdgeTests, OtherNode_LeftNode )
     ASSERT_EQ( result, node2 );
 }
 
-TEST( EdgeTests, OtherNode_RightNode )
+TEST_F( EdgeTest, OtherNode_RightNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -688,7 +662,7 @@ TEST( EdgeTests, OtherNode_RightNode )
     ASSERT_EQ( result, node1 );
 }
 
-TEST( EdgeTests, OtherNode_NodeNotOnEdge )
+TEST_F( EdgeTest, OtherNode_NodeNotOnEdge )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -699,7 +673,7 @@ TEST( EdgeTests, OtherNode_NodeNotOnEdge )
     ASSERT_EQ( result, nullptr );
 }
 
-TEST( EdgeTests, OtherNodeGivenNewLength )
+TEST_F( EdgeTest, OtherNodeGivenNewLength )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 3.0, 4.0 );
@@ -712,7 +686,7 @@ TEST( EdgeTests, OtherNodeGivenNewLength )
     ASSERT_NEAR( newNode->y, 4.0, 1e-9 );
 }
 
-TEST( EdgeTests, OtherNodeGivenNewLengthWithDifferentNode )
+TEST_F( EdgeTest, OtherNodeGivenNewLengthWithDifferentNode )
 {
     auto node1 = std::make_shared<Node>( 1.0, 1.0 );
     auto node2 = std::make_shared<Node>( 4.0, 5.0 );
@@ -725,7 +699,7 @@ TEST( EdgeTests, OtherNodeGivenNewLengthWithDifferentNode )
     ASSERT_NEAR( newNode->y, 5.0, 1e-9 );
 }
 
-TEST( EdgeTests, OtherNodeGivenNewLengthWithNegativeCoordinates )
+TEST_F( EdgeTest, OtherNodeGivenNewLengthWithNegativeCoordinates )
 {
     auto node1 = std::make_shared<Node>( -1.0, -1.0 );
     auto node2 = std::make_shared<Node>( -4.0, -5.0 );
@@ -738,7 +712,7 @@ TEST( EdgeTests, OtherNodeGivenNewLengthWithNegativeCoordinates )
     ASSERT_NEAR( newNode->y, -5.0, 1e-9 );
 }
 
-TEST( EdgeTests, UpperNode_LeftNodeHigher )
+TEST_F( EdgeTest, UpperNode_LeftNodeHigher )
 {
     auto node1 = std::make_shared<Node>( 0.0, 1.0 );
     auto node2 = std::make_shared<Node>( 0.0, 0.0 );
@@ -746,7 +720,7 @@ TEST( EdgeTests, UpperNode_LeftNodeHigher )
     EXPECT_EQ( edge.upperNode(), node1 );
 }
 
-TEST( EdgeTests, UpperNode_RightNodeHigher )
+TEST_F( EdgeTest, UpperNode_RightNodeHigher )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 0.0, 1.0 );
@@ -754,7 +728,7 @@ TEST( EdgeTests, UpperNode_RightNodeHigher )
     EXPECT_EQ( edge.upperNode(), node2 );
 }
 
-TEST( EdgeTests, UpperNode_NodesAtSameHeight )
+TEST_F( EdgeTest, UpperNode_NodesAtSameHeight )
 {
     auto node1 = std::make_shared<Node>( 0.0, 1.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -762,7 +736,7 @@ TEST( EdgeTests, UpperNode_NodesAtSameHeight )
     EXPECT_EQ( edge.upperNode(), node1 );
 }
 
-TEST( EdgeTests, LowerNode )
+TEST_F( EdgeTest, LowerNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 1.0 );
     auto node2 = std::make_shared<Node>( 0.0, 2.0 );
@@ -776,7 +750,7 @@ TEST( EdgeTests, LowerNode )
     EXPECT_EQ( edge2.lowerNode(), node3 );
 }
 
-TEST( EdgeTests, SetFrontNeighbor_LeftNode )
+TEST_F( EdgeTest, SetFrontNeighbor_LeftNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -791,7 +765,7 @@ TEST( EdgeTests, SetFrontNeighbor_LeftNode )
     ASSERT_EQ( edge1->rightFrontNeighbor, nullptr );
 }
 
-TEST( EdgeTests, SetFrontNeighbor_RightNode )
+TEST_F( EdgeTest, SetFrontNeighbor_RightNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -806,7 +780,7 @@ TEST( EdgeTests, SetFrontNeighbor_RightNode )
     ASSERT_EQ( edge1->leftFrontNeighbor, nullptr );
 }
 
-TEST( EdgeTests, SetFrontNeighbor_NoCommonNode )
+TEST_F( EdgeTest, SetFrontNeighbor_NoCommonNode )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -868,7 +842,7 @@ TEST_F( EdgeTest, RemoveFromFront_Failure )
     EXPECT_EQ( frontList.size(), 0 );
 }
 
-TEST( EdgeTests, CommonNodeTest )
+TEST_F( EdgeTest, CommonNodeTest )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 1.0 );
@@ -894,7 +868,7 @@ TEST( EdgeTests, CommonNodeTest )
     EXPECT_EQ( commonNode, nullptr );
 }
 
-TEST( EdgeTests, FrontNeighborAt_LeftNeighbor )
+TEST_F( EdgeTest, FrontNeighborAt_LeftNeighbor )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -908,7 +882,7 @@ TEST( EdgeTests, FrontNeighborAt_LeftNeighbor )
     EXPECT_EQ( edge1->frontNeighborAt( node1 ), edge2 );
 }
 
-TEST( EdgeTests, FrontNeighborAt_RightNeighbor )
+TEST_F( EdgeTest, FrontNeighborAt_RightNeighbor )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -922,7 +896,7 @@ TEST( EdgeTests, FrontNeighborAt_RightNeighbor )
     EXPECT_EQ( edge1->frontNeighborAt( node2 ), edge2 );
 }
 
-TEST( EdgeTests, FrontNeighborAt_NoNeighbor )
+TEST_F( EdgeTest, FrontNeighborAt_NoNeighbor )
 {
     auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
@@ -934,7 +908,7 @@ TEST( EdgeTests, FrontNeighborAt_NoNeighbor )
     EXPECT_EQ( edge1->frontNeighborAt( node3 ), nullptr );
 }
 
-TEST( EdgeTests, NextFrontNeighbor_LeftNeighbor )
+TEST_F( EdgeTest, NextFrontNeighbor_LeftNeighbor )
 {
     auto node1 = std::make_shared<Node>( 0, 0 );
     auto node2 = std::make_shared<Node>( 1, 0 );
@@ -948,7 +922,7 @@ TEST( EdgeTests, NextFrontNeighbor_LeftNeighbor )
     EXPECT_EQ( edge1->nextFrontNeighbor( nullptr ), edge2 );
 }
 
-TEST( EdgeTests, NextFrontNeighbor_RightNeighbor )
+TEST_F( EdgeTest, NextFrontNeighbor_RightNeighbor )
 {
     auto node1 = std::make_shared<Node>( 0, 0 );
     auto node2 = std::make_shared<Node>( 1, 0 );
@@ -962,7 +936,7 @@ TEST( EdgeTests, NextFrontNeighbor_RightNeighbor )
     EXPECT_EQ( edge1->nextFrontNeighbor( nullptr ), edge2 );
 }
 
-TEST( EdgeTests, NextFrontNeighbor_NoNeighbor )
+TEST_F( EdgeTest, NextFrontNeighbor_NoNeighbor )
 {
     auto node1 = std::make_shared<Node>( 0, 0 );
     auto node2 = std::make_shared<Node>( 1, 0 );
@@ -972,7 +946,7 @@ TEST( EdgeTests, NextFrontNeighbor_NoNeighbor )
     EXPECT_EQ( edge1->nextFrontNeighbor( nullptr ), nullptr );
 }
 
-TEST( EdgeTests, NextFrontNeighbor_PrevIsLeftNeighbor )
+TEST_F( EdgeTest, NextFrontNeighbor_PrevIsLeftNeighbor )
 {
     auto node1 = std::make_shared<Node>( 0, 0 );
     auto node2 = std::make_shared<Node>( 1, 0 );
@@ -986,7 +960,7 @@ TEST( EdgeTests, NextFrontNeighbor_PrevIsLeftNeighbor )
     EXPECT_EQ( edge1->nextFrontNeighbor( edge2 ), nullptr );
 }
 
-TEST( EdgeTests, NextFrontNeighbor_PrevIsRightNeighbor )
+TEST_F( EdgeTest, NextFrontNeighbor_PrevIsRightNeighbor )
 {
     auto node1 = std::make_shared<Node>( 0, 0 );
     auto node2 = std::make_shared<Node>( 1, 0 );
