@@ -11,16 +11,20 @@ protected:
     std::shared_ptr<MyVector> vector3;
     std::shared_ptr<Node> node1;
     std::shared_ptr<Node> node2;
-    std::shared_ptr<Node> origin = std::make_shared<Node>(0.0, 0.0);
-    std::shared_ptr<Node> origin2 = std::make_shared<Node>(1.0, 1.0);
+    std::shared_ptr<Node> origin;
+    std::shared_ptr<Node> origin2;
 
     void SetUp() override
     {
+        Node::mLastNumber = 0;
+
         vector1 = std::make_shared<MyVector>( nullptr, 0.0, 0.0 );
         vector2 = std::make_shared<MyVector>( nullptr, 0.0, 0.0 );
         vector3 = std::make_shared<MyVector>( nullptr, 0.0, 0.0 );
         node1 = std::make_shared<Node>( 0.0, 0.0 );
         node2 = std::make_shared<Node>( 0.0, 0.0 );
+        origin = std::make_shared<Node>( 0.0, 0.0 );
+        origin2 = std::make_shared<Node>( 1.0, 1.0 );
 
         vector1->origin = node1;
         vector2->origin = node1;
@@ -32,8 +36,6 @@ protected:
         vector2->y = 2.0;
         vector3->x = 2.0;
         vector3->y = 6.0;
-
-        Node::mLastNumber = 0;
 
     }
 
@@ -535,8 +537,8 @@ TEST_F( MyVectorTest, DescrTest )
 
 TEST_F( MyVectorTest, DescrTestWithNegativeValues )
 {
-    auto origin = std::make_shared<Node>( -1.0, -1.0 );
-    MyVector vector( origin, -2.0, -3.0 );
+    auto _origin = std::make_shared<Node>( -1.0, -1.0 );
+    MyVector vector( _origin, -2.0, -3.0 );
     std::string expected = "1, (-3.000000, -4.000000)";
     EXPECT_EQ( vector.descr(), expected );
 }
