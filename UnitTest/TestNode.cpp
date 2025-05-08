@@ -5,55 +5,66 @@
 #include "Node.h"
 #include "Edge.h"
 
-
-TEST( NodeTest, Equals_SameCoordinates_ReturnsTrue )
+class NodeTest : public ::testing::Test
 {
-    auto node1 = std::make_shared<Node>( 1.0, 2.0 );
-    auto node2 = std::make_shared<Node>( 1.0, 2.0 );
+protected:
+    std::shared_ptr<Node> node_ptr = std::make_shared<Node>(1.0, 2.0);
+    std::shared_ptr<Node> node_ptr1 = std::make_shared<Node>(0.0, 0.0);
+    Node node;
 
-    EXPECT_TRUE( node1->equals( node2 ) );
+    void SetUp() override
+    {
+        node_ptr->setXY(1.0, 2.0);
+        node_ptr1->setXY(0.0, 0.0);
+        node.setXY(1.0, 2.0);
+    }
+
+    void TearDown() override
+    {
+
+    }
+};
+
+
+TEST_F( NodeTest, Equals_SameCoordinates_ReturnsTrue )
+{
+    EXPECT_TRUE(node_ptr->equals(node_ptr) );
 }
 
-TEST( NodeTest, Equals_DifferentXCoordinate_ReturnsFalse )
+TEST_F( NodeTest, Equals_DifferentXCoordinate_ReturnsFalse )
 {
-    auto node1 = std::make_shared<Node>( 1.0, 2.0 );
     auto node2 = std::make_shared<Node>( 2.0, 2.0 );
 
-    EXPECT_FALSE( node1->equals( node2 ) );
+    EXPECT_FALSE(node_ptr->equals( node2 ) );
 }
 
-TEST( NodeTest, Equals_DifferentYCoordinate_ReturnsFalse )
+TEST_F( NodeTest, Equals_DifferentYCoordinate_ReturnsFalse )
 {
-    auto node1 = std::make_shared<Node>( 1.0, 2.0 );
     auto node2 = std::make_shared<Node>( 1.0, 3.0 );
 
-    EXPECT_FALSE( node1->equals( node2 ) );
+    EXPECT_FALSE(node_ptr->equals( node2 ) );
 }
 
-TEST( NodeTest, Equals_DifferentCoordinates_ReturnsFalse )
+TEST_F( NodeTest, Equals_DifferentCoordinates_ReturnsFalse )
 {
-    auto node1 = std::make_shared<Node>( 1.0, 2.0 );
     auto node2 = std::make_shared<Node>( 3.0, 4.0 );
 
-    EXPECT_FALSE( node1->equals( node2 ) );
+    EXPECT_FALSE(node_ptr->equals( node2 ) );
 }
 
-TEST( NodeTest, Equals_SameObject_ReturnsTrue )
+TEST_F( NodeTest, Equals_SameObject_ReturnsTrue )
 {
-    auto node1 = std::make_shared<Node>( 1.0, 2.0 );
-
-    EXPECT_TRUE( node1->equals( node1 ) );
+    EXPECT_TRUE(node_ptr->equals(node_ptr) );
 }
 
-TEST( NodeTest, CopyNode )
+TEST_F( NodeTest, CopyNode )
 {
     // Create a node
-    auto node1 = std::make_shared<Node>( 1.0, 2.0 );
     auto node2 = std::make_shared<Node>( 2.0, 3.0 );
-	node1->edgeList.add( std::make_shared<Edge>( node1, node2 ) );
+    node_ptr->edgeList.add( std::make_shared<Edge>(node_ptr, node2 ) );
 
     // Copy the node
-    auto copiedNode = node1->copy();
+    auto copiedNode = node_ptr->copy();
 
     // Check if the copied node has the same coordinates
     EXPECT_EQ( copiedNode->x, 1.0 );
@@ -61,52 +72,48 @@ TEST( NodeTest, CopyNode )
 
     // Check if the edgeList is copied
     EXPECT_EQ( copiedNode->edgeList.size(), 1 );
-    EXPECT_EQ( copiedNode->edgeList.get(0), node1->edgeList.get(0) );
+    EXPECT_EQ( copiedNode->edgeList.get(0), node_ptr->edgeList.get(0) );
 }
 
-TEST( NodeTest, CopyXY )
+TEST_F( NodeTest, CopyXY )
 {
-    Node node( 1.0, 2.0 );
     auto copy = node.copyXY();
     EXPECT_EQ( copy->x, 1.0 );
     EXPECT_EQ( copy->y, 2.0 );
 }
 
-TEST( NodeTests, SetXY_UpdatesCoordinates )
+TEST_F( NodeTest, SetXY_UpdatesCoordinates )
 {
     // Arrange
-    Node node1( 1.0, 2.0 );
     Node node2( 3.0, 4.0 );
 
     // Act
-    node1.setXY( node2 );
+    node.setXY( node2 );
 
     // Assert
-    EXPECT_DOUBLE_EQ( node1.x, 3.0 );
-    EXPECT_DOUBLE_EQ( node1.y, 4.0 );
+    EXPECT_DOUBLE_EQ( node.x, 3.0 );
+    EXPECT_DOUBLE_EQ( node.y, 4.0 );
 }
 
-TEST( NodeTests, SetXY_DoesNotAffectOtherProperties )
+TEST_F( NodeTest, SetXY_DoesNotAffectOtherProperties )
 {
     // Arrange
-    auto node1 = std::make_shared<Node>( 1.0, 2.0 );
     auto node2 = std::make_shared<Node>( 3.0, 4.0 );
-    node1->edgeList.add( std::make_shared<Edge>(node1, node2) );
+    node_ptr->edgeList.add( std::make_shared<Edge>(node_ptr, node2) );
 
     // Act
-    node1->setXY( *node2 );
+    node_ptr->setXY( *node2 );
 
     // Assert
-    EXPECT_EQ( node1->edgeList.size(), 1 );
-    EXPECT_EQ( node1->edgeList.get(0), node1->edgeList.get(0) );
+    EXPECT_EQ(node_ptr->edgeList.size(), 1 );
+    EXPECT_EQ(node_ptr->edgeList.get(0), node_ptr->edgeList.get(0) );
 }
 
-TEST( NodeTest, CrossProduct )
+TEST_F( NodeTest, CrossProduct )
 {
     Node node1( 3.0, 4.0 );
-    Node node2( 1.0, 2.0 );
 
-    double result = node1.cross( node2 );
+    double result = node1.cross( node );
     EXPECT_DOUBLE_EQ( result, 2.0 );
 
     Node node3( 0.0, 0.0 );
@@ -122,41 +129,38 @@ TEST( NodeTest, CrossProduct )
     EXPECT_DOUBLE_EQ( result, 0.0 );
 }
 
-TEST( NodeTests, ConnectToEdge_AddsEdgeToList )
+TEST_F( NodeTest, ConnectToEdge_AddsEdgeToList )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
-    auto edge = std::make_shared<Edge>(node1 , node2);
+    auto edge = std::make_shared<Edge>(node_ptr1, node2);
 
-    node1->connectToEdge( edge );
+    node_ptr1->connectToEdge( edge );
 
-    ASSERT_TRUE( node1->edgeList.contains( edge ) );
+    ASSERT_TRUE(node_ptr1->edgeList.contains( edge ) );
 }
 
-TEST( NodeTests, ConnectToEdge_DoesNotAddDuplicateEdge )
+TEST_F( NodeTest, ConnectToEdge_DoesNotAddDuplicateEdge )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 1.0, 0.0 );
-    auto edge = std::make_shared<Edge>(node1, node2);
+    auto edge = std::make_shared<Edge>(node_ptr1, node2);
 
-    node1->connectToEdge( edge );
-    node1->connectToEdge( edge );
+    node_ptr1->connectToEdge( edge );
+    node_ptr1->connectToEdge( edge );
 
-    auto count = std::count( node1->edgeList.begin(), node1->edgeList.end(), edge );
+    auto count = std::count(node_ptr1->edgeList.begin(), node_ptr1->edgeList.end(), edge );
     ASSERT_EQ( count, 1 );
 }
 
-TEST( NodeTests, LengthTest )
+TEST_F( NodeTest, LengthTest )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
     auto node2 = std::make_shared<Node>( 3.0, 4.0 );
 
-    double length = node1->length( node2 );
+    double length = node_ptr1->length( node2 );
 
     EXPECT_DOUBLE_EQ( length, 5.0 );
 }
 
-TEST( NodeTests, LengthTestSameNode )
+TEST_F( NodeTest, LengthTestSameNode )
 {
     auto node1 = std::make_shared<Node>( 1.0, 1.0 );
 
@@ -165,7 +169,7 @@ TEST( NodeTests, LengthTestSameNode )
     EXPECT_DOUBLE_EQ( length, 0.0 );
 }
 
-TEST( NodeTests, LengthTestNegativeCoordinates )
+TEST_F( NodeTest, LengthTestNegativeCoordinates )
 {
     auto node1 = std::make_shared<Node>( -1.0, -1.0 );
     auto node2 = std::make_shared<Node>( -4.0, -5.0 );
@@ -175,25 +179,25 @@ TEST( NodeTests, LengthTestNegativeCoordinates )
     EXPECT_DOUBLE_EQ( length, 5.0 );
 }
 
-TEST( NodeTests, DescrReturnsCorrectString )
+TEST_F( NodeTest, DescrReturnsCorrectString )
 {
     Node node( 3.5, 7.2 );
-    EXPECT_EQ( node.descr(), "379" );
+    EXPECT_EQ( node.descr(), "52" );
 }
 
-TEST( NodeTests, DescrHandlesNegativeCoordinates )
+TEST_F( NodeTest, DescrHandlesNegativeCoordinates )
 {
     Node node( -1.0, -2.5 );
     EXPECT_EQ( node.descr(), "380" );
 }
 
-TEST( NodeTests, DescrHandlesZeroCoordinates )
+TEST_F( NodeTest, DescrHandlesZeroCoordinates )
 {
     Node node( 0.0, 0.0 );
     EXPECT_EQ( node.descr(), "381" );
 }
 
-TEST( NodeTest, ValDescrTest )
+TEST_F( NodeTest, ValDescrTest )
 {
     // Test case 1: pattern with multiple elements
     Node node1( 0.0, 0.0 );

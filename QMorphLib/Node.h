@@ -34,6 +34,11 @@ public:
 	Color color = Color::Cyan;
     int mNumber = 0;
     inline static int mLastNumber = 0;
+	
+	Node() :
+		x(0.0),
+		y(0.0)
+	{}
 
 	/** Create new node with position (x,y). */
 	Node( double x, double y )

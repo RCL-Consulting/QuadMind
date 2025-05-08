@@ -11,6 +11,8 @@ protected:
     std::shared_ptr<MyVector> vector3;
     std::shared_ptr<Node> node1;
     std::shared_ptr<Node> node2;
+    std::shared_ptr<Node> origin = std::make_shared<Node>(0.0, 0.0);
+    std::shared_ptr<Node> origin2 = std::make_shared<Node>(1.0, 1.0);
 
     void SetUp() override
     {
@@ -30,6 +32,14 @@ protected:
         vector2->y = 2.0;
         vector3->x = 2.0;
         vector3->y = 6.0;
+
+        Node::mLastNumber = 0;
+
+    }
+
+    void TearDown() override
+    {
+
     }
 };
 
@@ -54,9 +64,8 @@ TEST_F( MyVectorTest, Equals_DifferentType_ReturnsFalse )
     EXPECT_FALSE( vector1->equals( constElem ) );
 }
 
-TEST( MyVectorTests, LengthTest )
+TEST_F( MyVectorTest, LengthTest )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 3.0, 4.0 );
     EXPECT_DOUBLE_EQ( v1.length(), 5.0 );
 
@@ -70,100 +79,86 @@ TEST( MyVectorTests, LengthTest )
     EXPECT_DOUBLE_EQ( v4.length(), 0.0 );
 }
 
-TEST( MyVectorTests, AngleTest_PositiveX )
+TEST_F( MyVectorTest, AngleTest_PositiveX )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector vector( origin, 1.0, 0.0 );
     EXPECT_DOUBLE_EQ( vector.angle(), 0.0 );
 }
 
-TEST( MyVectorTests, AngleTest_PositiveY )
+TEST_F( MyVectorTest, AngleTest_PositiveY )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector vector( origin, 0.0, 1.0 );
     EXPECT_DOUBLE_EQ( vector.angle(), std::numbers::pi / 2.0 );
 }
 
-TEST( MyVectorTests, AngleTest_NegativeX )
+TEST_F( MyVectorTest, AngleTest_NegativeX )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector vector( origin, -1.0, 0.0 );
     EXPECT_DOUBLE_EQ( vector.angle(), std::numbers::pi );
 }
 
-TEST( MyVectorTests, AngleTest_NegativeY )
+TEST_F( MyVectorTest, AngleTest_NegativeY )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector vector( origin, 0.0, -1.0 );
     EXPECT_DOUBLE_EQ( vector.angle(), -std::numbers::pi / 2.0 );
 }
 
-TEST( MyVectorTests, AngleTest_PositiveXY )
+TEST_F( MyVectorTest, AngleTest_PositiveXY )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector vector( origin, 1.0, 1.0 );
     EXPECT_DOUBLE_EQ( vector.angle(), std::acos( 1.0 / std::sqrt( 2.0 ) ) );
 }
 
-TEST( MyVectorTests, AngleTest_NegativeXY )
+TEST_F( MyVectorTest, AngleTest_NegativeXY )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector vector( origin, -1.0, -1.0 );
     EXPECT_DOUBLE_EQ( vector.angle(), -std::acos( 1.0 / std::sqrt( 2.0 ) )-std::numbers::pi/2 );
 }
 
-TEST( MyVectorTests, PosAngle_ZeroVector )
+TEST_F( MyVectorTest, PosAngle_ZeroVector )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 0.0, 0.0 );
     EXPECT_DOUBLE_EQ( v.posAngle(), 0.0 );
 }
 
-TEST( MyVectorTests, PosAngle_PositiveX )
+TEST_F( MyVectorTest, PosAngle_PositiveX )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 1.0, 0.0 );
     EXPECT_DOUBLE_EQ( v.posAngle(), 0.0 );
 }
 
-TEST( MyVectorTests, PosAngle_PositiveY )
+TEST_F( MyVectorTest, PosAngle_PositiveY )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 0.0, 1.0 );
     EXPECT_DOUBLE_EQ( v.posAngle(), Constants::PIdiv2 );
 }
 
-TEST( MyVectorTests, PosAngle_NegativeX )
+TEST_F( MyVectorTest, PosAngle_NegativeX )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, -1.0, 0.0 );
     EXPECT_DOUBLE_EQ( v.posAngle(), std::numbers::pi );
 }
 
-TEST( MyVectorTests, PosAngle_NegativeY )
+TEST_F( MyVectorTest, PosAngle_NegativeY )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 0.0, -1.0 );
     EXPECT_DOUBLE_EQ( v.posAngle(), Constants::PIx3div2 );
 }
 
-TEST( MyVectorTests, PosAngle_PositiveXY )
+TEST_F( MyVectorTest, PosAngle_PositiveXY )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 1.0, 1.0 );
     EXPECT_DOUBLE_EQ( v.posAngle(), std::acos( 1.0 / std::sqrt( 2.0 ) ) );
 }
 
-TEST( MyVectorTests, PosAngle_NegativeXY )
+TEST_F( MyVectorTest, PosAngle_NegativeXY )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, -1.0, -1.0 );
     EXPECT_DOUBLE_EQ( v.posAngle(), std::numbers::pi + std::acos( 1.0 / std::sqrt( 2.0 ) ) );
 }
 
-TEST( MyVectorTests, SetLengthAndAngle )
+TEST_F( MyVectorTest, SetLengthAndAngle )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector vector( origin, 1.0, 0.0 );
 
     vector.setLengthAndAngle( 2.0, std::numbers::pi / 2.0 );
@@ -183,9 +178,8 @@ TEST( MyVectorTests, SetLengthAndAngle )
     EXPECT_NEAR( vector.y, 0.0, 1e-9 );
 }
 
-TEST( MyVectorTests, PlusVectors )
+TEST_F( MyVectorTest, PlusVectors )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 3.0, 4.0 );
     MyVector v2( origin, 1.0, 2.0 );
 
@@ -196,23 +190,20 @@ TEST( MyVectorTests, PlusVectors )
     EXPECT_TRUE( result.origin == origin );
 }
 
-TEST( MyVectorTests, PlusVectorsWithDifferentOrigins )
+TEST_F( MyVectorTest, PlusVectorsWithDifferentOrigins )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto origin2 = std::make_shared<Node>( 1.0, 1.0 );
-    MyVector v1( origin1, 3.0, 4.0 );
+    MyVector v1( origin, 3.0, 4.0 );
     MyVector v2( origin2, 1.0, 2.0 );
 
     MyVector result = v1.plus( v2 );
 
     EXPECT_DOUBLE_EQ( result.x, 4.0 );
     EXPECT_DOUBLE_EQ( result.y, 6.0 );
-    EXPECT_TRUE( result.origin == origin1 );
+    EXPECT_TRUE( result.origin == origin );
 }
 
-TEST( MyVectorTests, MinusVectors )
+TEST_F( MyVectorTest, MinusVectors )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 5.0, 3.0 );
     MyVector v2( origin, 2.0, 1.0 );
     MyVector result = v1.minus( v2 );
@@ -221,9 +212,8 @@ TEST( MyVectorTests, MinusVectors )
     EXPECT_DOUBLE_EQ( result.y, 2.0 );
 }
 
-TEST( MyVectorTests, MinusVectorsWithNegativeResult )
+TEST_F( MyVectorTest, MinusVectorsWithNegativeResult )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 2.0, 1.0 );
     MyVector v2( origin, 5.0, 3.0 );
     MyVector result = v1.minus( v2 );
@@ -232,9 +222,8 @@ TEST( MyVectorTests, MinusVectorsWithNegativeResult )
     EXPECT_DOUBLE_EQ( result.y, -2.0 );
 }
 
-TEST( MyVectorTests, MinusVectorsWithZeroResult )
+TEST_F( MyVectorTest, MinusVectorsWithZeroResult )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 2.0, 1.0 );
     MyVector v2( origin, 2.0, 1.0 );
     MyVector result = v1.minus( v2 );
@@ -243,9 +232,8 @@ TEST( MyVectorTests, MinusVectorsWithZeroResult )
     EXPECT_DOUBLE_EQ( result.y, 0.0 );
 }
 
-TEST( MyVectorTests, MulTest )
+TEST_F( MyVectorTest, MulTest )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 3.0, 4.0 );
     double scalar = 2.0;
 
@@ -256,9 +244,8 @@ TEST( MyVectorTests, MulTest )
     EXPECT_EQ( result.origin, origin );
 }
 
-TEST( MyVectorTests, MulTestWithNegativeScalar )
+TEST_F( MyVectorTest, MulTestWithNegativeScalar )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 3.0, 4.0 );
     double scalar = -1.0;
 
@@ -269,9 +256,8 @@ TEST( MyVectorTests, MulTestWithNegativeScalar )
     EXPECT_EQ( result.origin, origin );
 }
 
-TEST( MyVectorTests, MulTestWithZeroScalar )
+TEST_F( MyVectorTest, MulTestWithZeroScalar )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 3.0, 4.0 );
     double scalar = 0.0;
 
@@ -282,9 +268,8 @@ TEST( MyVectorTests, MulTestWithZeroScalar )
     EXPECT_EQ( result.origin, origin );
 }
 
-TEST( MyVectorTests, DivByPositiveNumber )
+TEST_F( MyVectorTest, DivByPositiveNumber )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 10.0, 20.0 );
     MyVector result = v.div( 2.0 );
 
@@ -292,9 +277,8 @@ TEST( MyVectorTests, DivByPositiveNumber )
     EXPECT_DOUBLE_EQ( result.y, 10.0 );
 }
 
-TEST( MyVectorTests, DivByNegativeNumber )
+TEST_F( MyVectorTest, DivByNegativeNumber )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 10.0, 20.0 );
     MyVector result = v.div( -2.0 );
 
@@ -302,17 +286,15 @@ TEST( MyVectorTests, DivByNegativeNumber )
     EXPECT_DOUBLE_EQ( result.y, -10.0 );
 }
 
-TEST( MyVectorTests, DivByZero )
+TEST_F( MyVectorTest, DivByZero )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 10.0, 20.0 );
 
     EXPECT_THROW( v.div( 0.0 ), std::invalid_argument );
 }
 
-TEST( MyVectorTests, DivByOne )
+TEST_F( MyVectorTest, DivByOne )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 10.0, 20.0 );
     MyVector result = v.div( 1.0 );
 
@@ -320,136 +302,120 @@ TEST( MyVectorTests, DivByOne )
     EXPECT_DOUBLE_EQ( result.y, 20.0 );
 }
 
-TEST( MyVectorTests, ComputePosAngle_ZeroAngle )
+TEST_F( MyVectorTest, ComputePosAngle_ZeroAngle )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin, 1.0, 0.0 );
     EXPECT_NEAR( v1.computePosAngle( v2 ), 0.0, 1e-9 );
 }
 
-TEST( MyVectorTests, ComputePosAngle_90Degrees )
+TEST_F( MyVectorTest, ComputePosAngle_90Degrees )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin, 0.0, 1.0 );
     EXPECT_NEAR( v1.computePosAngle( v2 ), Constants::PIdiv2, 1e-9 );
 }
 
-TEST( MyVectorTests, ComputePosAngle_180Degrees )
+TEST_F( MyVectorTest, ComputePosAngle_180Degrees )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin, -1.0, 0.0 );
     EXPECT_NEAR( v1.computePosAngle( v2 ), Constants::DEG_180, 1e-9 );
 }
 
-TEST( MyVectorTests, ComputePosAngle_270Degrees )
+TEST_F( MyVectorTest, ComputePosAngle_270Degrees )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin, 0.0, -1.0 );
     EXPECT_NEAR( v1.computePosAngle( v2 ), Constants::PIx3div2, 1e-9 );
 }
 
-TEST( MyVectorTests, ComputePosAngle_45Degrees )
+TEST_F( MyVectorTest, ComputePosAngle_45Degrees )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin, 1.0, 1.0 );
 	EXPECT_NEAR( v1.computePosAngle( v2 ), Constants::PIdiv2/2, 1e-9 );
 }
 
-TEST( MyVectorTests, IsCWto_SameVector )
+TEST_F( MyVectorTest, IsCWto_SameVector )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 1.0 );
     EXPECT_FALSE( v1.isCWto( v1 ) );
 }
 
-TEST( MyVectorTests, IsCWto_FirstQuadrant )
+TEST_F( MyVectorTest, IsCWto_FirstQuadrant )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin, 1.0, 2.0 );
     EXPECT_TRUE( v1.isCWto( v2 ) );
 }
 
-TEST( MyVectorTests, IsCWto_SecondQuadrant )
+TEST_F( MyVectorTest, IsCWto_SecondQuadrant )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, -1.0, 1.0 );
     MyVector v2( origin, -2.0, 1.0 );
     EXPECT_TRUE( v1.isCWto( v2 ) );
 }
 
-TEST( MyVectorTests, IsCWto_ThirdQuadrant )
+TEST_F( MyVectorTest, IsCWto_ThirdQuadrant )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, -1.0, -1.0 );
     MyVector v2( origin, -1.0, -2.0 );
     EXPECT_TRUE( v1.isCWto( v2 ) );
 }
 
-TEST( MyVectorTests, IsCWto_FourthQuadrant )
+TEST_F( MyVectorTest, IsCWto_FourthQuadrant )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
+    
     MyVector v1( origin, 1.0, -1.0 );
     MyVector v2( origin, 2.0, -1.0 );
     EXPECT_TRUE( v1.isCWto( v2 ) );
 }
 
-TEST( MyVectorTests, IsCWto_DifferentQuadrants )
+TEST_F( MyVectorTest, IsCWto_DifferentQuadrants )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin, -0.5, -1.0 );
     EXPECT_FALSE( v1.isCWto( v2 ) );
 }
 
-TEST( MyVectorTests, ComputeAngle_ZeroAngle )
+TEST_F( MyVectorTest, ComputeAngle_ZeroAngle )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin, 1.0, 0.0 );
     EXPECT_DOUBLE_EQ( v1.computeAngle( v2 ), 0.0 );
 }
 
-TEST( MyVectorTests, ComputeAngle_90Degrees )
+TEST_F( MyVectorTest, ComputeAngle_90Degrees )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin, 0.0, 1.0 );
     EXPECT_DOUBLE_EQ( v1.computeAngle( v2 ), std::numbers::pi / 2.0 );
 }
 
-TEST( MyVectorTests, ComputeAngle_180Degrees )
+TEST_F( MyVectorTest, ComputeAngle_180Degrees )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin, -1.0, 0.0 );
     EXPECT_DOUBLE_EQ( v1.computeAngle( v2 ), std::numbers::pi );
 }
 
-TEST( MyVectorTests, ComputeAngle_270Degrees )
+TEST_F( MyVectorTest, ComputeAngle_270Degrees )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin, 0.0, -1.0 );
     EXPECT_DOUBLE_EQ( v1.computeAngle( v2 ), -std::numbers::pi / 2.0 );
 }
 
-TEST( MyVectorTests, ComputeAngle_45Degrees )
+TEST_F( MyVectorTest, ComputeAngle_45Degrees )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin, 1.0, 1.0 );
     EXPECT_DOUBLE_EQ( v1.computeAngle( v2 ), std::numbers::pi / 4.0 );
 }
 
-TEST( MyVectorTests, CrossProductTest )
+TEST_F( MyVectorTest, CrossProductTest )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 3.0, 4.0 );
     MyVector v2( origin, 4.0, 3.0 );
 
@@ -469,10 +435,10 @@ TEST( MyVectorTests, CrossProductTest )
     EXPECT_DOUBLE_EQ( result, 0.0 );
 }
 
-TEST( MyVectorTests, PointIntersectsAt_Intersection )
+TEST_F( MyVectorTest, PointIntersectsAt_Intersection )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
+    
+    MyVector v1( origin, 1.0, 1.0 );
 
     auto origin2 = std::make_shared<Node>( 1.0, 0.0 );
     MyVector v2( origin2, -1.0, 1.0 );
@@ -483,10 +449,10 @@ TEST( MyVectorTests, PointIntersectsAt_Intersection )
     EXPECT_DOUBLE_EQ( intersection->y, 0.5 );
 }
 
-TEST( MyVectorTests, PointIntersectsAt_NoIntersection )
+TEST_F( MyVectorTest, PointIntersectsAt_NoIntersection )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
+    
+    MyVector v1( origin, 1.0, 1.0 );
 
     auto origin2 = std::make_shared<Node>( 2.0, 0.0 );
     MyVector v2( origin2, 1.0, 1.0 );
@@ -495,22 +461,22 @@ TEST( MyVectorTests, PointIntersectsAt_NoIntersection )
     ASSERT_EQ( intersection, nullptr );
 }
 
-TEST( MyVectorTests, PointIntersectsAt_ParallelVectors )
+TEST_F( MyVectorTest, PointIntersectsAt_ParallelVectors )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
+    
+    MyVector v1( origin, 1.0, 1.0 );
 
-    auto origin2 = std::make_shared<Node>( 1.0, 1.0 );
+    
     MyVector v2( origin2, 1.0, 1.0 );
 
     auto intersection = v1.pointIntersectsAt( v2 );
     ASSERT_EQ( intersection, nullptr );
 }
 
-TEST( MyVectorTests, PointIntersectsAt_IntersectionAtOrigin )
+TEST_F( MyVectorTest, PointIntersectsAt_IntersectionAtOrigin )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    MyVector v1( origin1, 1.0, 0.0 );
+    
+    MyVector v1( origin, 1.0, 0.0 );
 
     auto origin2 = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v2( origin2, 0.0, 1.0 );
@@ -521,206 +487,207 @@ TEST( MyVectorTests, PointIntersectsAt_IntersectionAtOrigin )
     EXPECT_DOUBLE_EQ( intersection->y, 0.0 );
 }
 
-TEST( MyVectorTests, DotProductWithItself )
+TEST_F( MyVectorTest, DotProductWithItself )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v( origin, 3.0, 4.0 );
     double result = v.dot( v );
     EXPECT_DOUBLE_EQ( result, 25.0 ); // 3^2 + 4^2 = 9 + 16 = 25
 }
 
-TEST( MyVectorTests, DotProductWithOrthogonalVector )
+TEST_F( MyVectorTest, DotProductWithOrthogonalVector )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin, 0.0, 1.0 );
     double result = v1.dot( v2 );
 	EXPECT_TRUE( abs( result - 0.0 ) < 1e-12 ); // Orthogonal vectors have dot product 0
 }
 
-TEST( MyVectorTests, DotProductWithParallelVector )
+TEST_F( MyVectorTest, DotProductWithParallelVector )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 2.0, 3.0 );
     MyVector v2( origin, 4.0, 6.0 );
     double result = v1.dot( v2 );
     EXPECT_DOUBLE_EQ( result, 26.0 ); // 2*4 + 3*6 = 8 + 18 = 26
 }
 
-TEST( MyVectorTests, DotProductWithNegativeComponents )
+TEST_F( MyVectorTest, DotProductWithNegativeComponents )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, -1.0, -2.0 );
     MyVector v2( origin, 3.0, 4.0 );
     double result = v1.dot( v2 );
     EXPECT_DOUBLE_EQ( result, -11.0 ); // -1*3 + -2*4 = -3 + -8 = -11
 }
 
-TEST( MyVectorTests, DotProductWithZeroVector )
+TEST_F( MyVectorTest, DotProductWithZeroVector )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 0.0, 0.0 );
     MyVector v2( origin, 3.0, 4.0 );
     double result = v1.dot( v2 );
     EXPECT_DOUBLE_EQ( result, 0.0 ); // Zero vector has dot product 0 with any vector
 }
 
-TEST( MyVectorTests, DescrTest )
+TEST_F( MyVectorTest, DescrTest )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector vector( origin, 3.0, 4.0 );
-    std::string expected = "313, (3.000000, 4.000000)";
+    std::string expected = "1, (3.000000, 4.000000)";
     EXPECT_EQ( vector.descr(), expected );
 }
 
-TEST( MyVectorTests, DescrTestWithNegativeValues )
+TEST_F( MyVectorTest, DescrTestWithNegativeValues )
 {
     auto origin = std::make_shared<Node>( -1.0, -1.0 );
     MyVector vector( origin, -2.0, -3.0 );
-    std::string expected = "314, (-3.000000, -4.000000)";
+    std::string expected = "1, (-3.000000, -4.000000)";
     EXPECT_EQ( vector.descr(), expected );
 }
 
-TEST( MyVectorTests, DescrTestWithZeroValues )
+TEST_F( MyVectorTest, DescrTestWithZeroValues )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector vector( origin, 0.0, 0.0 );
-    std::string expected = "315, (0.000000, 0.000000)";
+    std::string expected = "2, (0.000000, 0.000000)";
     EXPECT_EQ( vector.descr(), expected );
 }
 
-TEST( MyVectorTests, Intersects_ParallelVectors )
+TEST_F( MyVectorTest, Intersects_ParallelVectors )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
+    
     auto origin2 = std::make_shared<Node>( 1.0, 0.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
+    MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin2, 1.0, 1.0 );
     EXPECT_FALSE( v1.intersects( v2 ) );
 }
 
-TEST( MyVectorTests, Intersects_IntersectingVectors )
+TEST_F( MyVectorTest, Intersects_IntersectingVectors )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
+    
     auto origin2 = std::make_shared<Node>( 1.0, 0.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
+    MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin2, -1.0, 1.0 );
     EXPECT_TRUE( v1.intersects( v2 ) );
 }
 
-TEST( MyVectorTests, Intersects_NonIntersectingVectors )
+TEST_F( MyVectorTest, Intersects_NonIntersectingVectors )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
+    
     auto origin2 = std::make_shared<Node>( 2.0, 2.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
+    MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin2, 1.0, 1.0 );
     EXPECT_FALSE( v1.intersects( v2 ) );
 }
 
-TEST( MyVectorTests, Intersects_CollinearNonOverlappingVectors )
+TEST_F( MyVectorTest, Intersects_CollinearNonOverlappingVectors )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
+    
     auto origin2 = std::make_shared<Node>( 2.0, 2.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
+    MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin2, 1.0, 1.0 );
     EXPECT_FALSE( v1.intersects( v2 ) );
 }
 
-TEST( MyVectorTests, PointIntersects_True )
+TEST_F( MyVectorTest, PointIntersects_False )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto origin2 = std::make_shared<Node>( 1.0, 1.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
-    MyVector v2( origin2, 1.0, 0.0 );
+    
+    
+    MyVector v1( origin, 1.0, 1.0 );
+    MyVector v2( origin2, -1.0, -1.0 );
 
-    EXPECT_TRUE( v1.pointIntersects( v2 ) );
+    EXPECT_FALSE( v1.pointIntersects( v2 ) );
 }
 
-TEST( MyVectorTests, PointIntersects_False_Parallel )
+//TEST_F(MyVectorTest, PointIntersects_True)
+//{
+//    auto origin = std::make_shared<Node>(0.0, 0.0);
+//    auto origin2 = std::make_shared<Node>(1.0, 1.0);
+//    MyVector v1(origin, 1.0, 1.0);
+//    MyVector v2(origin2, -1.0, -1.0);
+//
+//    EXPECT_FALSE(v1.pointIntersects(v2));
+//}
+
+
+TEST_F( MyVectorTest, PointIntersects_False_Parallel )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto origin2 = std::make_shared<Node>( 1.0, 1.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
+    
+    
+    MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin2, 1.0, 1.0 );
 
     EXPECT_FALSE( v1.pointIntersects( v2 ) );
 }
 
-TEST( MyVectorTests, PointIntersects_False_NoIntersection )
+TEST_F( MyVectorTest, PointIntersects_False_NoIntersection )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
+    
     auto origin2 = std::make_shared<Node>( 2.0, 2.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
+    MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin2, 1.0, 1.0 );
 
     EXPECT_FALSE( v1.pointIntersects( v2 ) );
 }
 
-TEST( MyVectorTests, PointIntersects_True_AtEdge )
+TEST_F( MyVectorTest, PointIntersects_True_AtEdge )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
+    
     auto origin2 = std::make_shared<Node>( 1.0, 0.0 );
-    MyVector v1( origin1, 1.0, 0.0 );
+    MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin2, 0.0, 1.0 );
 
     EXPECT_TRUE( v1.pointIntersects( v2 ) );
 }
 
-TEST( MyVectorTests, InnerPointIntersects_SameOrigin )
+TEST_F( MyVectorTest, InnerPointIntersects_SameOrigin )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin, 2.0, 2.0 );
     EXPECT_FALSE( v1.innerpointIntersects( v2 ) );
 }
 
-TEST( MyVectorTests, InnerPointIntersects_ParallelVectors )
+TEST_F( MyVectorTest, InnerPointIntersects_ParallelVectors )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto origin2 = std::make_shared<Node>( 1.0, 1.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
+    
+    
+    MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin2, 2.0, 2.0 );
     EXPECT_FALSE( v1.innerpointIntersects( v2 ) );
 }
 
-TEST( MyVectorTests, InnerPointIntersects_IntersectingAtEdge )
+TEST_F( MyVectorTest, InnerPointIntersects_IntersectingAtEdge )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto origin2 = std::make_shared<Node>( 1.0, 1.0 );
-    MyVector v1( origin1, 2.0, 2.0 );
+    
+    
+    MyVector v1( origin, 2.0, 2.0 );
     MyVector v2( origin2, 1.0, 1.0 );
     EXPECT_FALSE( v1.innerpointIntersects( v2 ) );
 }
 
-TEST( MyVectorTests, InnerPointIntersects_IntersectingAtInnerPoint )
+TEST_F( MyVectorTest, InnerPointIntersects_IntersectingAtInnerPoint )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
+    
     auto origin2 = std::make_shared<Node>( 1.0, 0.0 );
-    MyVector v1( origin1, 2.0, 2.0 );
+    MyVector v1( origin, 2.0, 2.0 );
     MyVector v2( origin2, 0.0, 2.0 );
     EXPECT_TRUE( v1.innerpointIntersects( v2 ) );
 }
 
-TEST( MyVectorTests, InnerPointIntersects_NonIntersecting )
+TEST_F( MyVectorTest, InnerPointIntersects_NonIntersecting )
 {
-    auto origin1 = std::make_shared<Node>( 0.0, 0.0 );
+    
     auto origin2 = std::make_shared<Node>( 3.0, 3.0 );
-    MyVector v1( origin1, 1.0, 1.0 );
+    MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin2, 1.0, 1.0 );
     EXPECT_FALSE( v1.innerpointIntersects( v2 ) );
 }
 
-TEST( MyVectorTests, CrossProductWithVector )
+TEST_F( MyVectorTest, CrossProductWithVector )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 3.0, 4.0 );
     MyVector v2( origin, 1.0, 2.0 );
     double result = v1.cross( v2 );
     EXPECT_DOUBLE_EQ( result, 2.0 );
 }
 
-TEST( MyVectorTests, CrossProductWithRay )
+TEST_F( MyVectorTest, CrossProductWithRay )
 {
-    auto origin = std::make_shared<Node>( 0.0, 0.0 );
     MyVector v1( origin, 3.0, 4.0 );
     Ray r( origin, 0.0 );
     double result = v1.cross( r );
