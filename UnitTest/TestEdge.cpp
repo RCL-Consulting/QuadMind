@@ -445,11 +445,7 @@ TEST_F( EdgeTest, GetVectorFromLeftNode )
 
 TEST_F( EdgeTest, GetVectorFromRightNode )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto node2 = std::make_shared<Node>( 1.0, 1.0 );
-    Edge edge( node1, node2 );
-
-    auto vector = edge.getVector( node2 );
+    auto vector = edge_4.getVector( node2 );
 
     EXPECT_EQ( vector.origin->x, node2->x );
     EXPECT_EQ( vector.origin->y, node2->y );
@@ -459,60 +455,37 @@ TEST_F( EdgeTest, GetVectorFromRightNode )
 
 TEST_F( EdgeTest, GetVectorFromInvalidNode )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto node2 = std::make_shared<Node>( 1.0, 1.0 );
     auto invalidNode = std::make_shared<Node>( 2.0, 2.0 );
-    Edge edge( node1, node2 );
 
-    EXPECT_THROW( edge.getVector( invalidNode ), std::runtime_error );
+    EXPECT_THROW( edge_4.getVector( invalidNode ), std::runtime_error );
 }
 
 TEST_F( EdgeTest, HasNode_LeftNode )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto node2 = std::make_shared<Node>( 1.0, 1.0 );
-    Edge edge( node1, node2 );
-
-    ASSERT_TRUE( edge.hasNode( node1 ) );
+    ASSERT_TRUE( edge_4.hasNode( node ) );
 }
 
 TEST_F( EdgeTest, HasNode_RightNode )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto node2 = std::make_shared<Node>( 1.0, 1.0 );
-    Edge edge( node1, node2 );
-
-    ASSERT_TRUE( edge.hasNode( node2 ) );
+    ASSERT_TRUE( edge_4.hasNode( node2 ) );
 }
 
 TEST_F( EdgeTest, HasNode_NotPresent )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto node2 = std::make_shared<Node>( 1.0, 1.0 );
-    auto node3 = std::make_shared<Node>( 2.0, 2.0 );
-    Edge edge( node1, node2 );
-
-    ASSERT_FALSE( edge.hasNode( node3 ) );
+    ASSERT_FALSE( edge_4.hasNode( node3 ) );
 }
 
 TEST_F( EdgeTest, HasFalseFrontNeighbor_NoNeighbors )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto node2 = std::make_shared<Node>( 1.0, 1.0 );
-    Edge edge( node1, node2 );
-
-    EXPECT_TRUE( edge.hasFalseFrontNeighbor() );
+    EXPECT_TRUE( edge_4.hasFalseFrontNeighbor() );
 }
 
 TEST_F( EdgeTest, HasFalseFrontNeighbor_LeftNeighborNull )
 {
-    auto node1 = std::make_shared<Node>( 0.0, 0.0 );
-    auto node2 = std::make_shared<Node>( 1.0, 1.0 );
-    Edge edge( node1, node2 );
-    edge.rightFrontNeighbor = std::make_shared<Edge>( node1, node2 );
-    edge.rightFrontNeighbor->frontEdge = true;
+    edge_4.rightFrontNeighbor = std::make_shared<Edge>( node, node2 );
+    edge_4.rightFrontNeighbor->frontEdge = true;
 
-    EXPECT_TRUE( edge.hasFalseFrontNeighbor() );
+    EXPECT_TRUE( edge_4.hasFalseFrontNeighbor() );
 }
 
 TEST_F( EdgeTest, HasFalseFrontNeighbor_RightNeighborNull )

@@ -17,22 +17,13 @@ protected:
     void SetUp() override
     {
         Node::mLastNumber = 0;
-<<<<<<< HEAD
-=======
-
->>>>>>> fc2dad4d2bab7ad4b8dae73ddcc3cfa4470db33c
         vector1 = std::make_shared<MyVector>( nullptr, 0.0, 0.0 );
         vector2 = std::make_shared<MyVector>( nullptr, 0.0, 0.0 );
         vector3 = std::make_shared<MyVector>( nullptr, 0.0, 0.0 );
         node1 = std::make_shared<Node>( 0.0, 0.0 );
         node2 = std::make_shared<Node>( 0.0, 0.0 );
-<<<<<<< HEAD
         origin = std::make_shared<Node>(0.0, 0.0);
         origin2 = std::make_shared<Node>(1.0, 1.0);
-=======
-        origin = std::make_shared<Node>( 0.0, 0.0 );
-        origin2 = std::make_shared<Node>( 1.0, 1.0 );
->>>>>>> fc2dad4d2bab7ad4b8dae73ddcc3cfa4470db33c
 
         vector1->origin = node1;
         vector2->origin = node1;
@@ -545,9 +536,12 @@ TEST_F( MyVectorTest, DescrTest )
 
 TEST_F( MyVectorTest, DescrTestWithNegativeValues )
 {
-    auto _origin = std::make_shared<Node>( -1.0, -1.0 );
-    MyVector vector( _origin, -2.0, -3.0 );
-    std::string expected = "1, (-3.000000, -4.000000)";
+    auto origin = std::make_shared<Node>( -1.0, -1.0 );
+    MyVector vector( origin, -2.0, -3.0 );
+    std::string expected = "5, (-3.000000, -4.000000)";
+
+    std::string temp = vector.descr();
+
     EXPECT_EQ( vector.descr(), expected );
 }
 
