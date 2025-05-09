@@ -373,6 +373,7 @@ TEST_F( MyVectorTest, IsCWto_FourthQuadrant )
     EXPECT_TRUE( v1.isCWto( v2 ) );
 }
 
+//Doesn't work properly
 TEST_F( MyVectorTest, IsCWto_DifferentQuadrants )
 {
     MyVector v1( origin, 1.0, 1.0 );
@@ -539,9 +540,6 @@ TEST_F( MyVectorTest, DescrTestWithNegativeValues )
     auto origin = std::make_shared<Node>( -1.0, -1.0 );
     MyVector vector( origin, -2.0, -3.0 );
     std::string expected = "5, (-3.000000, -4.000000)";
-
-    std::string temp = vector.descr();
-
     EXPECT_EQ( vector.descr(), expected );
 }
 
@@ -598,30 +596,28 @@ TEST_F( MyVectorTest, PointIntersects_False )
     EXPECT_FALSE( v1.pointIntersects( v2 ) );
 }
 
-//TEST_F(MyVectorTest, PointIntersects_True)
-//{
-//    auto origin = std::make_shared<Node>(0.0, 0.0);
-//    auto origin2 = std::make_shared<Node>(1.0, 1.0);
-//    MyVector v1(origin, 1.0, 1.0);
-//    MyVector v2(origin2, -1.0, -1.0);
-//
-//    EXPECT_FALSE(v1.pointIntersects(v2));
-//}
+TEST_F(MyVectorTest, PointIntersects_True)
+{
+    auto origin = std::make_shared<Node>(0.0, 0.0);
+    auto origin2 = std::make_shared<Node>(1.0, 1.0);
+    MyVector v1(origin, 1.0, 1.0);
+    MyVector v2(origin2, -1.0, -1.0);
+
+    EXPECT_FALSE(v1.pointIntersects(v2));
+}
 
 
 TEST_F( MyVectorTest, PointIntersects_False_Parallel )
 {
-    
-    
     MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin2, 1.0, 1.0 );
 
     EXPECT_FALSE( v1.pointIntersects( v2 ) );
 }
 
+//Doesn't work properly
 TEST_F( MyVectorTest, PointIntersects_False_NoIntersection )
 {
-    
     auto origin2 = std::make_shared<Node>( 2.0, 2.0 );
     MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin2, 1.0, 1.0 );
@@ -631,7 +627,6 @@ TEST_F( MyVectorTest, PointIntersects_False_NoIntersection )
 
 TEST_F( MyVectorTest, PointIntersects_True_AtEdge )
 {
-    
     auto origin2 = std::make_shared<Node>( 1.0, 0.0 );
     MyVector v1( origin, 1.0, 0.0 );
     MyVector v2( origin2, 0.0, 1.0 );
@@ -639,6 +634,7 @@ TEST_F( MyVectorTest, PointIntersects_True_AtEdge )
     EXPECT_TRUE( v1.pointIntersects( v2 ) );
 }
 
+//Doesn't work properly
 TEST_F( MyVectorTest, InnerPointIntersects_SameOrigin )
 {
     MyVector v1( origin, 1.0, 1.0 );
@@ -648,8 +644,6 @@ TEST_F( MyVectorTest, InnerPointIntersects_SameOrigin )
 
 TEST_F( MyVectorTest, InnerPointIntersects_ParallelVectors )
 {
-    
-    
     MyVector v1( origin, 1.0, 1.0 );
     MyVector v2( origin2, 2.0, 2.0 );
     EXPECT_FALSE( v1.innerpointIntersects( v2 ) );
@@ -657,8 +651,6 @@ TEST_F( MyVectorTest, InnerPointIntersects_ParallelVectors )
 
 TEST_F( MyVectorTest, InnerPointIntersects_IntersectingAtEdge )
 {
-    
-    
     MyVector v1( origin, 2.0, 2.0 );
     MyVector v2( origin2, 1.0, 1.0 );
     EXPECT_FALSE( v1.innerpointIntersects( v2 ) );
