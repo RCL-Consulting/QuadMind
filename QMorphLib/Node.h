@@ -22,6 +22,8 @@ class Node:
 	public Constants,
 	public std::enable_shared_from_this<Node>
 {
+private:
+	int mNumber = 0;
 public:
 	/** Boolean indicating whether the node has been moved by the OBS */
 	bool movedByOBS = false; // Used by the smoother
@@ -32,7 +34,7 @@ public:
 	// byte state= 0; // For front Nodes only
 	ArrayList<std::shared_ptr<Edge>> edgeList;
 	Color color = Color::Cyan;
-    int mNumber = 0;
+    
     inline static int mLastNumber = 0;
 	
 	Node() :
@@ -45,7 +47,16 @@ public:
 		: x( x )
 		, y( y )
 	{
-        mNumber = ++mLastNumber;
+        SetNumber( ++mLastNumber );
+	}
+
+	void SetNumber( int number )
+	{
+		mNumber = number;
+	}
+	int GetNumber() const
+	{
+		return mNumber;
 	}
 
 	bool equals( const std::shared_ptr<Constants>& elem ) const override;
