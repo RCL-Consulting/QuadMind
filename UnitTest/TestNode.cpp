@@ -11,6 +11,7 @@ protected:
     std::shared_ptr<Node> node_ptr = std::make_shared<Node>(1.0, 2.0);
     std::shared_ptr<Node> node_ptr1 = std::make_shared<Node>(0.0, 0.0);
     Node node;
+    Node node1;
 
     void SetUp() override
     {
@@ -18,6 +19,7 @@ protected:
         node_ptr->setXY(1.0, 2.0);
         node_ptr1->setXY(0.0, 0.0);
         node.setXY(1.0, 2.0);
+        node1.setXY(0.0, 0.0);
     }
 
     void TearDown() override
@@ -201,17 +203,14 @@ TEST_F( NodeTest, DescrHandlesZeroCoordinates )
 TEST_F( NodeTest, ValDescrTest )
 {
     // Test case 1: pattern with multiple elements
-    Node node1( 0.0, 0.0 );
     node1.pattern = { 5, 3, 4, 2, 1 };
     EXPECT_EQ( node1.valDescr(), "3-421" );
 
     // Test case 2: pattern with single element
-    Node node2( 0.0, 0.0 );
-    node2.pattern = { 3, 2, 1 };
-    EXPECT_EQ( node2.valDescr(), "2-1" );
+    node1.pattern = { 3, 2, 1 };
+    EXPECT_EQ( node1.valDescr(), "2-1" );
 
     // Test case 3: pattern with no elements
-    Node node3( 0.0, 0.0 );
-    node3.pattern = { 2, 0 };
-    EXPECT_EQ( node3.valDescr(), "0-" );
+    node1.pattern = { 2, 0 };
+    EXPECT_EQ( node1.valDescr(), "0-" );
 }

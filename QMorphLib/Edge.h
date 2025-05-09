@@ -38,6 +38,8 @@ public:
 	double len; // length of this edge
 	Color color = Color::Green;
 
+	Edge() {}
+
 	Edge( const std::shared_ptr<Node>& node1,
 		  const std::shared_ptr<Node>& node2 );
 
