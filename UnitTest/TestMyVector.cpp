@@ -11,16 +11,19 @@ protected:
     std::shared_ptr<MyVector> vector3;
     std::shared_ptr<Node> node1;
     std::shared_ptr<Node> node2;
-    std::shared_ptr<Node> origin = std::make_shared<Node>(0.0, 0.0);
-    std::shared_ptr<Node> origin2 = std::make_shared<Node>(1.0, 1.0);
+    std::shared_ptr<Node> origin;
+    std::shared_ptr<Node> origin2;
 
     void SetUp() override
     {
+        Node::mLastNumber = 0;
         vector1 = std::make_shared<MyVector>( nullptr, 0.0, 0.0 );
         vector2 = std::make_shared<MyVector>( nullptr, 0.0, 0.0 );
         vector3 = std::make_shared<MyVector>( nullptr, 0.0, 0.0 );
         node1 = std::make_shared<Node>( 0.0, 0.0 );
         node2 = std::make_shared<Node>( 0.0, 0.0 );
+        origin = std::make_shared<Node>(0.0, 0.0);
+        origin2 = std::make_shared<Node>(1.0, 1.0);
 
         vector1->origin = node1;
         vector2->origin = node1;
@@ -529,7 +532,7 @@ TEST_F( MyVectorTest, DotProductWithZeroVector )
 TEST_F( MyVectorTest, DescrTest )
 {
     MyVector vector( origin, 3.0, 4.0 );
-    std::string expected = "1, (3.000000, 4.000000)";
+    std::string expected = "3, (3.000000, 4.000000)";
     EXPECT_EQ( vector.descr(), expected );
 }
 
@@ -544,7 +547,7 @@ TEST_F( MyVectorTest, DescrTestWithNegativeValues )
 TEST_F( MyVectorTest, DescrTestWithZeroValues )
 {
     MyVector vector( origin, 0.0, 0.0 );
-    std::string expected = "2, (0.000000, 0.000000)";
+    std::string expected = "3, (0.000000, 0.000000)";
     EXPECT_EQ( vector.descr(), expected );
 }
 

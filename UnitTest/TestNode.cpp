@@ -14,6 +14,7 @@ protected:
 
     void SetUp() override
     {
+        Node::mLastNumber = 0;
         node_ptr->setXY(1.0, 2.0);
         node_ptr1->setXY(0.0, 0.0);
         node.setXY(1.0, 2.0);
@@ -182,19 +183,19 @@ TEST_F( NodeTest, LengthTestNegativeCoordinates )
 TEST_F( NodeTest, DescrReturnsCorrectString )
 {
     Node node( 3.5, 7.2 );
-    EXPECT_EQ( node.descr(), "52" );
+    EXPECT_EQ( node.descr(), "1" );
 }
 
 TEST_F( NodeTest, DescrHandlesNegativeCoordinates )
 {
     Node node( -1.0, -2.5 );
-    EXPECT_EQ( node.descr(), "55" );
+    EXPECT_EQ( node.descr(), "1" );
 }
 
 TEST_F( NodeTest, DescrHandlesZeroCoordinates )
 {
     Node node( 0.0, 0.0 );
-    EXPECT_EQ( node.descr(), "58" );
+    EXPECT_EQ( node.descr(), "1" );
 }
 
 TEST_F( NodeTest, ValDescrTest )

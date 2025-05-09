@@ -15,6 +15,7 @@ protected:
 
     void SetUp() override
     {
+        Node::mLastNumber = 0;
         origin->setXY(0.0, 0.0);
         origin1->setXY(1.0, 1.0);
     }
@@ -54,7 +55,7 @@ TEST_F( RayTest, ConstructorWithOriginAndPassThrough )
 }
 
 //TODO: Implement this test
-/*TEST_F(RayTest, ConstructorWithOriginRelEdgeAndAngle)
+TEST_F(RayTest, ConstructorWithOriginRelEdgeAndAngle)
 {
     auto origin = std::make_shared<Node>();
     auto relEdge = std::make_shared<Edge>();
@@ -68,7 +69,7 @@ TEST_F( RayTest, ConstructorWithOriginAndPassThrough )
     EXPECT_EQ( ray.origin, origin );
     EXPECT_NEAR( ray.x, 0.0, 1e-9 );
     EXPECT_NEAR( ray.y, 1.0, 1e-9 );
-}*/
+}
 
 TEST_F( RayTest, CrossProductWithVector )
 {
@@ -140,20 +141,20 @@ TEST_F( RayTest, PointIntersectsAt_IntersectionAtOrigin )
 TEST_F( RayTest, ValuesTest )
 {
     Ray ray1( origin, 0.0 );
-    EXPECT_EQ( ray1.values(), "84, x= 1.000000, y= 0.000000" );
+    EXPECT_EQ( ray1.values(), "1, x= 1.000000, y= 0.000000" );
 
     Ray ray2( origin, std::numbers::pi / 2 );
-    EXPECT_EQ( ray2.values(), "84, x= 0.000000, y= 1.000000" );
+    EXPECT_EQ( ray2.values(), "1, x= 0.000000, y= 1.000000" );
 
     auto passThrough = std::make_shared<Node>( 1.0, 1.0 );
     Ray ray3( origin, passThrough );
-    EXPECT_EQ( ray3.values(), "84, x= 0.707107, y= 0.707107" );
+    EXPECT_EQ( ray3.values(), "1, x= 0.707107, y= 0.707107" );
 }
 
 TEST_F( RayTest, DescrWithAngle )
 {
     Ray ray( origin, 45.0 * Constants::toRadians );
-    std::string expected = "87, (0.707107, 0.707107)";
+    std::string expected = "2, (0.707107, 0.707107)";
     EXPECT_EQ( ray.descr(), expected );
 }
 
@@ -161,16 +162,17 @@ TEST_F( RayTest, DescrWithPassThrough )
 {
     auto passThrough = std::make_shared<Node>( 1.0, 1.0 );
     Ray ray( origin, passThrough );
-    std::string expected = "89, (0.707107, 0.707107)";
+    std::string expected = "1, (0.707107, 0.707107)";
+
+    std::string temp = ray.descr();
+
     EXPECT_EQ( ray.descr(), expected );
 }
 
-//TODO: Implement this test
-//TEST_F( RayTest, DescrWithRelEdge )
-//{
-//    auto origin = std::make_shared<Node>( 0.0, 0.0 );
-//    auto relEdge = std::make_shared<Edge>();
-//    Ray ray( origin, relEdge, 45.0 * Constants::toRadians );
-//    std::string expected = "(0.000000, 0.000000), (0.707107, 0.707107)";
-//    EXPECT_EQ( ray.descr(), expected );
-//}
+TEST_F( RayTest, DescrWithRelEdge )
+{
+    auto relEdge = std::make_shared<Edge>();
+    Ray ray( origin, relEdge, 45.0 * Constants::toRadians );
+    std::string expected = "(0.000000, 0.000000), (0.707107, 0.707107)";
+    EXPECT_EQ( ray.descr(), expected );
+}
