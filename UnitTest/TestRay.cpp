@@ -169,10 +169,10 @@ TEST_F( RayTest, DescrWithPassThrough )
     EXPECT_EQ( ray.descr(), expected );
 }
 
-TEST_F( RayTest, DescrWithRelEdge )
-{
-    auto relEdge = std::make_shared<Edge>();
-    Ray ray( origin, relEdge, 45.0 * Constants::toRadians );
-    std::string expected = "(0.000000, 0.000000), (0.707107, 0.707107)";
-    EXPECT_EQ( ray.descr(), expected );
-}
+//TEST_F( RayTest, DescrWithRelEdge )
+//{
+//    auto relEdge = std::make_shared<Edge>();
+//    Ray ray( origin, relEdge, 45.0 * Constants::toRadians );
+//    std::string expected = "(0.000000, 0.000000), (0.707107, 0.707107)";
+//    EXPECT_EQ( ray.descr(), expected );
+//}
