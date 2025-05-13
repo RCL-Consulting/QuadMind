@@ -4,6 +4,8 @@
 #include "Node.h"
 #include "MyVector.h"
 
+//All tests are working.
+
 class EdgeTest : public ::testing::Test
 {
 protected:

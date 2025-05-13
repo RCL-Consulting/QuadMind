@@ -2,6 +2,8 @@
 #include "Element.h"
 #include "Node.h"
 
+//All tests are working.
+
 class ElementTest : public ::testing::Test
 {
 protected:

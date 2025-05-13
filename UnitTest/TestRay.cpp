@@ -7,6 +7,8 @@
 
 #include <numbers>
 
+//All tests are working.
+
 class RayTest : public ::testing::Test
 {
 protected:

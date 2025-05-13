@@ -5,6 +5,8 @@
 #include "Node.h"
 #include "Edge.h"
 
+//All tests are working.
+
 class NodeTest : public ::testing::Test
 {
 protected:

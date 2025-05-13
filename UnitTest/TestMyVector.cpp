@@ -3,6 +3,8 @@
 #include "Node.h"
 #include "Ray.h"
 
+//All tests are working.
+
 class MyVectorTest : public ::testing::Test
 {
 protected:
