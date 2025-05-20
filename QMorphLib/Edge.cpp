@@ -157,7 +157,6 @@ Edge::alterRightState( bool newRightState )
 	return true;
 }
 
-//TODO: Tests
 std::shared_ptr<Edge>
 Edge::evalPotSideEdge( const std::shared_ptr<Edge>& frontNeighbor,
 					   const std::shared_ptr<Node>& n )
@@ -189,7 +188,6 @@ Edge::evalPotSideEdge( const std::shared_ptr<Edge>& frontNeighbor,
 	}
 }
 
-//TODO: Tests
 void 
 Edge::classifyStateOfFrontEdge()
 {
@@ -256,7 +254,6 @@ Edge::classifyStateOfFrontEdge()
 	Msg::debug( "Leaving Edge.classifyStateOfFrontEdge()" );
 }
 
-//TODO: Tests
 bool
 Edge::isLargeTransition( const std::shared_ptr<Edge>& e )
 {
@@ -283,7 +280,6 @@ Edge::isLargeTransition( const std::shared_ptr<Edge>& e )
 	}
 }
 
-//TODO: Tests
 std::shared_ptr<Edge>
 Edge::getNextFront()
 {
@@ -364,7 +360,6 @@ Edge::replaceNode( const std::shared_ptr<Node>& n1,
 	return true;
 }
 
-//TODO: Tests
 void
 Edge::seamWith( const std::shared_ptr<Edge>& e )
 {
@@ -451,7 +446,6 @@ Edge::length( const std::shared_ptr<Node>& node1,
 	return length( node1->x, node1->y, node2->x, node2->y );
 }
 
-//TODO: Tests
 double
 Edge::angleAt( const std::shared_ptr<Node>& n )
 {

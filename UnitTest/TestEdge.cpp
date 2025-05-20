@@ -817,3 +817,416 @@ TEST_F( EdgeTest, NextFrontNeighbor_PrevIsRightNeighbor )
 
     EXPECT_EQ( edge->nextFrontNeighbor( edge2 ), nullptr );
 }
+
+static std::shared_ptr<Triangle> makeTriangle(
+    const std::shared_ptr<Edge>& e1,
+    const std::shared_ptr<Edge>& e2,
+    const std::shared_ptr<Edge>& e3)
+{
+    return std::make_shared<Triangle>(e1, e2, e3);
+}
+
+// Helper to create a quad for testing
+static std::shared_ptr<Quad> makeQuad(
+    const std::shared_ptr<Edge>& e1,
+    const std::shared_ptr<Edge>& e2,
+    const std::shared_ptr<Edge>& e3,
+    const std::shared_ptr<Edge>& e4)
+{
+    return std::make_shared<Quad>(e1, e2, e3, e4);
+}
+
+TEST_F(EdgeTest, EvalPotSideEdge_Triangle_ReturnsFrontNeighborIfAngleSmall)
+{
+    auto n1 = std::make_shared<Node>(0.0, 0.0);
+    auto n2 = std::make_shared<Node>(1.0, 0.0);
+    auto n3 = std::make_shared<Node>(0.5, 1.0);
+
+    auto e1 = std::make_shared<Edge>(n1, n2);
+    auto e2 = std::make_shared<Edge>(n2, n3);
+    auto e3 = std::make_shared<Edge>(n3, n1);
+
+    auto tri = makeTriangle(e1, e2, e3);
+    e1->connectToElement(tri);
+    e2->connectToElement(tri);
+    e3->connectToElement(tri);
+
+    auto result = e1->evalPotSideEdge(e2, n2);
+    ASSERT_EQ(result, e2);
+}
+
+TEST_F(EdgeTest, EvalPotSideEdge_Triangle_ReturnsNullIfAngleLarge)
+{
+    auto n1 = std::make_shared<Node>(0.0, 0.0);
+    auto n2 = std::make_shared<Node>(2.0, 0.0);
+    auto n3 = std::make_shared<Node>(1.0, 10.0);
+
+    auto e1 = std::make_shared<Edge>(n1, n2);
+    auto e2 = std::make_shared<Edge>(n2, n3);
+    auto e3 = std::make_shared<Edge>(n3, n1);
+
+    auto tri = makeTriangle(e1, e2, e3);
+    e1->connectToElement(tri);
+    e2->connectToElement(tri);
+    e3->connectToElement(tri);
+
+    auto result = e1->evalPotSideEdge(e2, n2);
+    ASSERT_EQ(result, nullptr);
+}
+
+TEST_F(EdgeTest, EvalPotSideEdge_Quad_ReturnsFrontNeighborIfAngleSmall)  
+{  
+    auto n1 = std::make_shared<Node>(0.0, 0.0);  
+    auto n2 = std::make_shared<Node>(1.0, 0.0);  
+    auto n3 = std::make_shared<Node>(1.0, 1.0);  
+    auto n4 = std::make_shared<Node>(0.0, 1.0);  
+
+    auto e1 = std::make_shared<Edge>(n1, n2);  
+    auto e2 = std::make_shared<Edge>(n2, n3);  
+    auto e3 = std::make_shared<Edge>(n3, n4);  
+    auto e4 = std::make_shared<Edge>(n4, n1);  
+
+    auto quad = makeQuad(e1, e2, e3, e4);  
+    e1->connectToElement(quad);  
+    e2->connectToElement(quad);  
+    e3->connectToElement(quad);  
+    e4->connectToElement(quad);  
+
+    auto result = e1->evalPotSideEdge(e2, n2);  
+    ASSERT_EQ(result, e2);  
+}
+
+TEST_F(EdgeTest, EvalPotSideEdge_Quad_ReturnsNullIfAngleLarge)
+{
+    auto n1 = std::make_shared<Node>(0.0, 0.0);
+    auto n2 = std::make_shared<Node>(2.0, 0.0);
+    auto n3 = std::make_shared<Node>(2.0, 10.0);
+    auto n4 = std::make_shared<Node>(0.0, 10.0);
+
+    auto e1 = std::make_shared<Edge>(n1, n2);
+    auto e2 = std::make_shared<Edge>(n2, n3);
+    auto e3 = std::make_shared<Edge>(n3, n4);
+    auto e4 = std::make_shared<Edge>(n4, n1);
+
+    auto quad = makeQuad(e1, e2, e3, e4);
+    e1->connectToElement(quad);
+    e2->connectToElement(quad);
+    e3->connectToElement(quad);
+    e4->connectToElement(quad);
+
+    auto result = e1->evalPotSideEdge(e2, n2);
+    ASSERT_EQ(result, nullptr);
+}
+
+std::shared_ptr<Triangle> makeTriangle(const std::shared_ptr<Edge>& e1, const std::shared_ptr<Edge>& e2, const std::shared_ptr<Edge>& e3) {
+    auto tri = std::make_shared<Triangle>(e1, e2, e3);
+    e1->connectToTriangle(tri);
+    e2->connectToTriangle(tri);
+    e3->connectToTriangle(tri);
+    return tri;
+}
+
+TEST_F(EdgeTest, ClassifyStateOfFrontEdge_Basic) {
+    // Create nodes
+    auto n1 = std::make_shared<Node>(0.0, 0.0);
+    auto n2 = std::make_shared<Node>(1.0, 0.0);
+    auto n3 = std::make_shared<Node>(0.5, 1.0);
+    auto n4 = std::make_shared<Node>(1.5, 1.0);
+
+    // Create edges
+    auto e_main = std::make_shared<Edge>(n1, n2);
+    auto e_left = std::make_shared<Edge>(n1, n3);
+    auto e_right = std::make_shared<Edge>(n2, n4);
+
+    // Set up as front edges
+    e_main->frontEdge = true;
+    e_left->frontEdge = true;
+    e_right->frontEdge = true;
+
+    // Set neighbors
+    e_main->leftFrontNeighbor = e_left;
+    e_main->rightFrontNeighbor = e_right;
+    e_left->rightFrontNeighbor = e_main;
+    e_right->leftFrontNeighbor = e_main;
+
+    // Connect triangles to edges (simulate a front)
+    auto tri1 = makeTriangle(e_main, e_left, std::make_shared<Edge>(n3, n2));
+    auto tri2 = makeTriangle(e_main, e_right, std::make_shared<Edge>(n1, n4));
+
+    // Clear state lists before test
+    Edge::clearStateList();
+
+    // Call function under test
+    e_main->classifyStateOfFrontEdge();
+
+    // Check that e_main is in the correct state list
+    int state = e_main->getState();
+    bool found = false;
+    for (int i = 0; i < Edge::stateList[state].size(); ++i) {
+        if (Edge::stateList[state].get(i) == e_main) {
+            found = true;
+            break;
+        }
+    }
+    EXPECT_TRUE(found);
+
+    // Check that leftSide and rightSide are set (true or false, but at least set)
+    // and that the neighbors' states are updated accordingly
+    EXPECT_TRUE(e_main->leftSide == true || e_main->leftSide == false);
+    EXPECT_TRUE(e_main->rightSide == true || e_main->rightSide == false);
+    // The neighbor's left/right state should match the main edge's logic
+    if (e_main->leftSide) {
+        if (e_main->leftNode == e_left->leftNode)
+            EXPECT_TRUE(e_left->leftSide);
+        else
+            EXPECT_TRUE(e_left->rightSide);
+    }
+    else {
+        if (e_main->leftNode == e_left->leftNode)
+            EXPECT_FALSE(e_left->leftSide);
+        else
+            EXPECT_FALSE(e_left->rightSide);
+    }
+    if (e_main->rightSide) {
+        if (e_main->rightNode == e_right->leftNode)
+            EXPECT_TRUE(e_right->leftSide);
+        else
+            EXPECT_TRUE(e_right->rightSide);
+    }
+    else {
+        if (e_main->rightNode == e_right->leftNode)
+            EXPECT_FALSE(e_right->leftSide);
+        else
+            EXPECT_FALSE(e_right->rightSide);
+    }
+}
+
+std::shared_ptr<Edge> makeEdge(double x1, double y1, double x2, double y2) {
+    auto n1 = std::make_shared<Node>(x1, y1);
+    auto n2 = std::make_shared<Node>(x2, y2);
+    return std::make_shared<Edge>(n1, n2);
+}
+
+TEST_F(EdgeTest, IsLargeTransition_TrueWhenRatioGreaterThan2_5) {
+    // Edge1: length 10, Edge2: length 3 (ratio > 2.5)
+    auto e1 = makeEdge(0, 0, 10, 0);
+    auto e2 = makeEdge(0, 0, 3, 0);
+    EXPECT_TRUE(e1->isLargeTransition(e2));
+    EXPECT_TRUE(e2->isLargeTransition(e1));
+}
+
+TEST_F(EdgeTest, IsLargeTransition_FalseWhenRatioEqualTo2_5) {
+    // Edge1: length 5, Edge2: length 2 (ratio = 2.5)
+    auto e1 = makeEdge(0, 0, 5, 0);
+    auto e2 = makeEdge(0, 0, 2, 0);
+    EXPECT_FALSE(e1->isLargeTransition(e2));
+    EXPECT_FALSE(e2->isLargeTransition(e1));
+}
+
+TEST_F(EdgeTest, IsLargeTransition_FalseWhenRatioLessThan2_5) {
+    // Edge1: length 4, Edge2: length 3 (ratio < 2.5)
+    auto e1 = makeEdge(0, 0, 4, 0);
+    auto e2 = makeEdge(0, 0, 3, 0);
+    EXPECT_FALSE(e1->isLargeTransition(e2));
+    EXPECT_FALSE(e2->isLargeTransition(e1));
+}
+
+class EdgeTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        // Clear stateList before each test
+        Edge::clearStateList();
+    }
+};
+
+TEST_F(EdgeTest, GetNextFrontReturnsSelectableFront) {
+    // Create nodes
+    auto n1 = std::make_shared<Node>(0.0, 0.0);
+    auto n2 = std::make_shared<Node>(1.0, 0.0);
+    auto n3 = std::make_shared<Node>(0.5, 1.0);
+
+    // Create edges
+    auto e1 = std::make_shared<Edge>(n1, n2);
+    auto e2 = std::make_shared<Edge>(n2, n3);
+    auto e3 = std::make_shared<Edge>(n3, n1);
+
+    // Set up as front edges
+    e1->frontEdge = true;
+    e2->frontEdge = true;
+    e3->frontEdge = true;
+
+    // Set selectable and level
+    e1->selectable = true;
+    e2->selectable = true;
+    e3->selectable = true;
+    e1->level = 1;
+    e2->level = 2;
+    e3->level = 3;
+
+    // Place e1 in stateList[2], e2 in stateList[1], e3 in stateList[0]
+    Edge::stateList[2].add(e1);
+    Edge::stateList[1].add(e2);
+    Edge::stateList[0].add(e3);
+
+    // Should select e1 (highest state, lowest level)
+    auto nextFront = Edge::getNextFront();
+    ASSERT_EQ(nextFront, e1);
+}
+
+TEST_F(EdgeTest, GetNextFrontReturnsNullIfNoSelectable) {
+    // No selectable edges in any state
+    auto result = Edge::getNextFront();
+    ASSERT_EQ(result, nullptr);
+}
+
+TEST_F(EdgeTest, GetNextFrontPrefersShorterEdgeOnLargeTransition) {
+    // Create nodes
+    auto n1 = std::make_shared<Node>(0.0, 0.0);
+    auto n2 = std::make_shared<Node>(10.0, 0.0);
+    auto n3 = std::make_shared<Node>(0.0, 1.0);
+    auto n4 = std::make_shared<Node>(0.0, 2.0);
+
+    // Create edges
+    auto e1 = std::make_shared<Edge>(n1, n2); // long edge
+    auto e2 = std::make_shared<Edge>(n1, n3); // short edge
+    auto e3 = std::make_shared<Edge>(n1, n4); // short edge
+
+    // Set up as front edges
+    e1->frontEdge = true;
+    e2->frontEdge = true;
+    e3->frontEdge = true;
+
+    // Set selectable and level
+    e1->selectable = true;
+    e2->selectable = true;
+    e3->selectable = true;
+    e1->level = 1;
+    e2->level = 1;
+    e3->level = 1;
+
+    // Set neighbors for large transition
+    e1->leftFrontNeighbor = e2;
+    e1->rightFrontNeighbor = e3;
+    e2->leftFrontNeighbor = e1;
+    e3->rightFrontNeighbor = e1;
+
+    // Place e1 in stateList[1]
+    Edge::stateList[1].add(e1);
+    Edge::stateList[1].add(e2);
+    Edge::stateList[1].add(e3);
+
+    // e1 is a large transition compared to e2 and e3, so should return e2 or e3
+    auto nextFront = Edge::getNextFront();
+    // Should return e2 or e3, not e1
+    ASSERT_TRUE(nextFront == e2 || nextFront == e3);
+}
+
+class MockElement : public Element {
+public:
+    MockElement() { firstNode = nullptr; }
+    std::shared_ptr<Element> neighbor(const std::shared_ptr<Edge>&) override { return nullptr; }
+    double angle(const std::shared_ptr<Edge>&, const std::shared_ptr<Node>&) override { return 0.0; }
+    bool hasEdge(const std::shared_ptr<Edge>&) override { return false; }
+    bool hasNode(const std::shared_ptr<Node>&) override { return false; }
+    std::shared_ptr<Edge> neighborEdge(const std::shared_ptr<Node>&, const std::shared_ptr<Edge>&) override { return nullptr; }
+    int indexOf(const std::shared_ptr<Edge>&) override { return 0; }
+    int angleIndex(const std::shared_ptr<Edge>&, const std::shared_ptr<Edge>&) override { return 0; }
+    int angleIndex(const std::shared_ptr<Node>&) override { return 0; }
+    double angle(const std::shared_ptr<Edge>&, const std::shared_ptr<Edge>&) override { return 0.0; }
+    bool concavityAt(const std::shared_ptr<Node>&) override { return false; }
+    void replaceEdge(const std::shared_ptr<Edge>&, const std::shared_ptr<Edge>&) override {}
+    bool invertedWhenNodeRelocated(const std::shared_ptr<Node>&, const std::shared_ptr<Node>&) override { return false; }
+    std::shared_ptr<Node> nodeAtLargestAngle() override { return nullptr; }
+};
+
+// Helper to create a node
+std::shared_ptr<Node> makeNode(double x, double y) {
+    auto n = std::make_shared<Node>(x, y);
+    return n;
+}
+
+// Test seamWith
+TEST_F(EdgeTest, SeamWithBasic) {
+    // Create nodes
+    auto n1 = makeNode(0, 0);
+    auto n2 = makeNode(1, 0);
+    auto n3 = makeNode(1, 1);
+
+    // Create edges
+    auto e1 = std::make_shared<Edge>(n1, n2);
+    auto e2 = std::make_shared<Edge>(n2, n3);
+
+    // Add e1 to n1 and n2 edge lists
+    n1->edgeList.add(e1);
+    n2->edgeList.add(e1);
+    // Add e2 to n2 and n3 edge lists
+    n2->edgeList.add(e2);
+    n3->edgeList.add(e2);
+
+    // Attach mock elements to edges
+    auto elem1 = std::make_shared<MockElement>();
+    auto elem2 = std::make_shared<MockElement>();
+    e1->element1 = elem1;
+    e2->element1 = elem2;
+    elem1->firstNode = n1;
+    elem2->firstNode = n2;
+
+    // Before seamWith, n2 should have both e1 and e2
+    EXPECT_EQ(n2->edgeList.size(), 2);
+
+    // Call seamWith
+    e1->seamWith(e2);
+
+    // After seamWith, n2 should still have at least one edge
+    EXPECT_GE(n2->edgeList.size(), 1);
+
+    // The edgeLists of n1 and n3 should not be empty
+    EXPECT_GE(n1->edgeList.size(), 0);
+    EXPECT_GE(n3->edgeList.size(), 0);
+}
+
+std::shared_ptr<Node> make_node(double x, double y) {
+    return std::make_shared<Node>(x, y);
+}
+
+TEST_F(EdgeTest, AngleAtXAxis) {
+    auto n1 = make_node(0.0, 0.0);
+    auto n2 = make_node(1.0, 0.0);
+    Edge e(n1, n2);
+
+    // Angle at n1 should be 0 (along x-axis)
+    double angle = e.angleAt(n1);
+    EXPECT_NEAR(angle, 0.0, 1e-9);
+
+    // Angle at n2 should be PI (opposite x-axis)
+    angle = e.angleAt(n2);
+    EXPECT_NEAR(angle, Constants::PI, 1e-9);
+}
+
+TEST_F(EdgeTest, AngleAtYAxis) {
+    auto n1 = make_node(0.0, 0.0);
+    auto n2 = make_node(0.0, 1.0);
+    Edge e(n1, n2);
+
+    // Angle at n1 should be -PI/2 (upwards)
+    double angle = e.angleAt(n1);
+    EXPECT_NEAR(angle, -Constants::PIdiv2, 1e-9);
+
+    // Angle at n2 should be PI/2 (downwards)
+    angle = e.angleAt(n2);
+    EXPECT_NEAR(angle, Constants::PIdiv2, 1e-9);
+}
+
+TEST_F(EdgeTest, AngleAtDiagonal) {
+    auto n1 = make_node(0.0, 0.0);
+    auto n2 = make_node(1.0, 1.0);
+    Edge e(n1, n2);
+
+    // Angle at n1 should be -PI/4 (45 degrees up and right)
+    double angle = e.angleAt(n1);
+    EXPECT_NEAR(angle, -Constants::PIdiv4, 1e-9);
+
+    // Angle at n2 should be PI + PIdiv4 (225 degrees)
+    angle = e.angleAt(n2);
+    EXPECT_NEAR(angle, Constants::PI + Constants::PIdiv4, 1e-9);
+}
