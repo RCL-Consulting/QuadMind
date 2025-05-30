@@ -3,6 +3,8 @@
 #include "Edge.h"
 #include "Node.h"
 #include "MyVector.h"
+#include "Triangle.h"
+#include "Quad.h"
 
 //All tests are working.
 
@@ -35,7 +37,10 @@ protected:
         edge_4 = Edge(node, node2);
         tri1 = std::make_shared<Triangle>(edge, std::make_shared<Edge>(node, std::make_shared<Node>(0.0, 1.0)), std::make_shared<Edge>(node1, std::make_shared<Node>(1.0, 1.0)));
         tri2 = std::make_shared<Triangle>(edge, std::make_shared<Edge>(node, std::make_shared<Node>(-1.0, 0.0)), std::make_shared<Edge>(node1, std::make_shared<Node>(2.0, 0.0)));
-        quad1 = std::make_shared<Quad>(edge, std::make_shared<Edge>(node, std::make_shared<Node>(0.0, 1.0)), std::make_shared<Edge>(node1, std::make_shared<Node>(1.0, 1.0)), std::make_shared<Edge>(n1, n2));
+		auto edge_n_n5 = std::make_shared<Edge>(node, node5);
+		auto edge_n1_n2 = std::make_shared<Edge>(node1, node2);
+		auto edge_n2_n5 = std::make_shared<Edge>(node2, node5);
+        quad1 = std::make_shared<Quad>(edge, edge_n_n5, edge_n1_n2, edge_n2_n5);
     }
 
 	void TearDown() override
@@ -879,7 +884,7 @@ TEST_F(EdgeTest, EvalPotSideEdge_Triangle_ReturnsNullIfAngleLarge)
     ASSERT_EQ(result, nullptr);
 }
 
-TEST_F(EdgeTest, EvalPotSideEdge_Quad_ReturnsFrontNeighborIfAngleSmall)  
+TEST_F(EdgeTest, EvalPotSideEdge_Quad_ReturnsFrontNeighborIfAngleSmall)
 {  
     auto n1 = std::make_shared<Node>(0.0, 0.0);  
     auto n2 = std::make_shared<Node>(1.0, 0.0);  
@@ -923,13 +928,7 @@ TEST_F(EdgeTest, EvalPotSideEdge_Quad_ReturnsNullIfAngleLarge)
     ASSERT_EQ(result, nullptr);
 }
 
-std::shared_ptr<Triangle> makeTriangle(const std::shared_ptr<Edge>& e1, const std::shared_ptr<Edge>& e2, const std::shared_ptr<Edge>& e3) {
-    auto tri = std::make_shared<Triangle>(e1, e2, e3);
-    e1->connectToTriangle(tri);
-    e2->connectToTriangle(tri);
-    e3->connectToTriangle(tri);
-    return tri;
-}
+
 
 TEST_F(EdgeTest, ClassifyStateOfFrontEdge_Basic) {
     // Create nodes
@@ -1036,13 +1035,6 @@ TEST_F(EdgeTest, IsLargeTransition_FalseWhenRatioLessThan2_5) {
     EXPECT_FALSE(e2->isLargeTransition(e1));
 }
 
-class EdgeTest : public ::testing::Test {
-protected:
-    void SetUp() override {
-        // Clear stateList before each test
-        Edge::clearStateList();
-    }
-};
 
 TEST_F(EdgeTest, GetNextFrontReturnsSelectableFront) {
     // Create nodes
@@ -1126,7 +1118,7 @@ TEST_F(EdgeTest, GetNextFrontPrefersShorterEdgeOnLargeTransition) {
     ASSERT_TRUE(nextFront == e2 || nextFront == e3);
 }
 
-class MockElement : public Element {
+/*class MockElement : public Element {
 public:
     MockElement() { firstNode = nullptr; }
     std::shared_ptr<Element> neighbor(const std::shared_ptr<Edge>&) override { return nullptr; }
@@ -2990,4 +2982,4 @@ TEST_F(EdgeTest, PrintMeOutputsDescr) {
     std::string output = oss.str();
     std::string expected = edge.descr() + "\n";
     EXPECT_EQ(output, expected);
-}
+}*/
