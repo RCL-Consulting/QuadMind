@@ -2559,8 +2559,6 @@ TEST_F(EdgeTest, NextQuadEdgeAt_ReturnsNullIfNoQuad)
     EXPECT_EQ(result, nullptr);
 }
 
-}
-
 TEST_F(EdgeTest, GetQuadElement_ReturnsCorrectQuad) {
     // Arrange
     auto node1 = std::make_shared<Node>(0.0, 0.0);
