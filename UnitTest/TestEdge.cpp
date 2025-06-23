@@ -834,7 +834,7 @@ TEST_F( EdgeTest, NextFrontNeighbor_PrevIsRightNeighbor )
     EXPECT_EQ( edge->nextFrontNeighbor( edge2 ), nullptr );
 }
 
-static std::shared_ptr<Triangle> makeTriangle(
+static std::shared_ptr<Triangle> makeSimpleTriangle(
     const std::shared_ptr<Edge>& e1,
     const std::shared_ptr<Edge>& e2,
     const std::shared_ptr<Edge>& e3)
@@ -843,7 +843,7 @@ static std::shared_ptr<Triangle> makeTriangle(
 }
 
 // Helper to create a quad for testing
-static std::shared_ptr<Quad> makeQuad(
+static std::shared_ptr<Quad> makeSimpleQuad(
     const std::shared_ptr<Edge>& e1,
     const std::shared_ptr<Edge>& e2,
     const std::shared_ptr<Edge>& e3,
@@ -862,7 +862,7 @@ TEST_F(EdgeTest, EvalPotSideEdge_Triangle_ReturnsFrontNeighborIfAngleSmall)
     auto e2 = std::make_shared<Edge>(n2, n3);
     auto e3 = std::make_shared<Edge>(n3, n1);
 
-    auto tri = makeTriangle(e1, e2, e3);
+    auto tri = makeSimpleTriangle(e1, e2, e3);
     e1->connectToElement(tri);
     e2->connectToElement(tri);
     e3->connectToElement(tri);
@@ -881,7 +881,7 @@ TEST_F(EdgeTest, EvalPotSideEdge_Triangle_ReturnsNullIfAngleLarge)
     auto e2 = std::make_shared<Edge>(n2, n3);
     auto e3 = std::make_shared<Edge>(n3, n1);
 
-    auto tri = makeTriangle(e1, e2, e3);
+    auto tri = makeSimpleTriangle(e1, e2, e3);
     e1->connectToElement(tri);
     e2->connectToElement(tri);
     e3->connectToElement(tri);
@@ -902,7 +902,7 @@ TEST_F(EdgeTest, EvalPotSideEdge_Quad_ReturnsFrontNeighborIfAngleSmall)
     auto e3 = std::make_shared<Edge>(n3, n4);  
     auto e4 = std::make_shared<Edge>(n4, n1);  
 
-    auto quad = makeQuad(e1, e2, e3, e4);  
+    auto quad = makeSimpleQuad(e1, e2, e3, e4);
     e1->connectToElement(quad);  
     e2->connectToElement(quad);  
     e3->connectToElement(quad);  
@@ -924,7 +924,7 @@ TEST_F(EdgeTest, EvalPotSideEdge_Quad_ReturnsNullIfAngleLarge)
     auto e3 = std::make_shared<Edge>(n3, n4);
     auto e4 = std::make_shared<Edge>(n4, n1);
 
-    auto quad = makeQuad(e1, e2, e3, e4);
+    auto quad = makeSimpleQuad(e1, e2, e3, e4);
     e1->connectToElement(quad);
     e2->connectToElement(quad);
     e3->connectToElement(quad);
@@ -960,8 +960,8 @@ TEST_F(EdgeTest, ClassifyStateOfFrontEdge_Basic) {
     e_right->leftFrontNeighbor = e_main;
 
     // Connect triangles to edges (simulate a front)
-    auto tri1 = makeTriangle(e_main, e_left, std::make_shared<Edge>(n3, n2));
-    auto tri2 = makeTriangle(e_main, e_right, std::make_shared<Edge>(n1, n4));
+    auto tri1 = makeSimpleTriangle(e_main, e_left, std::make_shared<Edge>(n3, n2));
+    auto tri2 = makeSimpleTriangle(e_main, e_right, std::make_shared<Edge>(n1, n4));
 
     // Clear state lists before test
     Edge::clearStateList();
@@ -1124,7 +1124,7 @@ TEST_F(EdgeTest, GetNextFrontPrefersShorterEdgeOnLargeTransition) {
     ASSERT_TRUE(nextFront == e2 || nextFront == e3);
 }
 
-/*class MockElement : public Element {
+class MockElement : public Element {
 public:
     MockElement() { firstNode = nullptr; }
     std::shared_ptr<Element> neighbor(const std::shared_ptr<Edge>&) override { return nullptr; }
@@ -1279,7 +1279,7 @@ TEST_F(EdgeTest, HandlesNullElement) {
     EXPECT_NEAR(angle, 0.0, 1e-10);
 }
 
-std::shared_ptr<Triangle> createTriangleWithEdges(
+std::shared_ptr<Triangle> createTriangleWithEdges_EF(
     std::shared_ptr<Edge>& e1,
     std::shared_ptr<Edge>& e2,
     std::shared_ptr<Edge>& e3,
@@ -1303,7 +1303,7 @@ std::shared_ptr<Triangle> createTriangleWithEdges(
 TEST_F(EdgeTest, FirstFrontEdgeAt_ReturnsFrontEdge) {
     std::shared_ptr<Edge> e1, e2, e3;
     std::shared_ptr<Node> n1, n2, n3;
-    auto tri = createTriangleWithEdges(e1, e2, e3, n1, n2, n3);
+    auto tri = createTriangleWithEdges_EF(e1, e2, e3, n1, n2, n3);
 
     // Mark e2 as a front edge
     e2->frontEdge = true;
@@ -1317,7 +1317,7 @@ TEST_F(EdgeTest, FirstFrontEdgeAt_ReturnsFrontEdge) {
 TEST_F(EdgeTest, FirstFrontEdgeAt_AlreadyFrontEdge) {
     std::shared_ptr<Edge> e1, e2, e3;
     std::shared_ptr<Node> n1, n2, n3;
-    auto tri = createTriangleWithEdges(e1, e2, e3, n1, n2, n3);
+    auto tri = createTriangleWithEdges_EF(e1, e2, e3, n1, n2, n3);
 
     // Mark e1 as a front edge
     e1->frontEdge = true;
@@ -1340,7 +1340,7 @@ TEST_F(EdgeTest, ComputeCCWAngle_90Degrees) {
 
     // CCW angle from edge1 to edge2 at A should be 90 degrees (PI/2)
     double angle = edge1->computeCCWAngle(edge2);
-    double expected = M_PI_2; // 90 degrees in radians
+    double expected = Constants::PIdiv2; // 90 degrees in radians
 
     ASSERT_NEAR(angle, expected, 1e-8);
 }
@@ -1357,7 +1357,7 @@ TEST_F(EdgeTest, ComputeCCWAngle_90Degrees) {
 
     // CCW angle from edge1 to edge2 at A should be 180 degrees (PI)
     double angle = edge1->computeCCWAngle(edge2);
-    double expected = M_PI;
+    double expected = Constants::PI;
 
     ASSERT_NEAR(angle, expected, 1e-8);
 }
@@ -1378,7 +1378,7 @@ TEST_F(EdgeTest, ComputeCCWAngle_ZeroDegrees) {
     ASSERT_NEAR(angle, expected, 1e-8);
 }
 
-std::shared_ptr<Triangle> makeTriangle(const std::shared_ptr<Edge>& e1, const std::shared_ptr<Edge>& e2, const std::shared_ptr<Edge>& e3) {
+std::shared_ptr<Triangle> makeConnectedTriangle(const std::shared_ptr<Edge>& e1, const std::shared_ptr<Edge>& e2, const std::shared_ptr<Edge>& e3) {
     auto t = std::make_shared<Triangle>(e1, e2, e3);
     e1->connectToElement(t);
     e2->connectToElement(t);
@@ -1386,16 +1386,10 @@ std::shared_ptr<Triangle> makeTriangle(const std::shared_ptr<Edge>& e1, const st
     return t;
 }
 
-std::shared_ptr<Triangle> makeTriangle(const std::shared_ptr<Edge>& e1, const std::shared_ptr<Edge>& e2, const std::shared_ptr<Edge>& e3) {
-    auto t = std::make_shared<Triangle>(e1, e2, e3);
-    e1->connectToElement(t);
-    e2->connectToElement(t);
-    e3->connectToElement(t);
-    return t;
-}
+
 
 // Helper to create a dummy quad with given edges   
-std::shared_ptr<Quad> makeQuad(const std::shared_ptr<Edge>& e1, const std::shared_ptr<Edge>& e2, const std::shared_ptr<Edge>& e3, const std::shared_ptr<Edge>& e4) {
+std::shared_ptr<Quad> makeConnectedQuad(const std::shared_ptr<Edge>& e1, const std::shared_ptr<Edge>& e2, const std::shared_ptr<Edge>& e3, const std::shared_ptr<Edge>& e4) {
     auto q = std::make_shared<Quad>(e1, e2, e3, e4);
     e1->connectToElement(q);
     e2->connectToElement(q);
@@ -1419,8 +1413,8 @@ TEST_F(EdgeTest, CommonElementReturnsCorrectElement) {
     auto e5 = std::make_shared<Edge>(n4, n3);
 
     // Create triangle and quad
-    auto tri = makeTriangle(e1, e2, e3);
-    auto quad = makeQuad(e1, e4, e5, e3);
+    auto tri = makeSimpleTriangle(e1, e2, e3);
+    auto quad = makeSimpleQuad(e1, e4, e5, e3);
 
     // e1 is shared by both tri and quad
     // e2 only in tri, e4 only in quad
@@ -1607,7 +1601,7 @@ TEST_F(EdgeTest, DisconnectNotConnectedElement) {
     EXPECT_EQ(edge->element2, tri2);
 }
 
-static std::shared_ptr<Triangle> createTriangleWithEdges(
+static std::shared_ptr<Triangle> createTriangleWithEdges_NF(
     std::shared_ptr<Node>& n1,
     std::shared_ptr<Node>& n2,
     std::shared_ptr<Node>& n3,
@@ -1632,7 +1626,7 @@ TEST_F(EdgeTest, OppositeNodeReturnsCorrectNodeInSingleTriangle)
     auto n2 = std::make_shared<Node>(1.0, 0.0);
     auto n3 = std::make_shared<Node>(0.0, 1.0);
     std::shared_ptr<Edge> e1, e2, e3;
-    auto tri = createTriangleWithEdges(n1, n2, n3, e1, e2, e3);
+    auto tri = createTriangleWithEdges_NF(n1, n2, n3, e1, e2, e3);
 
     // e1: n1-n2, e2: n2-n3, e3: n3-n1
     // e1's opposite node in tri should be n3
@@ -1799,7 +1793,7 @@ TEST_F(EdgeTest, SwapToAndSetElementsFor_SwapsDiagonalAndUpdatesElements)
     EXPECT_TRUE(n3->hasEdge(newDiag));
 }
 
-std::shared_ptr<Triangle> makeTriangle(const std::shared_ptr<Node>& n1, const std::shared_ptr<Node>& n2, const std::shared_ptr<Node>& n3) {
+std::shared_ptr<Triangle> makeNodeTriangle(const std::shared_ptr<Node>& n1, const std::shared_ptr<Node>& n2, const std::shared_ptr<Node>& n3) {
     auto e1 = std::make_shared<Edge>(n1, n2);
     auto e2 = std::make_shared<Edge>(n2, n3);
     auto e3 = std::make_shared<Edge>(n3, n1);
@@ -1811,7 +1805,7 @@ std::shared_ptr<Triangle> makeTriangle(const std::shared_ptr<Node>& n1, const st
 }
 
 // Helper to create a quad element
-std::shared_ptr<Quad> makeQuad(const std::shared_ptr<Node>& n1, const std::shared_ptr<Node>& n2, const std::shared_ptr<Node>& n3, const std::shared_ptr<Node>& n4) {
+std::shared_ptr<Quad> makeNodeQuad(const std::shared_ptr<Node>& n1, const std::shared_ptr<Node>& n2, const std::shared_ptr<Node>& n3, const std::shared_ptr<Node>& n4) {
     auto e1 = std::make_shared<Edge>(n1, n2);
     auto e2 = std::make_shared<Edge>(n2, n3);
     auto e3 = std::make_shared<Edge>(n3, n4);
@@ -1828,7 +1822,7 @@ TEST_F(EdgeTest, BordersToTriangle_Element1IsTriangle) {
     auto n1 = std::make_shared<Node>(0.0, 0.0);
     auto n2 = std::make_shared<Node>(1.0, 0.0);
     auto n3 = std::make_shared<Node>(0.0, 1.0);
-    auto tri = makeTriangle(n1, n2, n3);
+    auto tri = makeNodeTriangle(n1, n2, n3);
     auto edge = std::make_shared<Edge>(n1, n2);
     edge->connectToTriangle(tri);
     EXPECT_TRUE(edge->bordersToTriangle());
@@ -1838,7 +1832,7 @@ TEST_F(EdgeTest, BordersToTriangle_Element2IsTriangle) {
     auto n1 = std::make_shared<Node>(0.0, 0.0);
     auto n2 = std::make_shared<Node>(1.0, 0.0);
     auto n3 = std::make_shared<Node>(0.0, 1.0);
-    auto tri = makeTriangle(n1, n2, n3);
+    auto tri = makeNodeTriangle(n1, n2, n3);
     auto edge = std::make_shared<Edge>(n1, n2);
     // Manually set element2 to triangle
     edge->element2 = tri;
@@ -1850,7 +1844,7 @@ TEST_F(EdgeTest, BordersToTriangle_NoTriangle) {
     auto n2 = std::make_shared<Node>(1.0, 0.0);
     auto n3 = std::make_shared<Node>(1.0, 1.0);
     auto n4 = std::make_shared<Node>(0.0, 1.0);
-    auto quad = makeQuad(n1, n2, n3, n4);
+    auto quad = makeNodeQuad(n1, n2, n3, n4);
     auto edge = std::make_shared<Edge>(n1, n2);
     edge->connectToQuad(quad);
     EXPECT_FALSE(edge->bordersToTriangle());
@@ -2032,7 +2026,7 @@ Edge::noTrianglesInOrbit( const std::shared_ptr<Edge>& e,
 	return true;
 }
 
-std::shared_ptr<Quad> createSimpleQuad(
+std::shared_ptr<Quad> createSimpleQuadConnectQuad(
     std::shared_ptr<Node>& n1,
     std::shared_ptr<Node>& n2,
     std::shared_ptr<Node>& n3,
@@ -2061,7 +2055,7 @@ std::shared_ptr<Quad> createSimpleQuad(
 TEST_F(EdgeTest, NoTrianglesInOrbit_QuadOnly_ReturnsTrue) {
     std::shared_ptr<Node> n1, n2, n3, n4;
     std::shared_ptr<Edge> e1, e2, e3, e4;
-    auto quad = createSimpleQuad(n1, n2, n3, n4, e1, e2, e3, e4);
+    auto quad = createSimpleQuadConnectQuad(n1, n2, n3, n4, e1, e2, e3, e4);
 
     // Orbit from e1 to e3 (should not encounter any triangles)
     EXPECT_TRUE(e1->noTrianglesInOrbit(e3, quad));
@@ -2070,7 +2064,7 @@ TEST_F(EdgeTest, NoTrianglesInOrbit_QuadOnly_ReturnsTrue) {
 TEST_F(EdgeTest, NoTrianglesInOrbit_WithTriangle_ReturnsFalse) {
     std::shared_ptr<Node> n1, n2, n3, n4;
     std::shared_ptr<Edge> e1, e2, e3, e4;
-    auto quad = createSimpleQuad(n1, n2, n3, n4, e1, e2, e3, e4);
+    auto quad = createSimpleQuadConnectQuad(n1, n2, n3, n4, e1, e2, e3, e4);
 
     // Add a triangle sharing e2
     auto tri = std::make_shared<Triangle>(e2, std::make_shared<Edge>(n2, n4), std::make_shared<Edge>(n4, n3));
@@ -2083,7 +2077,7 @@ TEST_F(EdgeTest, NoTrianglesInOrbit_WithTriangle_ReturnsFalse) {
 TEST_F(EdgeTest, NoTrianglesInOrbit_NullCommonNode_ReturnsFalse) {
     std::shared_ptr<Node> n1, n2, n3, n4, n5;
     std::shared_ptr<Edge> e1, e2, e3, e4;
-    auto quad = createSimpleQuad(n1, n2, n3, n4, e1, e2, e3, e4);
+    auto quad = createSimpleQuadConnectQuad(n1, n2, n3, n4, e1, e2, e3, e4);
 
     // e5 does not share a node with e1
     n5 = std::make_shared<Node>(2.0, 2.0);
@@ -2092,7 +2086,7 @@ TEST_F(EdgeTest, NoTrianglesInOrbit_NullCommonNode_ReturnsFalse) {
     EXPECT_FALSE(e1->noTrianglesInOrbit(e5, quad));
 }
 
-std::shared_ptr<Triangle> createTriangle(
+std::shared_ptr<Triangle> createTriangleAndConnect(
     std::shared_ptr<Node> n1, std::shared_ptr<Node> n2, std::shared_ptr<Node> n3,
     std::shared_ptr<Edge>& e1, std::shared_ptr<Edge>& e2, std::shared_ptr<Edge>& e3)
 {
@@ -2118,7 +2112,7 @@ TEST_F(EdgeTest, FindLeftFrontNeighbor_SingleFrontEdge) {
 
     // Create triangle and edges
     std::shared_ptr<Edge> e1, e2, e3;
-    auto tri = createTriangle(n1, n2, n3, e1, e2, e3);
+    auto tri = createTriangleAndConnect(n1, n2, n3, e1, e2, e3);
 
     // Add a front edge to n1's edgeList (besides e1)
     auto frontEdge = std::make_shared<Edge>(n1, n4);
@@ -2155,7 +2149,7 @@ TEST_F(EdgeTest, FindLeftFrontNeighbor_MultipleFrontEdges_SelectsSmallestAngle) 
 
     // Create triangle and edges
     std::shared_ptr<Edge> e1, e2, e3;
-    auto tri = createTriangle(n1, n2, n3, e1, e2, e3);
+    auto tri = createTriangleAndConnect(n1, n2, n3, e1, e2, e3);
 
     // Create two front edges at n1
     auto frontEdge1 = std::make_shared<Edge>(n1, n4);
@@ -2196,7 +2190,7 @@ TEST_F(EdgeTest, FindLeftFrontNeighbor_NoFrontEdge_ReturnsNull) {
 
     // Create triangle and edges
     std::shared_ptr<Edge> e1, e2, e3;
-    auto tri = createTriangle(n1, n2, n3, e1, e2, e3);
+    auto tri = createTriangleAndConnect(n1, n2, n3, e1, e2, e3);
 
     // e1 is not a front edge
     e1->element1 = tri;
@@ -2214,7 +2208,7 @@ TEST_F(EdgeTest, FindLeftFrontNeighbor_NoFrontEdge_ReturnsNull) {
     ASSERT_EQ(result, nullptr);
 }
 
-std::shared_ptr<Triangle> createTriangle(
+std::shared_ptr<Triangle> createTriangleAndConnectNodes(
     std::shared_ptr<Node> n1, std::shared_ptr<Node> n2, std::shared_ptr<Node> n3,
     std::shared_ptr<Edge>& e1, std::shared_ptr<Edge>& e2, std::shared_ptr<Edge>& e3)
 {
@@ -2240,7 +2234,7 @@ TEST_F(EdgeTest, FindRightFrontNeighbor_SingleNeighbor) {
 
     // Create edges and triangles
     std::shared_ptr<Edge> e1, e2, e3, e4, e5;
-    auto tri1 = createTriangle(n1, n2, n3, e1, e2, e3);
+    auto tri1 = createTriangleAndConnectNodes(n1, n2, n3, e1, e2, e3);
     e4 = std::make_shared<Edge>(n3, n4);
     e5 = std::make_shared<Edge>(n4, n1);
     auto tri2 = std::make_shared<Triangle>(e3, e4, e5);
@@ -2274,7 +2268,7 @@ TEST_F(EdgeTest, FindRightFrontNeighbor_MultipleNeighbors) {
 
     // Create edges and triangles
     std::shared_ptr<Edge> e1, e2, e3, e4, e5, e6;
-    auto tri1 = createTriangle(n1, n2, n3, e1, e2, e3);
+    auto tri1 = createTriangleAndConnectNodes(n1, n2, n3, e1, e2, e3);
     e4 = std::make_shared<Edge>(n3, n4);
     e5 = std::make_shared<Edge>(n4, n1);
     auto tri2 = std::make_shared<Triangle>(e3, e4, e5);
@@ -2313,7 +2307,7 @@ TEST_F(EdgeTest, FindRightFrontNeighbor_NoNeighbor) {
 
     // Create edges and triangle
     std::shared_ptr<Edge> e1, e2, e3;
-    auto tri1 = createTriangle(n1, n2, n3, e1, e2, e3);
+    auto tri1 = createTriangleAndConnectNodes(n1, n2, n3, e1, e2, e3);
 
     // No front edges at n3
     ArrayList<std::shared_ptr<Edge>> frontList;
@@ -2373,7 +2367,7 @@ TEST_F(EdgeTest, SetFrontNeighbors_DoesNotCrashWithSingleEdge) {
         });
 }
 
-std::shared_ptr<Triangle> createTriangle(
+std::shared_ptr<Triangle> createTriangleWithElements(
     std::shared_ptr<Node> n1,
     std::shared_ptr<Node> n2,
     std::shared_ptr<Node> n3,
@@ -2401,8 +2395,8 @@ TEST_F(EdgeTest, SplitTrianglesAt_SplitsCorrectly)
 
     // Create two triangles sharing edge BC
     std::shared_ptr<Edge> eAB, eBC, eCA, eCD, eDA;
-    auto tri1 = createTriangle(nA, nB, nC, eAB, eBC, eCA);
-    auto tri2 = createTriangle(nC, nD, nA, eCD, eDA, eCA); // eCA reused
+    auto tri1 = createTriangleWithElements(nA, nB, nC, eAB, eBC, eCA);
+    auto tri2 = createTriangleWithElements(nC, nD, nA, eCD, eDA, eCA); // eCA reused
 
     // Set up edge's elements
     eCA->element1 = tri1;
@@ -2521,7 +2515,7 @@ TEST_F(EdgeTest, SplitTrianglesAtMyMidPoint_SplitsEdgeAndUpdatesLists)
     EXPECT_TRUE(resultEdge->hasNode(n2) || resultEdge->hasNode(n3));
 }
 
-std::shared_ptr<Quad> createSimpleQuad(
+std::shared_ptr<Quad> createSimpleQuadConnectElement(
     std::shared_ptr<Node>& n1,
     std::shared_ptr<Node>& n2,
     std::shared_ptr<Node>& n3,
@@ -2554,7 +2548,7 @@ TEST_F(EdgeTest, NextQuadEdgeAt_FindsNextQuad)
     // Arrange: Create two quads sharing an edge at node n2
     std::shared_ptr<Node> n1, n2, n3, n4, n5;
     std::shared_ptr<Edge> e1, e2, e3, e4, e5, e6, e7;
-    auto quad1 = createSimpleQuad(n1, n2, n3, n4, e1, e2, e3, e4);
+    auto quad1 = createSimpleQuadConnectElement(n1, n2, n3, n4, e1, e2, e3, e4);
 
     // Second quad shares n2-n3 edge with first quad
     n5 = std::make_shared<Node>(2.0, 0.0);
@@ -2988,4 +2982,4 @@ TEST_F(EdgeTest, PrintMeOutputsDescr) {
     std::string output = oss.str();
     std::string expected = edge.descr() + "\n";
     EXPECT_EQ(output, expected);
-}*/
+}
