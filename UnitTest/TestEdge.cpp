@@ -1594,9 +1594,13 @@ TEST_F(EdgeTest, DisconnectElement2) {
 TEST_F(EdgeTest, DisconnectNotConnectedElement) {
     edge->element1 = tri1;
     edge->element2 = tri2;
-    Msg::lastError.clear();
+    // Capture the error output produced when disconnecting an unconnected element
+    std::stringstream buffer;
+    std::streambuf* oldCout = std::cout.rdbuf(buffer.rdbuf());
     edge->disconnectFromElement(quad1);
-    EXPECT_EQ(Msg::lastError.find("is not connected to element"), 0u);
+    std::cout.rdbuf(oldCout);
+    auto output = buffer.str();
+    EXPECT_NE(output.find("is not connected to element"), std::string::npos);
     EXPECT_EQ(edge->element1, tri1);
     EXPECT_EQ(edge->element2, tri2);
 }
@@ -1986,45 +1990,6 @@ TEST_F(EdgeTest, HasElementReturnsFalseWhenBothNull) {
     EXPECT_FALSE(edge->hasElement(elem));
 }
 
-Edge::noTrianglesInOrbit( const std::shared_ptr<Edge>& e,
-						 const std::shared_ptr<Quad>& startQ )
-{
-	Msg::debug("Entering Edge.noTrianglesInOrbit(..)");
-	auto curEdge = shared_from_this();
-	std::shared_ptr<Element> curElem = startQ;
-	auto n = commonNode( e );
-	if ( n == nullptr )
-	{
-		Msg::debug( "Leaving Edge.noTrianglesInOrbit(..), returns false" );
-		return false;
-	}
-	if ( curEdge->boundaryEdge() )
-	{
-		curEdge = n->anotherBoundaryEdge( curEdge );
-		curElem = curEdge->element1;
-	}
-	do
-	{
-		if ( rcl::instanceOf<Triangle>( curElem ) )
-		{
-			Msg::debug( "Leaving Edge.noTrianglesInOrbit(..), returns false" );
-			return false;
-		}
-		curEdge = curElem->neighborEdge( n, curEdge );
-		if ( curEdge->boundaryEdge() )
-		{
-			curEdge = n->anotherBoundaryEdge( curEdge );
-			curElem = curEdge->element1;
-		}
-		else
-		{
-			curElem = curElem->neighbor( curEdge );
-		}
-	} while ( curEdge != e );
-
-	Msg::debug( "Leaving Edge.noTrianglesInOrbit(..), returns true" );
-	return true;
-}
 
 std::shared_ptr<Quad> createSimpleQuadConnectQuad(
     std::shared_ptr<Node>& n1,
