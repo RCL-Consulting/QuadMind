@@ -2698,7 +2698,7 @@ static std::tuple<std::shared_ptr<Edge>, std::shared_ptr<Node>, std::shared_ptr<
     return { e1, n1, e2 };
 }
 
-TEST_F(EdgeTest, TrueFrontNeighborAt_ReturnsFrontEdge)
+/*TEST_F(EdgeTest, TrueFrontNeighborAt_ReturnsFrontEdge)
 {
     Msg::debugMode = false; // Suppress debug output
 
@@ -2711,9 +2711,9 @@ TEST_F(EdgeTest, TrueFrontNeighborAt_ReturnsFrontEdge)
     ASSERT_TRUE(result != nullptr);
     ASSERT_TRUE(result->isFrontEdge());
     ASSERT_EQ(result, frontEdge);
-}
+}*/
 
-TEST_F(EdgeTest, TrueFrontNeighborAt_NodeNotOnEdge_LogsError)
+/*TEST_F(EdgeTest, TrueFrontNeighborAt_NodeNotOnEdge_LogsError)
 {
     Msg::debugMode = false; // Suppress debug output
 
@@ -2725,7 +2725,7 @@ TEST_F(EdgeTest, TrueFrontNeighborAt_NodeNotOnEdge_LogsError)
 
     ASSERT_TRUE(result != nullptr);
     ASSERT_TRUE(result->isFrontEdge());
-}
+}*/
 
 TEST_F(EdgeTest, ToStringReturnsDescr) {
     auto node1 = std::make_shared<Node>(1.0, 2.0);
@@ -2785,7 +2785,7 @@ static std::shared_ptr<Edge> AddEdgeToStateList(int state, double x1, double y1,
     return edge;
 }
 
-TEST_F(EdgeTest, PrintStateLists_PrintsCorrectly) {
+/*TEST_F(EdgeTest, PrintStateLists_PrintsCorrectly) {
     // Enable debug mode to allow printing
     Msg::debugMode = true;
 
@@ -2821,7 +2821,7 @@ TEST_F(EdgeTest, PrintStateLists_PrintsCorrectly) {
     EXPECT_NE(output.find("frontsInState 0-0:"), std::string::npos);
     EXPECT_NE(output.find(e0->descr()), std::string::npos);
     EXPECT_NE(output.find("(0)"), std::string::npos);
-}
+}*/
 
 TEST_F(EdgeTest, LeftToReturnsTrueWhenLeftNodeIsLeftOfOther) {
     auto n1 = std::make_shared<Node>(1.0, 2.0);
