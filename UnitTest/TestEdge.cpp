@@ -1486,9 +1486,6 @@ TEST_F(EdgeTest, ConnectToTriangle) {
     EXPECT_EQ(e1->element2, triangle2);
 }
 
-namespace Msg {
-    void error(const std::string&) {}
-}
 
 TEST_F(EdgeTest, ConnectToQuad_BasicBehavior) {
     auto node1 = std::make_shared<Node>(0.0, 0.0);
@@ -1528,8 +1525,11 @@ TEST_F(EdgeTest, ConnectToQuad_TooManyElements) {
     edge->connectToQuad(quad1);
     edge->connectToQuad(quad2);
 
-    // Should not crash or change anything, but should call Msg::error
+    // Should not crash or change anything, but should produce an error message
+    testing::internal::CaptureStderr();
     edge->connectToQuad(quad3);
+    std::string output = testing::internal::GetCapturedStderr();
+    EXPECT_NE(output.find("An edge cannot be connected to more than two elements"), std::string::npos);
     EXPECT_EQ(edge->element1, quad1);
     EXPECT_EQ(edge->element2, quad2);
 }
