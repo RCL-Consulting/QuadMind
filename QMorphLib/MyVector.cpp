@@ -19,22 +19,20 @@ MyVector::MyVector( const std::shared_ptr<Node>& origin,
 	this->y = y;
 }
 
-bool 
+bool
 MyVector::operator==( const MyVector& v ) const
 {
-	if ( !rcl::equal( origin->x, v.origin->x ) || !rcl::equal( origin->y, v.origin->y ) )
-	{
-		return false;
-	}
+        if ( !origin || !v.origin )
+        {
+                return false;
+        }
 
-	if ( !rcl::equal( x / y, v.x / v.y ) )
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+        if ( !rcl::equal( origin->x, v.origin->x ) || !rcl::equal( origin->y, v.origin->y ) )
+        {
+                return false;
+        }
+
+        return rcl::equal( x, v.x ) && rcl::equal( y, v.y );
 }
 
 bool 
