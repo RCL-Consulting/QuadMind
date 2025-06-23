@@ -11,6 +11,7 @@ double expected = M_PI_2; // 90 degrees in radians
 #include "MyVector.h"
 #include "Triangle.h"
 #include "Quad.h"
+#include "Msg.h"
 
 //All tests are working.
 
