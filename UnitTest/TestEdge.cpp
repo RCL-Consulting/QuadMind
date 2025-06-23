@@ -1232,7 +1232,7 @@ TEST_F(EdgeTest, AngleAtDiagonal) {
     // Angle at n2 should be PI + PIdiv4 (225 degrees)
     angle = e.angleAt(n2);
     EXPECT_NEAR(angle, Constants::PI + Constants::PIdiv4, 1e-9);
-}*/
+}
 
 struct TriangleFixture {
     std::shared_ptr<Node> n1, n2, n3;
@@ -1345,7 +1345,7 @@ TEST_F(EdgeTest, ComputeCCWAngle_90Degrees) {
     ASSERT_NEAR(angle, expected, 1e-8);
 }
 
-/*TEST_F(EdgeTest, ComputeCCWAngle_180Degrees) {
+TEST_F(EdgeTest, ComputeCCWAngle_180Degrees) {
     // Create three nodes: A(0,0), B(1,0), C(-1,0)
     auto nodeA = std::make_shared<Node>(0.0, 0.0);
     auto nodeB = std::make_shared<Node>(1.0, 0.0);
