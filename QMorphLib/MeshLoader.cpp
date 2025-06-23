@@ -7,6 +7,11 @@
 
 #include <fstream>
 
+// Define static member variables
+ArrayList<std::shared_ptr<Triangle>> MeshLoader::triangleList;
+ArrayList<std::shared_ptr<Edge>> MeshLoader::edgeList;
+ArrayList<std::shared_ptr<Node>> MeshLoader::nodeList;
+
 // Trim from start (in place)
 void ltrim( std::string& s )
 {

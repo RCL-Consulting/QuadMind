@@ -56,22 +56,18 @@ TEST_F( RayTest, ConstructorWithOriginAndPassThrough )
     EXPECT_NEAR( ray.y, std::sqrt( 2 ) / 2, 1e-9 );
 }
 
-//TODO: Implement this test
-//TEST_F(RayTest, ConstructorWithOriginRelEdgeAndAngle)
-//{
-//    auto origin = std::make_shared<Node>();
-//    auto relEdge = std::make_shared<Edge>();
-//    double angle = Constants::PIdiv2; // 90 degrees
-//
-//    // Mock the angleAt method of Edge
-//    EXPECT_CALL( *relEdge, angleAt( origin ) ).WillOnce( Return( 0.0 ) );
-//
-//    Ray ray( origin, relEdge, angle );
-//
-//    EXPECT_EQ( ray.origin, origin );
-//    EXPECT_NEAR( ray.x, 0.0, 1e-9 );
-//    EXPECT_NEAR( ray.y, 1.0, 1e-9 );
-//}
+TEST_F( RayTest, ConstructorWithOriginRelEdgeAndAngle )
+{
+    auto other = std::make_shared<Node>( 1.0, 0.0 );
+    auto relEdge = std::make_shared<Edge>( origin, other );
+    double angle = Constants::PIdiv2; // 90 degrees
+
+    Ray ray( origin, relEdge, angle );
+
+    EXPECT_EQ( ray.origin, origin );
+    EXPECT_NEAR( ray.x, 0.0, 1e-9 );
+    EXPECT_NEAR( ray.y, 1.0, 1e-9 );
+}
 
 TEST_F( RayTest, CrossProductWithVector )
 {
@@ -171,10 +167,11 @@ TEST_F( RayTest, DescrWithPassThrough )
     EXPECT_EQ( ray.descr(), expected );
 }
 
-//TEST_F( RayTest, DescrWithRelEdge )
-//{
-//    auto relEdge = std::make_shared<Edge>();
-//    Ray ray( origin, relEdge, 45.0 * Constants::toRadians );
-//    std::string expected = "(0.000000, 0.000000), (0.707107, 0.707107)";
-//    EXPECT_EQ( ray.descr(), expected );
-//}
+TEST_F( RayTest, DescrWithRelEdge )
+{
+    auto other = std::make_shared<Node>( 1.0, 0.0 );
+    auto relEdge = std::make_shared<Edge>( origin, other );
+    Ray ray( origin, relEdge, 45.0 * Constants::toRadians );
+    std::string expected = "1, (0.707107, 0.707107)";
+    EXPECT_EQ( ray.descr(), expected );
+}
