@@ -15,6 +15,9 @@ double expected = M_PI_2; // 90 degrees in radians
 
 //All tests are working.
 
+// Forward declaration for helper used later in the tests
+std::shared_ptr<Edge> makeEdge(double x1, double y1, double x2, double y2);
+
 class EdgeTest : public ::testing::Test
 {
 protected:
@@ -1120,22 +1123,38 @@ TEST_F(EdgeTest, GetNextFrontPrefersShorterEdgeOnLargeTransition) {
     ASSERT_TRUE(nextFront == e2 || nextFront == e3);
 }
 
-class MockElement : public Element {
+// Simple element class used in tests
+class DummyElement : public Element, public std::enable_shared_from_this<DummyElement> {
 public:
-    MockElement() { firstNode = nullptr; }
+    bool equals(const std::shared_ptr<Constants>&) const override { return false; }
     std::shared_ptr<Element> neighbor(const std::shared_ptr<Edge>&) override { return nullptr; }
     double angle(const std::shared_ptr<Edge>&, const std::shared_ptr<Node>&) override { return 0.0; }
+    void updateAngles() override {}
+    void updateAngle(const std::shared_ptr<Node>&) override {}
+    std::string descr() override { return ""; }
+    void printMe() override {}
     bool hasEdge(const std::shared_ptr<Edge>&) override { return false; }
     bool hasNode(const std::shared_ptr<Node>&) override { return false; }
+    bool areaLargerThan0() override { return true; }
     std::shared_ptr<Edge> neighborEdge(const std::shared_ptr<Node>&, const std::shared_ptr<Edge>&) override { return nullptr; }
-    int indexOf(const std::shared_ptr<Edge>&) override { return 0; }
-    int angleIndex(const std::shared_ptr<Edge>&, const std::shared_ptr<Edge>&) override { return 0; }
-    int angleIndex(const std::shared_ptr<Node>&) override { return 0; }
+    int indexOf(const std::shared_ptr<Edge>&) override { return -1; }
+    int angleIndex(const std::shared_ptr<Edge>&, const std::shared_ptr<Edge>&) override { return -1; }
+    int angleIndex(const std::shared_ptr<Node>&) override { return -1; }
     double angle(const std::shared_ptr<Edge>&, const std::shared_ptr<Edge>&) override { return 0.0; }
+    bool inverted() override { return false; }
+    bool invertedOrZeroArea() override { return false; }
     bool concavityAt(const std::shared_ptr<Node>&) override { return false; }
     void replaceEdge(const std::shared_ptr<Edge>&, const std::shared_ptr<Edge>&) override {}
+    void connectEdges() override {}
+    void disconnectEdges() override {}
+    std::shared_ptr<Element> elementWithExchangedNodes(const std::shared_ptr<Node>&, const std::shared_ptr<Node>&) override { return nullptr; }
     bool invertedWhenNodeRelocated(const std::shared_ptr<Node>&, const std::shared_ptr<Node>&) override { return false; }
+    void updateDistortionMetric() override {}
+    double longestEdgeLength() override { return 0.0; }
+    double largestAngle() override { return 0.0; }
     std::shared_ptr<Node> nodeAtLargestAngle() override { return nullptr; }
+    void markEdgesIllegal() override {}
+    void markEdgesLegal() override {}
 };
 
 // Helper to create a node
@@ -1163,8 +1182,8 @@ TEST_F(EdgeTest, SeamWithBasic) {
     n3->edgeList.add(e2);
 
     // Attach mock elements to edges
-    auto elem1 = std::make_shared<MockElement>();
-    auto elem2 = std::make_shared<MockElement>();
+    auto elem1 = std::make_shared<DummyElement>();
+    auto elem2 = std::make_shared<DummyElement>();
     e1->element1 = elem1;
     e2->element1 = elem2;
     elem1->firstNode = n1;
@@ -1529,37 +1548,6 @@ TEST_F(EdgeTest, ConnectToQuad_TooManyElements) {
     EXPECT_EQ(edge->element2, quad2);
 }
 
-class DummyElement : public Element, public std::enable_shared_from_this<DummyElement> {
-public:
-    std::shared_ptr<Element> neighbor(const std::shared_ptr<Edge>&) override { return nullptr; }
-    double angle(const std::shared_ptr<Edge>&, const std::shared_ptr<Node>&) override { return 0.0; }
-    void updateAngles() override {}
-    void updateAngle(const std::shared_ptr<Node>&) override {}
-    std::string descr() override { return ""; }
-    void printMe() override {}
-    bool hasEdge(const std::shared_ptr<Edge>&) override { return false; }
-    bool hasNode(const std::shared_ptr<Node>&) override { return false; }
-    bool areaLargerThan0() override { return true; }
-    std::shared_ptr<Edge> neighborEdge(const std::shared_ptr<Node>&, const std::shared_ptr<Edge>&) override { return nullptr; }
-    int indexOf(const std::shared_ptr<Edge>&) override { return -1; }
-    int angleIndex(const std::shared_ptr<Edge>&, const std::shared_ptr<Edge>&) override { return -1; }
-    int angleIndex(const std::shared_ptr<Node>&) override { return -1; }
-    double angle(const std::shared_ptr<Edge>&, const std::shared_ptr<Edge>&) override { return 0.0; }
-    bool inverted() override { return false; }
-    bool invertedOrZeroArea() override { return false; }
-    bool concavityAt(const std::shared_ptr<Node>&) override { return false; }
-    void replaceEdge(const std::shared_ptr<Edge>&, const std::shared_ptr<Edge>&) override {}
-    void connectEdges() override {}
-    void disconnectEdges() override {}
-    std::shared_ptr<Element> elementWithExchangedNodes(const std::shared_ptr<Node>&, const std::shared_ptr<Node>&) override { return nullptr; }
-    bool invertedWhenNodeRelocated(const std::shared_ptr<Node>&, const std::shared_ptr<Node>&) override { return false; }
-    void updateDistortionMetric() override {}
-    double longestEdgeLength() override { return 0.0; }
-    double largestAngle() override { return 0.0; }
-    std::shared_ptr<Node> nodeAtLargestAngle() override { return nullptr; }
-    void markEdgesIllegal() override {}
-    void markEdgesLegal() override {}
-};
 
 TEST_F(EdgeTest, ConnectToElement) {
     auto node1 = std::make_shared<Node>(0.0, 0.0);
@@ -1718,8 +1706,11 @@ TEST_F(EdgeTest, GetSwappedEdgeReturnsNullForQuadEdge) {
     auto n2 = std::make_shared<Node>(1.0, 0.0);
     auto edge = std::make_shared<Edge>(n1, n2);
     // Fake a quad by assigning element1 to a Quad
-    struct DummyQuad : public Quad {};
-    edge->element1 = std::make_shared<DummyQuad>();
+    struct DummyQuad : public Quad {
+        DummyQuad(const std::shared_ptr<Edge>& e)
+            : Quad(e, e, e, e) {}
+    };
+    edge->element1 = std::make_shared<DummyQuad>(edge);
     edge->element2 = std::make_shared<Triangle>(edge, edge, edge); // just to not be boundary
     EXPECT_EQ(edge->getSwappedEdge(), nullptr);
 }
@@ -1897,7 +1888,7 @@ TEST_F(EdgeTest, BoundaryEdgeReturnsTrueWhenElement2IsNull)
     auto node2 = std::make_shared<Node>(1.0, 0.0);
     Edge edge(node1, node2);
     // Simulate element1 is set, element2 is nullptr
-    edge.element1 = std::make_shared<Element>();
+    edge.element1 = std::make_shared<DummyElement>();
     edge.element2 = nullptr;
     EXPECT_TRUE(edge.boundaryEdge());
 }
@@ -1907,8 +1898,8 @@ TEST_F(EdgeTest, BoundaryEdgeReturnsFalseWhenBothElementsAreSet)
     auto node1 = std::make_shared<Node>(0.0, 0.0);
     auto node2 = std::make_shared<Node>(1.0, 0.0);
     Edge edge(node1, node2);
-    edge.element1 = std::make_shared<Element>();
-    edge.element2 = std::make_shared<Element>();
+    edge.element1 = std::make_shared<DummyElement>();
+    edge.element2 = std::make_shared<DummyElement>();
     EXPECT_FALSE(edge.boundaryEdge());
 }
 
