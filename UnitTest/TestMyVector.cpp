@@ -56,6 +56,13 @@ TEST_F( MyVectorTest, Equals_DifferentVector_ReturnsFalse )
     EXPECT_FALSE( vector1->equals( vector3 ) );
 }
 
+TEST_F( MyVectorTest, Equals_SameSlopeDifferentLength_ReturnsFalse )
+{
+    MyVector v1( origin, 1.0, 1.0 );
+    MyVector v2( origin, 2.0, 2.0 );
+    EXPECT_FALSE( v1.equals( std::make_shared<MyVector>( v2 ) ) );
+}
+
 TEST_F( MyVectorTest, Equals_NullVector_ReturnsFalse )
 {
     EXPECT_FALSE( vector1->equals( nullptr ) );
