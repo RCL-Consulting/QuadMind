@@ -329,7 +329,7 @@ TEST_F( EdgeTest, DescrTest )
     auto node6 = std::make_shared<Node>( 3.0, 4.0 );
     Edge edge2( node5, node6 );
 
-    std::string expected = "(1, 2)";
+    std::string expected = "(1.000000, 2.000000), (3.000000, 4.000000)";
     EXPECT_EQ( edge2.descr(), expected );
 }
 
@@ -339,7 +339,7 @@ TEST_F( EdgeTest, DescrTestReversedNodes )
     auto node2 = std::make_shared<Node>( 1.0, 2.0 );
     Edge edge( node1, node2 );
 
-    std::string expected = "(2, 1)";
+    std::string expected = "(3.000000, 4.000000), (1.000000, 2.000000)";
     EXPECT_EQ( edge.descr(), expected );
 }
 
