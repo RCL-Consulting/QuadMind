@@ -157,7 +157,6 @@ Edge::alterRightState( bool newRightState )
 	return true;
 }
 
-//TODO: Tests
 std::shared_ptr<Edge>
 Edge::evalPotSideEdge( const std::shared_ptr<Edge>& frontNeighbor,
 					   const std::shared_ptr<Node>& n )
@@ -189,7 +188,6 @@ Edge::evalPotSideEdge( const std::shared_ptr<Edge>& frontNeighbor,
 	}
 }
 
-//TODO: Tests
 void 
 Edge::classifyStateOfFrontEdge()
 {
@@ -256,7 +254,6 @@ Edge::classifyStateOfFrontEdge()
 	Msg::debug( "Leaving Edge.classifyStateOfFrontEdge()" );
 }
 
-//TODO: Tests
 bool
 Edge::isLargeTransition( const std::shared_ptr<Edge>& e )
 {
@@ -283,7 +280,6 @@ Edge::isLargeTransition( const std::shared_ptr<Edge>& e )
 	}
 }
 
-//TODO: Tests
 std::shared_ptr<Edge>
 Edge::getNextFront()
 {
@@ -364,7 +360,6 @@ Edge::replaceNode( const std::shared_ptr<Node>& n1,
 	return true;
 }
 
-//TODO: Tests
 void
 Edge::seamWith( const std::shared_ptr<Edge>& e )
 {
@@ -451,7 +446,6 @@ Edge::length( const std::shared_ptr<Node>& node1,
 	return length( node1->x, node1->y, node2->x, node2->y );
 }
 
-//TODO: Tests
 double
 Edge::angleAt( const std::shared_ptr<Node>& n )
 {
@@ -501,7 +495,6 @@ Edge::angleAt( const std::shared_ptr<Node>& n )
 	}
 }
 
-//TODO: Tests
 double 
 Edge::sumAngle( const std::shared_ptr<Element>& sElem,
 				const std::shared_ptr<Node>& n,
@@ -555,7 +548,6 @@ Edge::sumAngle( const std::shared_ptr<Element>& sElem,
 	return ang;
 }
 
-//TODO: Tests
 std::shared_ptr<Edge>
 Edge::firstFrontEdgeAt( const std::shared_ptr<Element>& sElem,
 						const std::shared_ptr<Node>& n )
@@ -640,7 +632,6 @@ Edge::computePosAngle( const std::shared_ptr<Edge>& edge,
 	}
 }
 
-//TODO: Tests
 double
 Edge::computeCCWAngle( const std::shared_ptr<Edge>& edge )
 {
@@ -677,7 +668,6 @@ Edge::commonNode( const std::shared_ptr<Edge> e )
 	}
 }
 
-//TODO: Tests
 std::shared_ptr<Element> 
 Edge::commonElement( const std::shared_ptr<Edge>& e )
 {
@@ -724,7 +714,6 @@ Edge::tryToDisconnectNodes()
 	}
 }
 
-//TODO: Tests
 void 
 Edge::connectToTriangle( const std::shared_ptr<Triangle>& triangle )
 {
@@ -746,7 +735,6 @@ Edge::connectToTriangle( const std::shared_ptr<Triangle>& triangle )
 	}
 }
 
-//TODO: Tests
 void 
 Edge::connectToQuad( const std::shared_ptr<Quad>& q )
 {
@@ -768,7 +756,6 @@ Edge::connectToQuad( const std::shared_ptr<Quad>& q )
 	}
 }
 
-//TODO: Tests
 void
 Edge::connectToElement( const std::shared_ptr<Element>& elem )
 {
@@ -790,7 +777,6 @@ Edge::connectToElement( const std::shared_ptr<Element>& elem )
 	}
 }
 
-//TODO: Tests
 void
 Edge::disconnectFromElement( const std::shared_ptr<Element>& elem )
 {
@@ -809,7 +795,6 @@ Edge::disconnectFromElement( const std::shared_ptr<Element>& elem )
 	}
 }
 
-//TODO: Tests
 std::shared_ptr<Node>
 Edge::oppositeNode( const std::shared_ptr<Node>& wrongNode )
 {
@@ -887,7 +872,6 @@ Edge::unitNormalAt( const std::shared_ptr<Node>& n )
 	return std::make_shared<Edge>( n, newNode );
 }
 
-//TODO: Tests
 std::shared_ptr<Edge> 
 Edge::getSwappedEdge()
 {
@@ -909,7 +893,6 @@ Edge::getSwappedEdge()
 	return swappedEdge;
 }
 
-//TODO: Tests
 void 
 Edge::swapToAndSetElementsFor( const std::shared_ptr<Edge>& e )
 {
@@ -970,7 +953,6 @@ Edge::getVector( const std::shared_ptr<Node>& origin )
 	}
 }
 
-//TODO: Tests
 bool
 Edge::bordersToTriangle()
 {
@@ -988,7 +970,6 @@ Edge::bordersToTriangle()
 	}
 }
 
-//TODO: Tests
 bool 
 Edge::boundaryEdge()
 {
@@ -1000,7 +981,6 @@ Edge::boundaryEdge()
 	return false;
 }
 
-//TODO: Tests
 bool 
 Edge::boundaryOrTriangleEdge()
 {
@@ -1024,7 +1004,6 @@ Edge::hasNode( const std::shared_ptr<Node>& n )
 	return false;
 }
 
-//TODO: Tests
 bool 
 Edge::hasElement( const std::shared_ptr<Element>& elem )
 {
@@ -1123,7 +1102,6 @@ Edge::lowerNode()
 	}
 }
 
-//TODO: Tests
 bool 
 Edge::noTrianglesInOrbit( const std::shared_ptr<Edge>& e,
 						 const std::shared_ptr<Quad>& startQ )
@@ -1165,7 +1143,6 @@ Edge::noTrianglesInOrbit( const std::shared_ptr<Edge>& e,
 	return true;
 }
 
-//TODO: Tests
 std::shared_ptr<Edge>
 Edge::findLeftFrontNeighbor( const ArrayList<std::shared_ptr<Edge>>& frontList2 )
 {
@@ -1207,7 +1184,6 @@ Edge::findLeftFrontNeighbor( const ArrayList<std::shared_ptr<Edge>>& frontList2 
 	return nullptr;
 }
 
-//TODO: Tests
 std::shared_ptr<Edge> 
 Edge::findRightFrontNeighbor( const ArrayList<std::shared_ptr<Edge>>& frontList2 )
 {
@@ -1265,7 +1241,6 @@ Edge::setFrontNeighbor( const std::shared_ptr<Edge>& e )
 	}
 }
 
-//TODO: Tests
 bool 
 Edge::setFrontNeighbors( const ArrayList<std::shared_ptr<Edge>>& frontList2 )
 {
@@ -1318,7 +1293,6 @@ Edge::removeFromFront( ArrayList<std::shared_ptr<Edge>>& frontList2 )
 	}
 }
 
-//TODO: Tests
 std::shared_ptr<Edge>
 Edge::splitTrianglesAt( const std::shared_ptr<Node>& nN,
 						const std::shared_ptr<Node>& ben,
@@ -1400,7 +1374,6 @@ Edge::splitTrianglesAt( const std::shared_ptr<Node>& nN,
 	}
 }
 
-//TODO: Tests
 std::shared_ptr<Edge>
 Edge::splitTrianglesAtMyMidPoint( ArrayList<std::shared_ptr<Triangle>>& triangleList,
 								  ArrayList<std::shared_ptr<Edge>>& edgeList,
@@ -1423,7 +1396,6 @@ Edge::splitTrianglesAtMyMidPoint( ArrayList<std::shared_ptr<Triangle>>& triangle
 	return lowerEdge;
 }
 
-//TODO: Tests
 std::shared_ptr<Edge> 
 Edge::nextQuadEdgeAt( const std::shared_ptr<Node>& n,
 					  const std::shared_ptr<Element>& startElem )
@@ -1452,7 +1424,6 @@ Edge::nextQuadEdgeAt( const std::shared_ptr<Node>& n,
 	}
 }
 
-//TODO: Tests
 std::shared_ptr<Quad> 
 Edge::getQuadElement()
 {
@@ -1470,7 +1441,6 @@ Edge::getQuadElement()
 	}
 }
 
-//TODO: Tests
 std::shared_ptr<Triangle> 
 Edge::getTriangleElement()
 {
@@ -1488,7 +1458,6 @@ Edge::getTriangleElement()
 	}
 }
 
-//TODO: Tests
 std::shared_ptr<Quad>
 Edge::getQuadWithEdge( const std::shared_ptr<Edge>& e )
 {
@@ -1541,7 +1510,6 @@ Edge::nextFrontNeighbor( const std::shared_ptr<Edge>& prev )
 	}
 }
 
-//TODO: Tests
 std::shared_ptr<Edge> 
 Edge::trueFrontNeighborAt( const std::shared_ptr<Node>& n )
 {
@@ -1562,14 +1530,12 @@ Edge::trueFrontNeighborAt( const std::shared_ptr<Node>& n )
 	return curEdge;
 }
 
-//TODO: Test
 std::string
 Edge::toString()
 {
 	return descr();
 }
 
-//TODO: Test
 void 
 Edge::markAllSelectable()
 {
@@ -1582,7 +1548,6 @@ Edge::markAllSelectable()
 	}
 }
 
-//TODO: Test
 void 
 Edge::printStateLists()
 {
@@ -1608,7 +1573,6 @@ Edge::printStateLists()
 	}
 }
 
-//TODO: Test
 bool 
 Edge::leftTo( const std::shared_ptr<Edge>& e )
 {
@@ -1622,7 +1586,6 @@ Edge::leftTo( const std::shared_ptr<Edge>& e )
 	}
 }
 
-//TODO: Test
 bool 
 Edge::isFrontEdge()
 {
@@ -1636,16 +1599,14 @@ Edge::isFrontEdge()
 	}
 }
 
-//TODO: Test
 std::string
 Edge::descr()
 {
-	/*return "(" + std::to_string( leftNode->x ) + ", " + std::to_string( leftNode->y ) + "), (" + 
-		std::to_string( rightNode->x ) + ", " + std::to_string( rightNode->y ) + ")";*/
+	return "(" + std::to_string( leftNode->x ) + ", " + std::to_string( leftNode->y ) + "), (" + 
+		std::to_string( rightNode->x ) + ", " + std::to_string( rightNode->y ) + ")";
     return "(" + leftNode->descr() + ", " + rightNode->descr() + ")";
 }
 
-//TODO: Test
 void 
 Edge::printMe()
 {
