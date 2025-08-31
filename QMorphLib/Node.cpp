@@ -2125,8 +2125,8 @@ Node::replaceWithStdMesh()
 std::string
 Node::descr()
 {
-	//return "(" + std::to_string( x ) + ", " + std::to_string( y ) + ")";
-    return std::to_string(mNumber);
+	return "(" + std::to_string( x ) + ", " + std::to_string( y ) + ")";
+    //return std::to_string(mNumber);
 }
 
 std::string
@@ -2144,7 +2144,7 @@ Node::valDescr()
 void
 Node::printMe()
 {
-	std::cout << descr() << "\n";
+	Msg::debug( descr() );
 }
 
 std::string 

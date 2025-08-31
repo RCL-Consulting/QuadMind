@@ -609,5 +609,5 @@ MyVector::innerpointIntersects( const MyVector& d1 )
 void 
 MyVector::printMe()
 {
-	std::cout << descr() << "\n";
+	Msg::debug( descr() );
 }

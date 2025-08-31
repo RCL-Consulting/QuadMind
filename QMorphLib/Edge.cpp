@@ -1553,22 +1553,22 @@ Edge::printStateLists()
 {
 	if ( Msg::debugMode )
 	{
-		std::cout << "frontsInState 1-1:\n";
+		Msg::debug( "frontsInState 1-1:" );
 		for ( auto edge : stateList[2] )
 		{
-			std::cout << "" << edge->descr() << ", (" << std::to_string( edge->getState() ) << ")\n";
+			Msg::debug( "" + edge->descr() + ", (" + std::to_string( edge->getState() ) + ")");
 		}
 
-		std::cout << "frontsInState 0-1 and 1-0:\n";
+		Msg::debug( "frontsInState 0-1 and 1-0:");
 		for ( auto edge : stateList[1] )
 		{
-			std::cout << "" << edge->descr() << ", (" << std::to_string( edge->getState() ) << ")\n";
+			Msg::debug( "" + edge->descr() + ", (" + std::to_string( edge->getState() ) + ")");
 		}
 
-		std::cout << "frontsInState 0-0:\n";
+		Msg::debug( "frontsInState 0-0:");
 		for ( auto edge : stateList[0] )
 		{
-			std::cout << "" << edge->descr() << ", (" << std::to_string( edge->getState() ) << ")\n";
+			Msg::debug( "" + edge->descr() + ", (" + std::to_string( edge->getState() ) + ")");
 		}
 	}
 }
@@ -1610,5 +1610,5 @@ Edge::descr()
 void 
 Edge::printMe()
 {
-	std::cout << descr() << "\n";
+	Msg::debug( descr() );
 }

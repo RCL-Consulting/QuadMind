@@ -106,5 +106,5 @@ Ray::descr()
 void 
 Ray::printMe()
 {
-	std::cout << descr() << "\n";
+	Msg::debug( descr() );
 }

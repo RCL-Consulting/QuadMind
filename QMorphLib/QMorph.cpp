@@ -960,8 +960,11 @@ QMorph::localSmooth( const std::shared_ptr<Quad>& q,
 		// Calculate smoothed pos for each element node and those nodes connected to
 		// the element. If the element has become inverted, then repair it.
 
-
-		for (auto k = 0; k < iterations; ++k)
+		topLeftNew = getSmoothedPos( topLeft, q );
+		topRightNew = getSmoothedPos( topRight, q );
+		bottomLeftNew = getSmoothedPos( bottomLeft, q );
+		bottomRightNew = getSmoothedPos( bottomRight, q );
+		/*for ( auto k = 0; k < iterations; ++k )
         {
             topLeftNew = getSmoothedPos(topLeft, q);
             Msg::debug("...Checking topLeft for inversion:");
@@ -998,7 +1001,7 @@ QMorph::localSmooth( const std::shared_ptr<Quad>& q,
                 inversionCheckAndRepair(bottomRight, bottomRightOld);
                 bottomRight->update();
             }
-        }
+        }*/
 
 		for ( int i = 0; i < adjNodes.size(); i++ )
 		{
@@ -1032,7 +1035,7 @@ QMorph::localSmooth( const std::shared_ptr<Quad>& q,
 			}
 		}
 
-		/*Msg::debug( "...Checking topLeft for inversion:" );
+		Msg::debug( "...Checking topLeft for inversion:" );
 		if ( !topLeft->equals( topLeftNew ) )
 		{
 			topLeft->moveTo( *topLeftNew );
@@ -1062,7 +1065,7 @@ QMorph::localSmooth( const std::shared_ptr<Quad>& q,
 			bottomRight->moveTo( *bottomRightNew );
 			inversionCheckAndRepair( bottomRight, bottomRightOld );
 			bottomRight->update();
-		}*/
+		}/**/
 
 		Msg::debug( "...Checking the surrounding nodes for inversion:" );
 		for ( int i = 0; i < adjNodes.size(); i++ )

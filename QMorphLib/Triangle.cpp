@@ -1030,11 +1030,11 @@ Triangle::printMe()
 {
 	if ( inverted() )
 	{
-		std::cout << descr() + ", inverted";
+		Msg::debug( descr() + ", inverted" );
 	}
 	else
 	{
-		std::cout << descr() + ", not inverted";
+		Msg::debug( descr() + ", not inverted" );
 	}
 
 }

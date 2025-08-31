@@ -1598,7 +1598,7 @@ Quad::invertedOrZeroArea()
 		okays = 4 - okays;
 	}
 
-	Msg::debug( "Leaving Quad.invertedOrZeroArea(), okays: " + okays );
+	Msg::debug( "Leaving Quad.invertedOrZeroArea(), okays: " + std::to_string(okays) );
 	if ( okays >= 3 )
 	{
 		return false;
@@ -2435,8 +2435,8 @@ Quad::descr()
 void
 Quad::printMe()
 {
-	std::cout << 
-		descr() << ", inverted(): " << inverted() << ", ang[0]: " << std::to_string( toDegrees * ang[0] ) <<
-		", ang[1]: " << std::to_string( toDegrees * ang[1] ) << ", ang[2]: " << std::to_string( toDegrees * ang[2] ) <<
-		", ang[3]: " << std::to_string( toDegrees * ang[3] ) << ", firstNode is " << firstNode->descr() << "/n";
+	Msg::debug(
+		descr() + ", inverted(): " + std::to_string( inverted() ) + ", ang[0]: " + std::to_string( toDegrees * ang[0] ) +
+		", ang[1]: " + std::to_string( toDegrees * ang[1] ) + ", ang[2]: " + std::to_string( toDegrees * ang[2] ) +
+		", ang[3]: " + std::to_string( toDegrees * ang[3] ) + ", firstNode is " + firstNode->descr() );
 }
