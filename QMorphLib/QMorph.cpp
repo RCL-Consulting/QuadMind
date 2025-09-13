@@ -664,14 +664,16 @@ QMorph::smoothFrontNode( const std::shared_ptr<Node>& nK,
             }
             else
             {
-                auto Size =
-                    abs(m_mesh_size) < 1e-10 ? eD->length() : m_mesh_size;
+                /*auto Size =
+                    abs(m_mesh_size) < 1e-10 ? eD->length() : m_mesh_size;*/
+				auto Size = eD->length();
                 newNode = nK->blackerSmooth(nJ, front1, front2, Size);
             }
         }
         else
         {
-            auto Size = abs(m_mesh_size) < 1e-10 ? eD->length() : m_mesh_size;
+            //auto Size = abs(m_mesh_size) < 1e-10 ? eD->length() : m_mesh_size;
+			auto Size = eD->length();
             newNode = nK->blackerSmooth(nJ, front1, front2, Size);
         }
     }

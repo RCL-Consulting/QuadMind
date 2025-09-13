@@ -822,10 +822,7 @@ Node::blackerSmooth( const std::shared_ptr<Node>& nJ,
 	{
 		Msg::debug( "...step 2..." );
 		MyVector vJ( origin, nJ );
-        MyVector vIJ(origin, nI);
-        vIJ.plus(deltaA);
-        vIJ = vIJ.minus(vJ);
-		//MyVector vIJ( nJ, vImarked.x, vImarked.y );
+		MyVector vIJ( nJ, vImarked.x, vImarked.y );
 		double la = vIJ.length();
 
 		MyVector deltaB = deltaA.plus( vI );
