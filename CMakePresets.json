@@ -1,0 +1,21 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "msvc-debug",
+      "generator": "Ninja",
+      "binaryDir": "out/build/${presetName}",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "msvc-release",
+      "generator": "Ninja",
+      "binaryDir": "out/build/${presetName}",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "debug",   "configurePreset": "msvc-debug" },
+    { "name": "release", "configurePreset": "msvc-release" }
+  ]
+}
